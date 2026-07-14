@@ -48,7 +48,7 @@ export function ContentCard({
         <h3 className="line-clamp-2 font-semibold tracking-tight">
           {title}
         </h3>
-
+        {/* not a contant */}
         <p className="text-sm text-muted-foreground">
           by {author}
         </p>
