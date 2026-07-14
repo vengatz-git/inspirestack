@@ -2,13 +2,14 @@
 
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
-import { ReactNode } from "react";
 
-interface ProvidersProps {
-  children: ReactNode;
+interface AppProvidersProps {
+  children: React.ReactNode;
 }
 
-export function Providers({ children }: ProvidersProps) {
+export function AppProviders({
+  children,
+}: AppProvidersProps) {
   return (
     <ThemeProvider
       attribute="class"
@@ -17,6 +18,7 @@ export function Providers({ children }: ProvidersProps) {
       disableTransitionOnChange
     >
       {children}
+
       <Toaster richColors position="top-right" />
     </ThemeProvider>
   );
