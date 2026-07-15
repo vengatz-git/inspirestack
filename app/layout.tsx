@@ -1,3 +1,4 @@
+import {ClerkProvider} from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 
@@ -47,10 +48,12 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-screen bg-background text-foreground">
-        <AppProviders>
+        <ClerkProvider>
+          <AppProviders>
           <Navbar />
           {children}
-        </AppProviders>
+          </AppProviders>
+        </ClerkProvider>
       </body>
     </html>
   );

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "./logo";
 import { NavLinks } from "./nav-links";
 import { ThemeToggle } from "./theme-toggle";
+import { AuthControls } from "./auth-controls";
 
 export function Navbar() {
   return (
@@ -15,10 +16,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
-
-          <Button asChild>
-            <Link href="/sign-in">Sign In</Link>
-          </Button>
+          <AuthControls />
         </div>
       </div>
     </header>
