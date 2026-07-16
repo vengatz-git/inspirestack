@@ -12,7 +12,12 @@ interface PinCardProps {
 export function PinCard({ pin }: PinCardProps) {
   return (
     <article className="group overflow-hidden rounded-3xl border bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <div className="relative aspect-[4/5] overflow-hidden">
+      <div
+        className="relative overflow-hidden"
+        style={{
+          aspectRatio: `${pin.width} / ${pin.height}`,
+        }}
+      >
         <Image
           src={pin.imageUrl}
           alt={pin.title}

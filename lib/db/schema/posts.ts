@@ -1,4 +1,5 @@
 import {
+  integer,
   pgTable,
   text,
   timestamp,
@@ -16,9 +17,17 @@ export const posts = pgTable("posts", {
 
   publicId: text("public_id").notNull(),
 
+  width: integer("width").notNull(),
+
+  height: integer("height").notNull(),
+
   authorId: text("author_id").notNull(),
 
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at")
+    .defaultNow()
+    .notNull(),
 
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .notNull(),
 });

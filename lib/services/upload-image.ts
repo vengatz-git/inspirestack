@@ -5,9 +5,13 @@ import { cloudinary } from "@/lib/cloudinary";
 interface UploadResult {
   secureUrl: string;
   publicId: string;
+  width: number;
+  height: number;
 }
 
-export async function uploadImage(file: File): Promise<UploadResult> {
+export async function uploadImage(
+  file: File
+): Promise<UploadResult> {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
@@ -26,6 +30,8 @@ export async function uploadImage(file: File): Promise<UploadResult> {
         resolve({
           secureUrl: result.secure_url,
           publicId: result.public_id,
+          width: result.width,
+          height: result.height,
         });
       }
     );

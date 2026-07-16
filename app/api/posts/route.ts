@@ -76,17 +76,24 @@ export async function POST(request: Request) {
       );
     }
 
-    const { secureUrl, publicId } = await uploadImage(image);
+    const {
+        secureUrl,
+        publicId,
+        width,
+        height,
+      } = await uploadImage(image);
 
     const [post] = await db
-      .insert(posts)
-      .values({
-        title,
-        description,
-        imageUrl: secureUrl,
-        publicId,
-        authorId: userId,
-      })
+        .insert(posts)
+        .values({
+              title,
+              description,
+              imageUrl: secureUrl,
+              publicId,
+              width,
+              height,
+              authorId: userId,
+          })
       .returning();
 
     return NextResponse.json({

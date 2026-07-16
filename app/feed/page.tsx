@@ -1,5 +1,5 @@
+import { PinGrid } from "@/components/feed/pin-grid";
 import { getFeedPosts } from "@/lib/db/queries/posts";
-import { PinCard } from "@/components/feed/pin-card";
 
 export default async function FeedPage() {
   const posts = await getFeedPosts();
@@ -16,14 +16,7 @@ export default async function FeedPage() {
         </p>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {posts.map((post) => (
-            <PinCard
-                key={post.id}
-                pin={post}
-            />
-            ))}
-        </div>
+      <PinGrid posts={posts} />
     </main>
   );
 }
