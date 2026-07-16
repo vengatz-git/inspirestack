@@ -14,6 +14,8 @@ export const posts = pgTable("posts", {
 
   imageUrl: text("image_url").notNull(),
 
+  publicId: text("public_id").notNull(),
+
   authorId: text("author_id").notNull(),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),

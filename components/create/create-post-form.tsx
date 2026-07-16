@@ -1,66 +1,112 @@
 "use client";
 
-import { ImagePlus } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { ImagePicker } from "./image-picker";
 
-export function CreatePostForm() {
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
-    const [image, setImage] = useState<File | null>(null);
+export function CreatePostForm() {
+  const router = useRouter();
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [image, setImage] = useState<File | null>(null);
+
+  const [loading, setLoading] = useState(false);
+
+  async function handlePublish() {
+    if (!image) {
+      alert("Please select an image.");
+      return;
+    }
+
+    if (!title.trim()) {
+      alert("Please enter a title.");
+      return;
+    }
+
+    if (!description.trim()) {
+      alert("Please enter a description.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+
+      formData.append("title", title);
+      formData.append("description", description);
+      formData.append("image", image);
+
+      const response = await fetch("/api/posts", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error?.message ?? "Failed to publish.");
+      }
+
+      alert("🎉 Post published!");
+
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <section className="grid gap-10 lg:grid-cols-[420px_1fr]">
       <ImagePicker onImageSelect={setImage} />
 
-      {/* <div className="flex aspect-square items-center justify-center rounded-3xl border-2 border-dashed border-border bg-muted/30">
-        <div className="flex flex-col items-center gap-4 text-center">
-          <ImagePlus className="h-14 w-14 text-muted-foreground" />
-
-          <div>
-            <h3 className="text-lg font-semibold">
-              Upload an image
-            </h3>
-
-            <p className="mt-1 text-sm text-muted-foreground">
-              PNG, JPG or WEBP up to 5 MB
-            </p>
-          </div>
-
-          <Button>Select Image</Button>
-        </div>
-      </div> */}
-
-      {/* Form */}
-
       <div className="space-y-6">
         <div className="space-y-2">
-          <label className="text-sm font-medium">
-            Title
-          </label>
+          <Label htmlFor="title">Title</Label>
 
-          <input
+          <Input
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             placeholder="Give your post a title..."
-            className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-primary"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">
-            Description
-          </label>
+          <Label htmlFor="description">Description</Label>
 
-          <textarea
+          <Textarea
+            id="description"
             rows={8}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             placeholder="Tell people about your post..."
-            className="w-full rounded-xl border bg-background px-4 py-3 outline-none transition focus:ring-2 focus:ring-primary resize-none"
           />
         </div>
 
-        <Button size="lg">
-          Publish Post
+        <Button
+          size="lg"
+          onClick={handlePublish}
+          disabled={loading}
+          className="w-full"
+        >
+          {loading ? "Publishing..." : "Publish Post"}
         </Button>
       </div>
     </section>
