@@ -1,43 +1,45 @@
+import Link from "next/link";
 import Image from "next/image";
-import type { InferSelectModel } from "drizzle-orm";
-
-import { posts } from "@/lib/db/schema/posts";
-
-type Post = InferSelectModel<typeof posts>;
+import type { Pin } from "@/types/pin";
 
 interface PinCardProps {
-  pin: Post;
+  pin: Pin;
 }
 
 export function PinCard({ pin }: PinCardProps) {
   return (
-    <article className="group overflow-hidden rounded-3xl border bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <div
-        className="relative overflow-hidden"
-        style={{
-          aspectRatio: `${pin.width} / ${pin.height}`,
-        }}
-      >
-        <Image
-          src={pin.imageUrl}
-          alt={pin.title}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-          sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 25vw"
-        />
-      </div>
+    <Link
+      href={`/pin/${pin.id}`}
+      className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-3xl"
+    >
+      <article className="group overflow-hidden rounded-3xl border bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+        <div
+          className="relative overflow-hidden"
+          style={{
+            aspectRatio: `${pin.width} / ${pin.height}`,
+          }}
+        >
+          <Image
+            src={pin.imageUrl}
+            alt={pin.title}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 25vw"
+          />
+        </div>
 
-      <div className="space-y-2 p-4">
-        <h2 className="line-clamp-2 text-lg font-semibold">
-          {pin.title}
-        </h2>
+        <div className="space-y-2 p-4">
+          <h2 className="line-clamp-2 text-lg font-semibold">
+            {pin.title}
+          </h2>
 
-        {pin.description && (
-          <p className="line-clamp-3 text-sm text-muted-foreground">
-            {pin.description}
-          </p>
-        )}
-      </div>
-    </article>
+          {pin.description && (
+            <p className="line-clamp-3 text-sm text-muted-foreground">
+              {pin.description}
+            </p>
+          )}
+        </div>
+      </article>
+    </Link>
   );
 }

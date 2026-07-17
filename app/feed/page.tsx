@@ -16,7 +16,7 @@ export default async function FeedPage() {
         </p>
       </div>
 
-      <PinGrid posts={posts} />
+      <PinGrid pins={posts} />
     </main>
   );
 }
