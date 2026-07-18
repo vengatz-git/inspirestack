@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 
-import { PinDetail } from "@/components/pin/pin-detail";
-import { RelatedPins } from "@/components/pin/related-pins";
-import { getPinById, getRelatedPins } from "@/lib/db/queries/posts";
+import { PinDetail } from "@/components/providers/pin/pin-detail";
+import {
+  getPinById,
+  getRelatedPins,
+} from "@/lib/db/queries/posts";
 
 interface PinPageProps {
   params: Promise<{
@@ -10,7 +12,9 @@ interface PinPageProps {
   }>;
 }
 
-export default async function PinPage({ params }: PinPageProps) {
+export default async function PinPage({
+  params,
+}: PinPageProps) {
   const { id } = await params;
 
   const pin = await getPinById(id);
@@ -23,9 +27,10 @@ export default async function PinPage({ params }: PinPageProps) {
 
   return (
     <main className="container mx-auto max-w-7xl px-4 py-10">
-      <PinDetail pin={pin} />
-
-      <RelatedPins pins={relatedPins} />
+      <PinDetail
+        pin={pin}
+        relatedPins={relatedPins}
+      />
     </main>
   );
 }

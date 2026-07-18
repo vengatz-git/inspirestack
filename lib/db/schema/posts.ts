@@ -6,6 +6,9 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
+import { profiles } from "./profiles";
+
+
 export const posts = pgTable("posts", {
   id: uuid("id").defaultRandom().primaryKey(),
 
@@ -21,7 +24,11 @@ export const posts = pgTable("posts", {
 
   height: integer("height").notNull(),
 
-  authorId: text("author_id").notNull(),
+  profileId: uuid("profile_id")
+  .references(() => profiles.id, {
+    onDelete: "cascade",
+  })
+  .notNull(),
 
   createdAt: timestamp("created_at")
     .defaultNow()

@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 
 import { db } from "@/lib/db";
 import { posts } from "@/lib/db/schema/posts";
+import { getProfileByClerkId } from "@/lib/db/queries/profile";
 import { uploadImage } from "@/lib/services/upload-image";
 
 import {
@@ -23,6 +24,20 @@ export async function POST(request: Request) {
           },
         },
         { status: 401 }
+      );
+    }
+
+    const profile = await getProfileByClerkId(userId);
+
+    if (!profile) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            message: "Profile not found.",
+          },
+        },
+        { status: 404 }
       );
     }
 
@@ -77,23 +92,23 @@ export async function POST(request: Request) {
     }
 
     const {
-        secureUrl,
+      secureUrl,
+      publicId,
+      width,
+      height,
+    } = await uploadImage(image);
+
+    const [post] = await db
+      .insert(posts)
+      .values({
+        title,
+        description,
+        imageUrl: secureUrl,
         publicId,
         width,
         height,
-      } = await uploadImage(image);
-
-    const [post] = await db
-        .insert(posts)
-        .values({
-              title,
-              description,
-              imageUrl: secureUrl,
-              publicId,
-              width,
-              height,
-              authorId: userId,
-          })
+        profileId: profile.id,
+      })
       .returning();
 
     return NextResponse.json({
@@ -101,7 +116,7 @@ export async function POST(request: Request) {
       data: post,
     });
   } catch (error) {
-    console.error(error);
+    console.error("POST /api/posts failed:", error);
 
     return NextResponse.json(
       {

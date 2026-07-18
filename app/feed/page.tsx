@@ -1,7 +1,11 @@
 import { PinGrid } from "@/components/feed/pin-grid";
 import { getFeedPosts } from "@/lib/db/queries/posts";
+import { syncUser } from "@/lib/auth/sync-user";
 
 export default async function FeedPage() {
+
+  await syncUser();
+
   const posts = await getFeedPosts();
 
   return (

@@ -1,11 +1,9 @@
-
-import { Pin } from "@/types/pin";
+import type { PinWithProfile } from "@/types/pin-with-profile";
 
 import { PinCard } from "./pin-card";
 
-
 interface PinGridProps {
-  pins: Pin[];
+  pins: PinWithProfile[];
 }
 
 export function PinGrid({
