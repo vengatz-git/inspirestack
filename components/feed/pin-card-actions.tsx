@@ -1,13 +1,16 @@
 "use client";
 
 import { MoreHorizontal, Send } from "lucide-react";
-import { PinCardMenu } from "./pin-card-menu";
+import { PinCardMenu } from "../menus/pin-card-menu";
+import { PinWithProfile } from "@/types/pin-with-profile";
 
 interface PinCardActionsProps {
+  pin: PinWithProfile;
   compact?: boolean;
 }
 
 export function PinCardActions({
+  pin,
   compact = false,
 }: PinCardActionsProps) {
   return (
@@ -53,7 +56,7 @@ export function PinCardActions({
             <Send className="h-5 w-5" />
           </button>
 
-          <PinCardMenu>
+          <PinCardMenu pin={pin}>
             <button
               className="
                 flex

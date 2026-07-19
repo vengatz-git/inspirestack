@@ -1,10 +1,10 @@
-import { PinWithProfile } from "@/types/pin-with-profile";
+import type { PinWithProfile } from "@/types/pin-with-profile";
 
+import { DetailViewer } from "./detail-viewer";
 import { PinActions } from "./pin-actions";
-import { PinImage } from "./pin-image";
 import { PinInfo } from "./pin-info";
-import { PinLayout } from "./pin-layout";
 import { PinSidebar } from "./pin-sidebar";
+import { PinImage } from "./pin-image";
 import { RelatedPins } from "./related-pins";
 
 interface PinDetailProps {
@@ -17,8 +17,8 @@ export function PinDetail({
   relatedPins,
 }: PinDetailProps) {
   return (
-    <div className="space-y-10">
-      <PinLayout
+    <div className="space-y-20">
+      <DetailViewer
         image={
           <PinImage
             src={pin.imageUrl}

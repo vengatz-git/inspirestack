@@ -15,21 +15,26 @@ export function PinCardImage({
 }: PinCardImageProps) {
   return (
     <div
-      className="relative overflow-hidden"
+      className="relative overflow-hidden rounded-3xl"
       style={{
         aspectRatio: `${width} / ${height}`,
       }}
     >
-
-      {/* TODO */}
       <Image
         src={src}
         alt={alt}
         width={width}
         height={height}
+        loading="lazy"
+        sizes="
+          (max-width:640px) 100vw,
+          (max-width:1024px) 50vw,
+          (max-width:1280px) 33vw,
+          25vw
+        "
         unoptimized
         className="
-          h-auto
+          h-full
           w-full
           object-cover
           transition-transform

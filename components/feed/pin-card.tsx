@@ -18,17 +18,18 @@ export function PinCard({ pin }: PinCardProps) {
 
   return (
     <Link
-      href={`/pin/${pin.id}`}
-      className="
-        group
-        block
-        rounded-3xl
-        focus:outline-none
-        focus-visible:ring-2
-        focus-visible:ring-primary
-        focus-visible:ring-offset-2
-      "
-    >
+        href={`/pin/${pin.id}`}
+        className="
+          group
+          mb-6
+          block
+          break-inside-avoid
+          focus:outline-none
+          focus-visible:ring-2
+          focus-visible:ring-primary
+          focus-visible:ring-offset-2
+        "
+      >
       <article
         ref={ref}
         className="
@@ -49,7 +50,10 @@ export function PinCard({ pin }: PinCardProps) {
           height={pin.height}
         />
 
-        <PinCardOverlay compact={compact} />
+        <PinCardOverlay
+            pin={pin}
+            compact={compact}
+        />
       </article>
     </Link>
   );

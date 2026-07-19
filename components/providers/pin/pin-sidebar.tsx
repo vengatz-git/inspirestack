@@ -15,30 +15,30 @@ export function PinSidebar({
         flex
         h-full
         flex-col
+        bg-background
+        lg:max-h-[calc(100vh-7rem)]
       "
     >
+      {/* Actions */}
       <div
         className="
+          sticky
+          top-0
+          z-20
+          bg-background
           border-b
-          p-6
-        "
+          px-6
+          py-5
+          "
       >
         {actions}
       </div>
 
+      {/* Content */}
       <div
-        className="
-          flex-1
-          overflow-y-auto
-        "
-      >
-        <div
-          className="
-            p-6
-          "
+        className="flex-1 overflow-y-auto px-6 py-6"
         >
-          {info}
-        </div>
+        {info}
       </div>
     </div>
   );

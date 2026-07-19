@@ -13,38 +13,51 @@ export function PinLayout({
     <section
       className="
         overflow-hidden
-        rounded-3xl
+        rounded-[32px]
         border
         bg-card
-        shadow-sm
-        lg:grid
-        lg:grid-cols-[minmax(0,1fr)_420px]
+        shadow-xl
       "
     >
       <div
         className="
           flex
-          items-center
-          justify-center
-          bg-muted/20
-          p-6
-          lg:h-[min(85vh,900px)]
+          flex-col
+          lg:flex-row
+          lg:items-start
+          lg:justify-center
         "
       >
-        {image}
-      </div>
+        {/* Image */}
+        <div
+          className="
+            flex
+            justify-center
+            p-4
+            md:p-6
+            lg:flex-1
+          "
+        >
+          {image}
+        </div>
 
-      <aside
-        className="
-          border-t
-          lg:border-t-0
-          lg:border-l
-          overflow-y-auto
-          lg:h-[min(85vh,900px)]
-        "
-      >
-        {sidebar}
-      </aside>
+        {/* Sidebar */}
+        <aside
+          className="
+            w-full
+            border-t
+            bg-background
+            lg:w-[420px]
+            lg:border-l
+            lg:border-t-0
+            lg:sticky
+            lg:top-20
+            lg:self-start
+          "
+        >
+          {sidebar}
+        </aside>
+      </div>
     </section>
   );
 }

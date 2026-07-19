@@ -1,12 +1,16 @@
 "use client";
 
 import { PinCardActions } from "./pin-card-actions";
+import type { PinWithProfile } from "@/types/pin-with-profile";
 
 interface PinCardOverlayProps {
+  pin: PinWithProfile;
   compact?: boolean;
 }
 
+
 export function PinCardOverlay({
+  pin,
   compact = false,
 }: PinCardOverlayProps) {
   return (
@@ -27,7 +31,10 @@ export function PinCardOverlay({
         group-hover:opacity-100
       "
     >
-      <PinCardActions compact={compact} />
+      <PinCardActions
+        pin={pin}
+        compact={compact}
+      />
     </div>
   );
 }

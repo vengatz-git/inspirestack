@@ -1,3 +1,7 @@
+"use client";
+
+import { memo } from "react";
+
 import type { PinWithProfile } from "@/types/pin-with-profile";
 
 import { PinCard } from "./pin-card";
@@ -6,11 +10,19 @@ interface PinGridProps {
   pins: PinWithProfile[];
 }
 
-export function PinGrid({
+function PinGridComponent({
   pins,
 }: PinGridProps) {
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div
+      className="
+        columns-1
+        gap-6
+        sm:columns-2
+        lg:columns-3
+        xl:columns-4
+      "
+    >
       {pins.map((pin) => (
         <PinCard
           key={pin.id}
@@ -20,3 +32,5 @@ export function PinGrid({
     </div>
   );
 }
+
+export const PinGrid = memo(PinGridComponent);

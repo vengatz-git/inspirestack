@@ -1,12 +1,15 @@
-import { PinGrid } from "@/components/feed/pin-grid";
+import { FeedClient } from "@/components/feed/feed-client";
 import { getFeedPosts } from "@/lib/db/queries/posts";
 import { syncUser } from "@/lib/auth/sync-user";
 
 export default async function FeedPage() {
-
   await syncUser();
 
-  const posts = await getFeedPosts();
+  const {
+    posts,
+    hasMore,
+    nextCursor,
+  } = await getFeedPosts();
 
   return (
     <main className="mx-auto w-full max-w-7xl px-6 py-10">
@@ -20,7 +23,11 @@ export default async function FeedPage() {
         </p>
       </div>
 
-      <PinGrid pins={posts} />
+      <FeedClient
+        initialPins={posts}
+        initialHasMore={hasMore}
+        initialCursor={nextCursor}
+      />
     </main>
   );
 }

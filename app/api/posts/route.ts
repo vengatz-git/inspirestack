@@ -1,8 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 
 import { db } from "@/lib/db";
 import { posts } from "@/lib/db/schema/posts";
+import { getFeedPosts } from "@/lib/db/queries/posts";
 import { getProfileByClerkId } from "@/lib/db/queries/profile";
 import { uploadImage } from "@/lib/services/upload-image";
 
@@ -10,6 +11,40 @@ import {
   ALLOWED_IMAGE_TYPES,
   MAX_IMAGE_SIZE,
 } from "@/lib/constants";
+
+export async function GET(request: NextRequest) {
+  try {
+    const searchParams = request.nextUrl.searchParams;
+
+    const cursor = searchParams.get("cursor") ?? undefined;
+
+    const limit = Number(searchParams.get("limit") ?? "24");
+
+    const data = await getFeedPosts({
+      cursor,
+      limit,
+    });
+
+    return NextResponse.json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    console.error("GET /api/posts failed:", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: {
+          message: "Failed to fetch posts.",
+        },
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}
 
 export async function POST(request: Request) {
   try {
