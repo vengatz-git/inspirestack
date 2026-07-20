@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { ImageOverlay } from "./image-overlay";
+import { FullscreenViewer } from "./fullscreen-viewer";
 
 interface PinImageProps {
   src: string;
@@ -16,6 +17,21 @@ export function PinImage({
   alt,
 }: PinImageProps) {
   const [loaded, setLoaded] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
+
+  useEffect(() => {
+      const handler = (e: KeyboardEvent) => {
+          if (e.key === "Escape") {
+              setFullscreen(false);
+          }
+      };
+
+      window.addEventListener("keydown", handler);
+
+      return () => {
+          window.removeEventListener("keydown", handler);
+      };
+  }, []);
 
   return (
     <div
@@ -55,7 +71,16 @@ export function PinImage({
             : "scale-95 opacity-0"
         )}
       />
-      <ImageOverlay />
+      <ImageOverlay
+        onFullscreen={() => setFullscreen(true)}
+      />
+
+      <FullscreenViewer
+        open={fullscreen}
+        src={src}
+        alt={alt}
+        onClose={() => setFullscreen(false)}
+      />
     </div>
   );
 }
