@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+
 import { cn } from "@/lib/utils";
 
 interface PinImageProps {
@@ -33,14 +34,9 @@ export function PinImage({
       "
     >
       {!loaded && (
-        <div
-          className="
-            absolute
-            inset-0
-            animate-pulse
-            bg-muted/40
-          "
-        />
+        <div className="absolute inset-0 overflow-hidden rounded-3xl">
+          <div className="h-full w-full animate-pulse bg-muted/40" />
+        </div>
       )}
 
       <Image
@@ -51,10 +47,10 @@ export function PinImage({
         priority
         onLoad={() => setLoaded(true)}
         className={cn(
-          "max-h-full max-w-full h-auto w-auto object-contain select-none transition-all duration-500 ease-out",
+          "h-auto max-h-full w-auto max-w-full select-none object-contain transition-all duration-500 ease-out",
           loaded
-            ? "opacity-100 scale-100"
-            : "opacity-0 scale-95"
+            ? "scale-100 opacity-100"
+            : "scale-95 opacity-0"
         )}
       />
     </div>
