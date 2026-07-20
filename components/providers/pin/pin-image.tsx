@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 
 import { cn } from "@/lib/utils";
+import { ImageOverlay } from "./image-overlay";
 
 interface PinImageProps {
   src: string;
@@ -19,6 +20,7 @@ export function PinImage({
   return (
     <div
       className="
+        group
         relative
         flex
         h-full
@@ -53,6 +55,7 @@ export function PinImage({
             : "scale-95 opacity-0"
         )}
       />
+      <ImageOverlay />
     </div>
   );
 }
