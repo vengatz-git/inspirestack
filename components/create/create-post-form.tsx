@@ -3,18 +3,27 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { CategorySelect } from "./category-select";
 import { ImagePicker } from "./image-picker";
+import { TagInput } from "./tag-input";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
+import { type Category } from "@/constants/categories";
+
 export function CreatePostForm() {
   const router = useRouter();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+
+  const [category, setCategory] = useState<Category | "">("");
+
+  const [tags, setTags] = useState<string[]>([]);
+
   const [image, setImage] = useState<File | null>(null);
 
   const [loading, setLoading] = useState(false);
@@ -35,6 +44,11 @@ export function CreatePostForm() {
       return;
     }
 
+    if (!category) {
+      alert("Please select a category.");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -42,6 +56,8 @@ export function CreatePostForm() {
 
       formData.append("title", title);
       formData.append("description", description);
+      formData.append("category", category);
+      formData.append("tags", JSON.stringify(tags));
       formData.append("image", image);
 
       const response = await fetch("/api/posts", {
@@ -83,6 +99,7 @@ export function CreatePostForm() {
           <Input
             id="title"
             value={title}
+            disabled={loading}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Give your post a title..."
           />
@@ -95,8 +112,29 @@ export function CreatePostForm() {
             id="description"
             rows={8}
             value={description}
+            disabled={loading}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Tell people about your post..."
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Category</Label>
+
+          <CategorySelect
+            value={category}
+            onValueChange={setCategory}
+            disabled={loading}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Tags</Label>
+
+          <TagInput
+            value={tags}
+            onChange={setTags}
+            disabled={loading}
           />
         </div>
 

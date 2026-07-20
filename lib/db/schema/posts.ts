@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
   integer,
   pgTable,
@@ -8,13 +9,22 @@ import {
 
 import { profiles } from "./profiles";
 
-
 export const posts = pgTable("posts", {
   id: uuid("id").defaultRandom().primaryKey(),
 
   title: text("title").notNull(),
 
   description: text("description"),
+
+  // New fields
+  category: text("category")
+    .notNull()
+    .default("Other"),
+
+  tags: text("tags")
+    .array()
+    .notNull()
+    .default(sql`ARRAY[]::text[]`),
 
   imageUrl: text("image_url").notNull(),
 
@@ -25,10 +35,10 @@ export const posts = pgTable("posts", {
   height: integer("height").notNull(),
 
   profileId: uuid("profile_id")
-  .references(() => profiles.id, {
-    onDelete: "cascade",
-  })
-  .notNull(),
+    .references(() => profiles.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
 
   createdAt: timestamp("created_at")
     .defaultNow()

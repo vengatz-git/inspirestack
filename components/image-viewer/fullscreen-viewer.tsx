@@ -1,16 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import Image from "next/image";
+import { useEffect } from "react";
 import { X } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-import { useImageZoom } from "@/hooks/use-image-zoom";
-import { useImagePan } from "@/hooks/use-image-pan";
-
-import { ImageControls } from "./image-controls";
+import { ImageCanvas } from "./image-canvas";
 
 interface FullscreenViewerProps {
   open: boolean;
@@ -25,38 +20,8 @@ export function FullscreenViewer({
   alt,
   onClose,
 }: FullscreenViewerProps) {
-  const {
-    scale,
-    zoomIn,
-    zoomOut,
-    reset,
-  } = useImageZoom();
-
-  const {
-    position,
-    dragging,
-    startDrag,
-    moveDrag,
-    endDrag,
-    resetPan,
-  } = useImagePan();
-
-  const wasOpen = useRef(false);
-
-  useEffect(() => {
-    if (open && !wasOpen.current) {
-      reset();
-      resetPan();
-    }
-
-    wasOpen.current = open;
-  }, [open, reset, resetPan]);
-
   useEffect(() => {
     if (!open) return;
-
-    reset();
-    resetPan();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -69,12 +34,7 @@ export function FullscreenViewer({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [open, onClose, reset, resetPan]);
-
-  const handleReset = () => {
-    reset();
-    resetPan();
-  };
+  }, [open, onClose]);
 
   if (!open) return null;
 
@@ -108,56 +68,9 @@ export function FullscreenViewer({
           <X className="size-4" />
         </Button>
 
-        <div
-          onPointerDown={(e) => {
-            if (scale === 1) return;
-            startDrag(e);
-          }}
-          onPointerMove={moveDrag}
-          onPointerUp={endDrag}
-          onPointerLeave={endDrag}
-          className={cn(
-            "flex items-center justify-center select-none",
-            scale > 1 &&
-              (dragging ? "cursor-grabbing" : "cursor-grab")
-          )}
-        >
-          <Image
-            src={src}
-            alt={alt}
-            width={2500}
-            height={2500}
-            draggable={false}
-            onWheel={(e) => {
-              e.preventDefault();
-
-              if (e.deltaY < 0) {
-                zoomIn();
-              } else {
-                zoomOut();
-              }
-            }}
-            style={{
-              transform: `
-                translate(${position.x}px, ${position.y}px)
-                scale(${scale})
-              `,
-            }}
-            className="
-              max-h-[90vh]
-              max-w-[90vw]
-              object-contain
-              transition-transform
-              duration-200
-              select-none
-            "
-          />
-        </div>
-
-        <ImageControls
-          onZoomIn={zoomIn}
-          onZoomOut={zoomOut}
-          onReset={handleReset}
+        <ImageCanvas
+          src={src}
+          alt={alt}
         />
       </div>
     </div>

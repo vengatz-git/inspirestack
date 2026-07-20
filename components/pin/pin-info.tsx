@@ -1,5 +1,6 @@
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Hash, Tag } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import { ProfileCard } from "@/components/profile/profile-card";
 
 import type { PinWithProfile } from "@/types/pin-with-profile";
@@ -13,13 +14,11 @@ export function PinInfo({
 }: PinInfoProps) {
   return (
     <div className="space-y-8">
-
       {/* Creator */}
       <ProfileCard profile={pin.profile} />
 
       {/* Title + Description */}
       <div className="space-y-4">
-
         <h1
           className="
             text-3xl
@@ -43,6 +42,46 @@ export function PinInfo({
           </p>
         )}
 
+        {/* Category */}
+        <div className="flex items-center gap-2">
+          <Tag className="h-4 w-4 text-muted-foreground" />
+
+          <Badge
+            variant="secondary"
+            className="rounded-full px-3 py-1"
+          >
+            {pin.category}
+          </Badge>
+        </div>
+
+        {/* Tags */}
+        {pin.tags.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Hash className="h-4 w-4" />
+              <span>Tags</span>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {pin.tags.map((tag) => (
+                <Badge
+                  key={tag}
+                  variant="outline"
+                  className="
+                    cursor-pointer
+                    rounded-full
+                    px-3
+                    py-1
+                    transition-colors
+                    hover:bg-accent
+                  "
+                >
+                  #{tag}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Metadata */}
@@ -72,7 +111,6 @@ export function PinInfo({
 
       {/* Comments Placeholder */}
       <section className="space-y-3">
-
         <h2 className="text-lg font-semibold">
           Comments
         </h2>
@@ -99,11 +137,8 @@ export function PinInfo({
             InspireStack focuses on visual discovery.
             Comments will be added in a future version.
           </p>
-
         </div>
-
       </section>
-
     </div>
   );
 }

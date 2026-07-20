@@ -58,7 +58,9 @@ export async function POST(request: Request) {
             message: "Unauthorized",
           },
         },
-        { status: 401 }
+        {
+          status: 401,
+        }
       );
     }
 
@@ -72,7 +74,9 @@ export async function POST(request: Request) {
             message: "Profile not found.",
           },
         },
-        { status: 404 }
+        {
+          status: 404,
+        }
       );
     }
 
@@ -80,11 +84,15 @@ export async function POST(request: Request) {
 
     const title = formData.get("title");
     const description = formData.get("description");
+    const category = formData.get("category");
+    const tags = formData.get("tags");
     const image = formData.get("image");
 
     if (
       typeof title !== "string" ||
       typeof description !== "string" ||
+      typeof category !== "string" ||
+      typeof tags !== "string" ||
       !(image instanceof File)
     ) {
       return NextResponse.json(
@@ -94,7 +102,36 @@ export async function POST(request: Request) {
             message: "Invalid form data.",
           },
         },
-        { status: 400 }
+        {
+          status: 400,
+        }
+      );
+    }
+
+    let parsedTags: string[] = [];
+
+    try {
+      const parsed = JSON.parse(tags);
+
+      if (!Array.isArray(parsed)) {
+        throw new Error();
+      }
+
+      parsedTags = parsed
+        .filter((tag): tag is string => typeof tag === "string")
+        .map((tag) => tag.trim().toLowerCase())
+        .filter(Boolean);
+    } catch {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            message: "Invalid tags format.",
+          },
+        },
+        {
+          status: 400,
+        }
       );
     }
 
@@ -110,7 +147,9 @@ export async function POST(request: Request) {
             message: "Unsupported image type.",
           },
         },
-        { status: 400 }
+        {
+          status: 400,
+        }
       );
     }
 
@@ -122,7 +161,9 @@ export async function POST(request: Request) {
             message: "Image exceeds 5 MB.",
           },
         },
-        { status: 400 }
+        {
+          status: 400,
+        }
       );
     }
 
@@ -138,6 +179,8 @@ export async function POST(request: Request) {
       .values({
         title,
         description,
+        category,
+        tags: parsedTags,
         imageUrl: secureUrl,
         publicId,
         width,
@@ -160,7 +203,9 @@ export async function POST(request: Request) {
           message: "Failed to create post.",
         },
       },
-      { status: 500 }
+      {
+        status: 500,
+      }
     );
   }
 }
