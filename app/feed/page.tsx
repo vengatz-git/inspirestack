@@ -1,4 +1,4 @@
-import { FeedClient } from "@/components/feed/feed-client";
+import { FeedClient } from "@/components/pins/feed-client";
 import { getFeedPosts } from "@/lib/db/queries/posts";
 import { syncUser } from "@/lib/auth/sync-user";
 

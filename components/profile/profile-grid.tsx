@@ -1,6 +1,6 @@
 import type { PinWithProfile } from "@/types/pin-with-profile";
 
-import { PinGrid } from "@/components/feed/pin-grid";
+import { PinGrid } from "@/components/pins/pin-grid";
 
 interface ProfileGridProps {
   pins: PinWithProfile[];

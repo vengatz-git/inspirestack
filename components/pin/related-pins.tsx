@@ -1,4 +1,4 @@
-import { PinGrid } from "@/components/feed/pin-grid";
+import { PinGrid } from "@/components/pins/pin-grid";
 
 import type { PinWithProfile } from "@/types/pin-with-profile";
 

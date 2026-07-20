@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { ImageOverlay } from "./image-overlay";
-import { FullscreenViewer } from "./fullscreen-viewer";
+import { FullscreenViewer } from "../image-viewer/fullscreen-viewer";
 
 interface PinImageProps {
   src: string;

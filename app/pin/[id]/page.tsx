@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { PinDetail } from "@/components/providers/pin/pin-detail";
+import { PinDetail } from "@/components/pin/pin-detail";
 import {
   getPinById,
   getRelatedPins,
