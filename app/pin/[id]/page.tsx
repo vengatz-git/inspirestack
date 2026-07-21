@@ -23,7 +23,11 @@ export default async function PinPage({
     notFound();
   }
 
-  const relatedPins = await getRelatedPins(id);
+  const relatedPins = await getRelatedPins({
+    id: pin.id,
+    category: pin.category,
+    tags: pin.tags,
+  });
 
   return (
     <main className="container mx-auto max-w-7xl px-4 py-10">

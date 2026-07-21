@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { CalendarDays, Hash, Tag } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -46,12 +47,26 @@ export function PinInfo({
         <div className="flex items-center gap-2">
           <Tag className="h-4 w-4 text-muted-foreground" />
 
-          <Badge
-            variant="secondary"
-            className="rounded-full px-3 py-1"
+          <Link
+            href={`/category/${encodeURIComponent(
+              pin.category.toLowerCase()
+            )}`}
           >
-            {pin.category}
-          </Badge>
+            <Badge
+              variant="secondary"
+              className="
+                cursor-pointer
+                rounded-full
+                px-3
+                py-1
+                transition-colors
+                hover:bg-primary
+                hover:text-primary-foreground
+              "
+            >
+              {pin.category}
+            </Badge>
+          </Link>
         </div>
 
         {/* Tags */}
@@ -64,20 +79,27 @@ export function PinInfo({
 
             <div className="flex flex-wrap gap-2">
               {pin.tags.map((tag) => (
-                <Badge
+                <Link
                   key={tag}
-                  variant="outline"
-                  className="
-                    cursor-pointer
-                    rounded-full
-                    px-3
-                    py-1
-                    transition-colors
-                    hover:bg-accent
-                  "
+                  href={`/tag/${encodeURIComponent(
+                    tag.toLowerCase()
+                  )}`}
                 >
-                  #{tag}
-                </Badge>
+                  <Badge
+                    variant="outline"
+                    className="
+                      cursor-pointer
+                      rounded-full
+                      px-3
+                      py-1
+                      transition-colors
+                      hover:bg-primary
+                      hover:text-primary-foreground
+                    "
+                  >
+                    #{tag}
+                  </Badge>
+                </Link>
               ))}
             </div>
           </div>

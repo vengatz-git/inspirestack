@@ -1,22 +1,37 @@
 import { FeedClient } from "@/components/pins/feed-client";
 import { FeedHeader } from "@/components/pins/feed-header";
-import { getFeedPosts } from "@/lib/db/queries/posts";
-import { syncUser } from "@/lib/auth/sync-user";
 
-export default async function FeedPage() {
+import { syncUser } from "@/lib/auth/sync-user";
+import { getPostsByTag } from "@/lib/db/queries/posts";
+
+interface TagPageProps {
+  params: Promise<{
+    tag: string;
+  }>;
+}
+
+export default async function TagPage({
+  params,
+}: TagPageProps) {
   await syncUser();
+
+  const { tag } = await params;
+
+  const decodedTag = decodeURIComponent(tag).toLowerCase();
 
   const {
     posts,
     hasMore,
     nextCursor,
-  } = await getFeedPosts();
+  } = await getPostsByTag({
+    tag: decodedTag,
+  });
 
   return (
     <main className="mx-auto w-full max-w-7xl px-6 py-10">
       <FeedHeader
-        title="Explore"
-        description="Discover ideas shared by the community."
+        title={`#${decodedTag}`}
+        description={`Browse posts tagged with #${decodedTag}.`}
       />
 
       <FeedClient
