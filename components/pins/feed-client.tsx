@@ -50,6 +50,19 @@ export function FeedClient({
 
   const abortRef = useRef<AbortController | null>(null);
 
+  useEffect(() => {
+    setPins(initialPins);
+    setCursor(initialCursor);
+    setHasMore(initialHasMore);
+
+    setError(false);
+    setLoadingMore(false);
+
+    loadingRef.current = false;
+
+    abortRef.current?.abort();
+  }, [initialPins, initialCursor, initialHasMore]);
+
   const loadMore = useCallback(async () => {
     if (!hasMore) return;
 

@@ -23,6 +23,7 @@ export function SearchBar() {
 
   const [query, setQuery] = useState(currentQuery);
   const [isOpen, setIsOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
   const {
     suggestions,
@@ -34,11 +35,8 @@ export function SearchBar() {
   }, [currentQuery]);
 
   useEffect(() => {
-    setIsOpen(
-      query.trim().length > 0 &&
-        suggestions.length > 0
-    );
-  }, [query, suggestions]);
+    setHighlightedIndex(-1);
+  }, [suggestions]);
 
   useClickOutside({
     ref: containerRef,
@@ -81,6 +79,51 @@ export function SearchBar() {
     );
   };
 
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (!isOpen || suggestions.length === 0) {
+      return;
+    }
+
+    switch (event.key) {
+      case "ArrowDown":
+        event.preventDefault();
+
+        setHighlightedIndex((current) =>
+          current < suggestions.length - 1
+            ? current + 1
+            : 0
+        );
+        break;
+
+      case "ArrowUp":
+        event.preventDefault();
+
+        setHighlightedIndex((current) =>
+          current > 0
+            ? current - 1
+            : suggestions.length - 1
+        );
+        break;
+
+      case "Enter":
+        if (highlightedIndex >= 0) {
+          event.preventDefault();
+
+          handleSuggestionSelect(
+            suggestions[highlightedIndex]
+          );
+        }
+        break;
+
+      case "Escape":
+        setIsOpen(false);
+        setHighlightedIndex(-1);
+        break;
+    }
+  };
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -98,9 +141,18 @@ export function SearchBar() {
 
         <Input
           value={query}
-          onChange={(event) =>
-            setQuery(event.target.value)
-          }
+          onChange={(event) => {
+            const value = event.target.value;
+
+            setQuery(value);
+
+            if (value.trim().length > 0) {
+              setIsOpen(true);
+            } else {
+              setIsOpen(false);
+            }
+          }}
+          onKeyDown={handleKeyDown}
           onFocus={() => {
             if (
               query.trim().length > 0 &&
@@ -111,11 +163,25 @@ export function SearchBar() {
           }}
           placeholder="Search inspiration..."
           className="pl-10"
+          role="combobox"
+          aria-label="Search inspiration"
+          aria-autocomplete="list"
+          aria-expanded={isOpen}
+          aria-controls={isOpen ? "search-suggestions" : undefined}
+          aria-activedescendant={
+            highlightedIndex >= 0
+              ? `search-suggestion-${highlightedIndex}`
+              : undefined
+          }
         />
 
         <SearchSuggestions
           suggestions={suggestions}
           open={isOpen}
+          highlightedIndex={highlightedIndex}
+          isLoading={isLoading}
+          queryLength={query.trim().length}
+          onHighlight={setHighlightedIndex}
           onSelect={handleSuggestionSelect}
         />
       </div>

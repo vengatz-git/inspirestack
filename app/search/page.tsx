@@ -44,6 +44,7 @@ export default async function SearchPage({
 
       {posts.length > 0 ? (
         <FeedClient
+        key={query}
           initialPins={posts}
           initialHasMore={false}
           initialCursor={null}
