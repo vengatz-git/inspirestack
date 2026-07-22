@@ -4,7 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { posts } from "@/lib/db/schema/posts";
 import { getFeedPosts } from "@/lib/db/queries/posts";
-import { getProfileByClerkId } from "@/lib/db/queries/profile";
+import { getProfileByClerkId } from "@/lib/db/queries/profiles";
 import { uploadImage } from "@/lib/services/upload-image";
 
 import {

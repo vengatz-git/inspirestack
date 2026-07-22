@@ -7,6 +7,8 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
+import { boardPins } from "./boards";
+
 import { profiles } from "./profiles";
 
 export const posts = pgTable("posts", {

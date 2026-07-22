@@ -3,7 +3,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import {
   createProfile,
   getProfileByClerkId,
-} from "@/lib/db/queries/profile";
+} from "@/lib/db/queries/profiles";
 
 function generateUsername(name: string, clerkId: string) {
   const base = name

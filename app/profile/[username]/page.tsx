@@ -7,7 +7,7 @@ import { ProfileStats } from "@/components/profile/profile-stats";
 import {
   getProfileByUsername,
   getProfilePosts,
-} from "@/lib/db/queries/profile";
+} from "@/lib/db/queries/profiles";
 
 interface ProfilePageProps {
   params: Promise<{
