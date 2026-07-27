@@ -3,6 +3,10 @@ import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 
 export default {
+  session: {
+    strategy: "database",
+  },
+
   providers: [
     Google({
       allowDangerousEmailAccountLinking: true,

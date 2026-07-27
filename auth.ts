@@ -19,9 +19,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     verificationTokensTable: verificationTokens,
   }),
 
-  session: {
-    strategy: "database",
-  },
-
   ...authConfig,
+
+  callbacks: {
+    ...authConfig.callbacks,
+
+    async session({ session, user }) {
+      if (session.user) {
+        session.user.id = user.id;
+        session.user.username = user.username;
+        session.user.role = user.role;
+        session.user.isOnboarded = user.isOnboarded;
+      }
+
+      return session;
+    },
+  },
 });

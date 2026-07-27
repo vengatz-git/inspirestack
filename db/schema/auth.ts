@@ -17,29 +17,38 @@ export const users = pgTable("users", {
   email: text("email").unique(),
   emailVerified: timestamp("emailVerified", {
     mode: "date",
-    withTimezone: true,
   }),
   image: text("image"),
 
-  // InspireStack fields
+  // InspireStack profile
   username: text("username").unique(),
+  displayName: text("display_name"),
   bio: text("bio"),
+
+  website: text("website"),
+  location: text("location"),
+
+  bannerImage: text("banner_image"),
+
+  isOnboarded: boolean("is_onboarded")
+    .notNull()
+    .default(false),
+
+  role: text("role")
+    .notNull()
+    .default("user"),
 
   createdAt: timestamp("created_at", {
     mode: "date",
-    withTimezone: true,
   })
-    .defaultNow()
-    .notNull(),
+    .notNull()
+    .defaultNow(),
 
   updatedAt: timestamp("updated_at", {
     mode: "date",
-    withTimezone: true,
   })
-    .defaultNow()
-    .notNull(),
-
-  isOnboarded: boolean("is_onboarded").default(false).notNull(),
+    .notNull()
+    .defaultNow(),
 });
 
 export const accounts = pgTable(
