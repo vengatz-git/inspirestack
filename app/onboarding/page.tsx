@@ -1,19 +1,26 @@
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
-import { getCurrentUser } from "@/lib/auth";
-
 export default async function OnboardingPage() {
-  const user = await getCurrentUser();
+  const session = await auth();
 
-  if (!user) {
+  if (!session) {
     redirect("/login");
   }
 
+  if (session.user.isOnboarded) {
+    redirect("/dashboard");
+  }
+
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl items-center justify-center">
+    <main className="mx-auto max-w-2xl p-8">
       <h1 className="text-3xl font-bold">
-        Welcome to InspireStack 👋
+        Complete your profile
       </h1>
+
+      <p className="mt-4 text-muted-foreground">
+        Let's set up your InspireStack profile.
+      </p>
     </main>
   );
 }

@@ -6,10 +6,7 @@ const SESSION_COOKIE_NAME =
     ? "__Secure-authjs.session-token"
     : "authjs.session-token";
 
-// Routes that require authentication
-const protectedRoutes = [ "/onboarding"];
-
-// Routes that should not be accessible after login
+const protectedRoutes = ["/dashboard", "/onboarding"];
 const authRoutes = ["/login"];
 
 export function proxy(request: NextRequest) {
@@ -26,12 +23,10 @@ export function proxy(request: NextRequest) {
     pathname.startsWith(route)
   );
 
-  // Redirect unauthenticated users to login
   if (isProtectedRoute && !isLoggedIn) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Prevent logged-in users from accessing login page
   if (isAuthRoute && isLoggedIn) {
     return NextResponse.redirect(new URL("/", request.url));
   }
