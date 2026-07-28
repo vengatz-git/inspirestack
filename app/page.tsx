@@ -1,7 +1,17 @@
-export default function Home() {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <h1 className="text-4xl font-bold">InspireStack</h1>
-    </main>
-  );
+import { redirect } from "next/navigation";
+
+import { auth } from "@/auth";
+
+export default async function HomePage() {
+  const session = await auth();
+
+  if (!session) {
+    redirect("/login");
+  }
+
+  if (!session.user.isOnboarded) {
+    redirect("/onboarding");
+  }
+
+  redirect("/dashboard");
 }

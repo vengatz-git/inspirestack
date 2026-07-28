@@ -1,8 +1,14 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
+import { OnboardingForm } from "../../features/onboarding/components/onboarding-form";
+
 export default async function OnboardingPage() {
   const session = await auth();
+
+  // const session = await auth();
+
+  console.log(session?.user);
 
   if (!session) {
     redirect("/login");
@@ -13,14 +19,22 @@ export default async function OnboardingPage() {
   }
 
   return (
-    <main className="mx-auto max-w-2xl p-8">
-      <h1 className="text-3xl font-bold">
-        Complete your profile
-      </h1>
+    <main className="flex min-h-screen items-center justify-center px-4 py-12">
+      <div className="w-full max-w-lg space-y-8">
+        <div className="space-y-2 text-center">
+          <h1 className="text-3xl font-bold tracking-tight">
+            Welcome to InspireStack
+          </h1>
 
-      <p className="mt-4 text-muted-foreground">
-        Let's set up your InspireStack profile.
-      </p>
+          <p className="text-muted-foreground">
+            Let's create your profile to get started.
+          </p>
+        </div>
+
+        <div className="bg-card rounded-xl border p-8 shadow-sm">
+          <OnboardingForm />
+        </div>
+      </div>
     </main>
   );
 }
