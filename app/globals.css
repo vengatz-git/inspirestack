@@ -121,10 +121,73 @@
   * {
     @apply border-border outline-ring/50;
   }
+
+  html {
+    @apply font-sans antialiased;
+    font-size: 17px;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
     @apply bg-background text-foreground;
+    line-height: 1.6;
+    font-weight: 400;
   }
-  html {
-    @apply font-sans;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading font-semibold tracking-tight;
+    line-height: 1.2;
   }
+
+  h1 {
+    font-size: 2.75rem;
+  }
+
+  h2 {
+    font-size: 2.2rem;
+  }
+
+  h3 {
+    font-size: 1.75rem;
+  }
+
+  h4 {
+    font-size: 1.5rem;
+  }
+
+  p,
+  li,
+  label,
+  input,
+  textarea,
+  button {
+    font-size: 1rem;
+  }
+
+  small {
+    font-size: 0.875rem;
+  }
+}
+
+[data-sonner-toast] {
+  border-radius: var(--radius-xl) !important;
+}
+
+[data-sonner-toast][data-type="success"] {
+  border: 1px solid oklch(0.82 0.16 145);
+}
+
+[data-sonner-toast][data-type="error"] {
+  border: 1px solid oklch(0.65 0.22 25);
+}
+
+[data-sonner-toast] [data-title] {
+  font-weight: 600;
 }

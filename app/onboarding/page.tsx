@@ -27,7 +27,7 @@ export default async function OnboardingPage() {
           </h1>
 
           <p className="text-muted-foreground">
-            Let's create your profile to get started.
+            Let&apos;s create your profile to get started.
           </p>
         </div>
 
