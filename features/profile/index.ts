@@ -15,3 +15,5 @@ export * from "./services/get-profile-by-username";
 export * from "./services/update-profile";
 
 export * from "./types/profile";
+// features/profile/index.ts
+export * from "./services/get-profile-stats-service";

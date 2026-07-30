@@ -6,12 +6,12 @@ import {
   primaryKey,
   text,
   timestamp,
+  uuid,
 } from "drizzle-orm/pg-core";
+import { pins } from "./pins";
 
 export const users = pgTable("users", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
+  id: uuid("id").defaultRandom().primaryKey(),
 
   name: text("name"),
   email: text("email").unique(),
@@ -30,13 +30,9 @@ export const users = pgTable("users", {
 
   bannerImage: text("banner_image"),
 
-  isOnboarded: boolean("is_onboarded")
-    .notNull()
-    .default(false),
+  isOnboarded: boolean("is_onboarded").notNull().default(false),
 
-  role: text("role")
-    .notNull()
-    .default("user"),
+  role: text("role").notNull().default("user"),
 
   createdAt: timestamp("created_at", {
     mode: "date",
@@ -54,7 +50,7 @@ export const users = pgTable("users", {
 export const accounts = pgTable(
   "accounts",
   {
-    userId: text("userId")
+    userId: uuid("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
 
@@ -80,9 +76,9 @@ export const accounts = pgTable(
 export const sessions = pgTable("sessions", {
   sessionToken: text("sessionToken").primaryKey(),
 
-  userId: text("userId")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+  userId: uuid("userId")
+  .notNull()
+  .references(() => users.id, { onDelete: "cascade" }),
 
   expires: timestamp("expires", {
     mode: "date",
@@ -110,6 +106,7 @@ export const verificationTokens = pgTable(
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
+  pin: many(pins),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({

@@ -1,32 +1,44 @@
-import React from "react";
+import type { ProfileStats as ProfileStatsData } from "../types/profile-stats";
+
 type ProfileStatsProps = {
-  pins: number;
-  followers: number;
-  following: number;
+  stats: ProfileStatsData;
   collections: number;
 };
 
 export function ProfileStats({
-  pins,
-  followers,
-  following,
+  stats,
   collections,
 }: ProfileStatsProps) {
-  const stats = [
-    { label: "Pins", value: pins },
-    { label: "Followers", value: followers },
-    { label: "Following", value: following },
-    { label: "Collections", value: collections },
+  const items = [
+    {
+      label: "Pins",
+      value: stats.posts,
+    },
+    {
+      label: "Followers",
+      value: stats.followers,
+    },
+    {
+      label: "Following",
+      value: stats.following,
+    },
+    {
+      label: "Collections",
+      value: collections,
+    },
   ];
 
   return (
     <section className="mt-8 border-y py-6">
       <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-        {stats.map((stat) => (
-          <div key={stat.label} className="text-center">
-            <p className="text-2xl font-bold">{stat.value}</p>
+        {items.map((item) => (
+          <div
+            key={item.label}
+            className="text-center"
+          >
+            <p className="text-2xl font-bold">{item.value}</p>
             <p className="text-muted-foreground text-sm">
-              {stat.label}
+              {item.label}
             </p>
           </div>
         ))}
