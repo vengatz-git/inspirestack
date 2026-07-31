@@ -1,11 +1,11 @@
 import { EmptyProfileContent } from "./empty-profile-content";
-import { ProfilePinGrid } from "@/features/pin";
+import { ProfilePinGrid } from "./profile-pin-grid";
 
-import type { Pin } from "@/db/schema";
+import type { PinCardData } from "@/features/pin/types/pin-card";
 
-type ProfileContentProps = {
-  pins: Pin[];
-};
+interface ProfileContentProps {
+  pins: PinCardData[];
+}
 
 export function ProfileContent({
   pins,

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { getPinByIdService } from "@/features/pin";
+import { getPinByIdService } from "@/features/pin/services/get-pin-by-id";
 import { PinDetail } from "@/features/pin/components/pin-detail";
 
 type PinPageProps = {

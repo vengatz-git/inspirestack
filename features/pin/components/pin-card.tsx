@@ -1,38 +1,31 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import { getUserPinsService } from "../services/get-user-pins";
+import type { PinCardData } from "../types/pin-card";
 
-type Pin = Awaited<ReturnType<typeof getUserPinsService>>[number];
-
-type PinCardProps = {
-  pin: Pin;
-};
+interface PinCardProps {
+  pin: PinCardData;
+}
 
 export function PinCard({ pin }: PinCardProps) {
   return (
     <Link
       href={`/pin/${pin.id}`}
-      className="group block overflow-hidden rounded-xl"
+      className="group mb-4 block break-inside-avoid"
     >
-      <article className="overflow-hidden rounded-xl border bg-card transition-shadow group-hover:shadow-lg">
-        <div className="relative aspect-[3/4] w-full">
-          <Image
-            src={pin.imageUrl}
-            alt={pin.altText ?? pin.title ?? "Pin image"}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        </div>
-
-        {pin.title ? (
-          <div className="p-3">
-            <h3 className="line-clamp-2 font-medium">
-              {pin.title}
-            </h3>
-          </div>
-        ) : null}
-      </article>
+      <Image
+        src={pin.imageUrl}
+        alt={pin.altText ?? pin.title ?? "Pin image"}
+        width={pin.imageWidth}
+        height={pin.imageHeight}
+        sizes="
+          (max-width: 640px) 100vw,
+          (max-width: 1024px) 50vw,
+          (max-width: 1536px) 33vw,
+          25vw
+        "
+        className="h-auto w-full rounded-2xl transition-shadow duration-200 group-hover:shadow-xl"
+      />
     </Link>
   );
 }

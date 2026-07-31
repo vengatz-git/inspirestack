@@ -6,10 +6,6 @@ import { OnboardingForm } from "../../features/onboarding/components/onboarding-
 export default async function OnboardingPage() {
   const session = await auth();
 
-  // const session = await auth();
-
-  console.log(session?.user);
-
   if (!session) {
     redirect("/login");
   }

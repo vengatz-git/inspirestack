@@ -11,7 +11,7 @@ import {
   ProfileStats,
   ProfileTabs,
 } from "@/features/profile";
-import { getUserPinsService } from "@/features/pin";
+import { getUserPinsService } from "@/features/pin/services/get-pins-by-user";
 
 type ProfilePageProps = {
   params: Promise<{

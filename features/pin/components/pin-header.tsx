@@ -33,19 +33,23 @@ export function PinHeader() {
   }
 
   return (
-    <div className="mb-8 flex items-center justify-between">
+    <header className="flex items-center justify-between">
       <Button
         variant="ghost"
         size="icon"
+        aria-label="Go back"
+        className="h-11 w-11 rounded-full transition-colors"
         onClick={() => router.back()}
       >
         <ArrowLeft className="size-5" />
       </Button>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <Button
           variant="ghost"
           size="icon"
+          aria-label="Share pin"
+          className="h-11 w-11 rounded-full transition-colors"
           onClick={handleShare}
         >
           <Share2 className="size-5" />
@@ -54,16 +58,21 @@ export function PinHeader() {
         <Button
           variant="ghost"
           size="icon"
+          aria-label="More actions"
           disabled
+          className="h-11 w-11 rounded-full transition-colors"
         >
           <MoreHorizontal className="size-5" />
         </Button>
 
-        <Button disabled>
+        <Button
+          disabled
+          className="h-11 rounded-full px-6"
+        >
           <Bookmark className="mr-2 size-4" />
           Save
         </Button>
       </div>
-    </div>
+    </header>
   );
 }

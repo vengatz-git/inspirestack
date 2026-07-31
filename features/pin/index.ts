@@ -1,12 +1,12 @@
-// features/pin/index.ts
-
-
+// Components
 export * from "./components/pin-card";
-export * from "./components/profile-pin-grid";
+export * from "./components/pin-image";
+export * from "./components/pin-header";
+export * from "./components/pin-author";
+export * from "./components/pin-meta";
+export * from "./components/pin-sidebar";
+export * from "./components/comments-section";
 export * from "./components/pin-detail";
-export * from "./components/comments-section"
 
-
-export * from "./services/get-pin-by-id";
-export * from "./services/get-user-pins";
-
+// Types
+export * from "./types/pin-card";

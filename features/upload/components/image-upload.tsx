@@ -40,13 +40,11 @@ export function ImageUpload({
         htmlFor="pin-image"
         aria-disabled={disabled}
         className={cn(
-          "relative flex aspect-[3/4] w-full items-center justify-center overflow-hidden rounded-3xl border-2 border-dashed transition-colors",
+          "relative flex aspect-3/4 w-full items-center justify-center overflow-hidden rounded-3xl border-2 border-dashed transition-colors",
           previewUrl
             ? "border-border"
             : "border-muted-foreground/30 hover:border-primary",
-          disabled
-            ? "cursor-not-allowed opacity-60"
-            : "cursor-pointer",
+          disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
         )}
       >
         {previewUrl ? (
@@ -54,6 +52,7 @@ export function ImageUpload({
             src={previewUrl}
             alt="Pin preview"
             fill
+            sizes="100vw"
             className="object-cover"
             unoptimized
           />
@@ -62,9 +61,7 @@ export function ImageUpload({
             <ImageIcon className="text-muted-foreground h-10 w-10" />
 
             <div>
-              <p className="font-medium">
-                Upload an image
-              </p>
+              <p className="font-medium">Upload an image</p>
 
               <p className="text-muted-foreground mt-1 text-sm">
                 PNG, JPG or WEBP
@@ -85,10 +82,7 @@ export function ImageUpload({
       </label>
 
       {error ? (
-        <p
-          className="text-sm text-destructive"
-          role="alert"
-        >
+        <p className="text-destructive text-sm" role="alert">
           {error}
         </p>
       ) : null}

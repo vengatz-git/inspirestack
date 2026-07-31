@@ -1,4 +1,10 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
+
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
 
 import { getPinByIdService } from "../services/get-pin-by-id";
 
@@ -18,25 +24,39 @@ export function PinAuthor({
     pin.author.username?.charAt(0) ??
     "?";
 
+  const profileHref = `/profile/${pin.author.username}`;
+
   return (
-    <div className="mb-8 flex items-center gap-4">
-      <Avatar className="size-12">
-        <AvatarImage src={pin.author.image ?? undefined} />
+    <section>
+      <div className="flex items-center gap-4">
+        <Link
+          href={profileHref}
+          aria-label={`View ${pin.author.name ?? pin.author.username}'s profile`}
+        >
+          <Avatar className="size-14 transition-opacity hover:opacity-90">
+            <AvatarImage src={pin.author.image ?? undefined} />
 
-        <AvatarFallback>
-          {initials.toUpperCase()}
-        </AvatarFallback>
-      </Avatar>
+            <AvatarFallback className="text-base font-semibold">
+              {initials.toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        </Link>
 
-      <div>
-        <p className="font-semibold">
-          {pin.author.name ?? "Unknown User"}
-        </p>
+        <div className="min-w-0">
+          <Link
+            href={profileHref}
+            className="block transition-opacity hover:opacity-80"
+          >
+            <h2 className="truncate text-lg font-semibold">
+              {pin.author.name ?? "Unknown User"}
+            </h2>
+          </Link>
 
-        <p className="text-muted-foreground text-sm">
-          @{pin.author.username ?? "unknown"}
-        </p>
+          <p className="truncate text-sm text-muted-foreground">
+            @{pin.author.username ?? "unknown"}
+          </p>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

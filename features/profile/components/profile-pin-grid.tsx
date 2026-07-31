@@ -1,10 +1,9 @@
-import type { Pin } from "@/db/schema";
+import { PinCard } from "@/features/pin/components/pin-card";
+import type { PinCardData } from "@/features/pin/types/pin-card";
 
-import { PinCard } from "./pin-card";
-
-type ProfilePinGridProps = {
-  pins: Pin[];
-};
+interface ProfilePinGridProps {
+  pins: PinCardData[];
+}
 
 export function ProfilePinGrid({
   pins,

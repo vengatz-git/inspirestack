@@ -14,15 +14,17 @@ export function PinImage({
   pin,
 }: PinImageProps) {
   return (
-    <div className="flex h-full items-center justify-center bg-muted/20 p-8">
-      <Image
-        src={pin.imageUrl}
-        alt={pin.altText ?? pin.title ?? "Pin image"}
-        width={pin.imageWidth}
-        height={pin.imageHeight}
-        priority
-        className="max-h-full max-w-full rounded-2xl object-contain"
-      />
+    <div className="relative flex h-full items-center justify-center bg-zinc-100 p-6 dark:bg-zinc-900">
+      <div className="relative h-full w-full">
+        <Image
+          src={pin.imageUrl}
+          alt={pin.altText ?? pin.title ?? "Pin image"}
+          fill
+          priority
+          sizes="50vw"
+          className="rounded-2xl object-contain"
+        />
+      </div>
     </div>
   );
 }

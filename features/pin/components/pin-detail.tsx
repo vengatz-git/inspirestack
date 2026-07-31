@@ -14,8 +14,8 @@ export function PinDetail({
   pin,
 }: PinDetailProps) {
   return (
-    <section className="mx-auto max-w-7xl overflow-hidden rounded-3xl border bg-card shadow-sm">
-      <div className="grid min-h-[85vh] lg:grid-cols-2">
+    <section className="overflow-hidden rounded-3xl border bg-card shadow-xl">
+      <div className="grid h-[85vh] max-h-225 lg:grid-cols-2">
         <PinImage pin={pin} />
 
         <PinSidebar pin={pin} />
