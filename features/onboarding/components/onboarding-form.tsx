@@ -45,31 +45,20 @@ export function OnboardingForm() {
       return;
     }
 
-    router.replace("/dashboard");
+    router.replace("/feed");
     router.refresh();
   }
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="space-y-6"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <UsernameField
         registration={register("username")}
         error={errors.username}
       />
 
-      {serverError && (
-        <p className="text-sm text-destructive">
-          {serverError}
-        </p>
-      )}
+      {serverError && <p className="text-destructive text-sm">{serverError}</p>}
 
-      <Button
-        type="submit"
-        className="w-full"
-        disabled={isSubmitting}
-      >
+      <Button type="submit" className="w-full" disabled={isSubmitting}>
         {isSubmitting ? "Completing..." : "Continue"}
       </Button>
     </form>

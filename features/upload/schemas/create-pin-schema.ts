@@ -23,6 +23,14 @@ export const createPinSchema = z.object({
     .trim()
     .max(200, "Alt text cannot exceed 200 characters.")
     .optional(),
-});
 
+  topicId: z
+  .string({
+    error: (issue) =>
+      issue.input === undefined
+        ? "Please select a topic."
+        : "Please select a valid topic.",
+  })
+  .uuid("Please select a valid topic."),
+});
 export type CreatePinSchema = z.infer<typeof createPinSchema>;

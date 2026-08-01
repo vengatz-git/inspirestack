@@ -8,6 +8,7 @@ export async function getPinByIdService(id: string) {
     where: eq(pins.id, id),
     with: {
       author: true,
+      topic: true,
     },
   });
 }

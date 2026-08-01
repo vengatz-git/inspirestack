@@ -15,12 +15,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
+import { TopicChip } from "@/features/topic/components/topic-chip";
+import type { TopicOption } from "@/features/topic/types/topic";
+
 import { createPinAction } from "../actions/create-pin";
 import { useCreatePinForm } from "../hooks/use-create-pin-form";
 import type { CreatePinSchema } from "../schemas/create-pin-schema";
 import { ImageUpload } from "./image-upload";
 
-export function CreatePinForm() {
+interface CreatePinFormProps {
+  topics: TopicOption[];
+}
+
+export function CreatePinForm({ topics }: CreatePinFormProps) {
   const form = useCreatePinForm();
   const router = useRouter();
 
@@ -28,6 +35,12 @@ export function CreatePinForm() {
     null,
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Topic selection is UI-only for now — not yet persisted.
+  // See features/topic/README.md for the planned Pin <-> Topic relationship.
+  const [selectedTopicId, setSelectedTopicId] = useState
+    <string | null
+  >(null);
 
   useEffect(() => {
     return () => {
@@ -51,6 +64,12 @@ export function CreatePinForm() {
     setPreviewUrl(URL.createObjectURL(file));
   }
 
+  function handleTopicSelect(topicId: string) {
+    setSelectedTopicId((current) =>
+      current === topicId ? null : topicId,
+    );
+  }
+
   async function onSubmit(values: CreatePinSchema) {
     try {
       setIsSubmitting(true);
@@ -71,6 +90,10 @@ export function CreatePinForm() {
 
       formData.append("image", values.image);
 
+      // Note: selectedTopicId is intentionally NOT appended here.
+      // Topic persistence is out of scope for this sprint.
+      
+
       const result = await createPinAction(formData);
 
       if (!result.success) {
@@ -87,6 +110,7 @@ export function CreatePinForm() {
       }
 
       setPreviewUrl(null);
+      setSelectedTopicId(null);
 
       router.push(`/profile/${result.username}`);
       router.refresh();
@@ -170,6 +194,23 @@ export function CreatePinForm() {
             errors={[form.formState.errors.altText]}
           />
         </Field>
+
+        {topics.length > 0 && (
+          <Field>
+            <FieldLabel>Topic</FieldLabel>
+
+            <div className="flex flex-wrap gap-2">
+              {topics.map((topic) => (
+                <TopicChip
+                  key={topic.id}
+                  label={topic.name}
+                  active={topic.id === selectedTopicId}
+                  onClick={() => handleTopicSelect(topic.id)}
+                />
+              ))}
+            </div>
+          </Field>
+        )}
 
         <div className="flex justify-end">
           <Button

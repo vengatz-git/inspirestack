@@ -9,6 +9,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import { topics } from "./topics";
 
 import { users } from "./auth"; // Adjust the import path based on your project structure
 
@@ -28,6 +29,12 @@ export const pins = pgTable(
         onDelete: "cascade",
       }),
 
+    topicId: uuid("topic_id")
+      .notNull()
+      .references(() => topics.id, {
+        onDelete: "restrict",
+      }),
+
     title: varchar("title", {
       length: 120,
     }),
@@ -44,9 +51,7 @@ export const pins = pgTable(
       length: 200,
     }),
 
-    visibility: pinVisibilityEnum("visibility")
-      .notNull()
-      .default("PUBLIC"),
+    visibility: pinVisibilityEnum("visibility").notNull().default("PUBLIC"),
 
     createdAt: timestamp("created_at", {
       withTimezone: true,
@@ -64,6 +69,8 @@ export const pins = pgTable(
   (table) => ({
     authorIdx: index("pins_author_idx").on(table.authorId),
 
+    topicIdx: index("pins_topic_idx").on(table.topicId),
+
     createdAtIdx: index("pins_created_at_idx").on(table.createdAt),
 
     authorCreatedAtIdx: index("pins_author_created_at_idx").on(
@@ -77,6 +84,11 @@ export const pinsRelations = relations(pins, ({ one }) => ({
   author: one(users, {
     fields: [pins.authorId],
     references: [users.id],
+  }),
+
+  topic: one(topics, {
+    fields: [pins.topicId],
+    references: [topics.id],
   }),
 }));
 

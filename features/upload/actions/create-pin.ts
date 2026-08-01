@@ -35,6 +35,7 @@ export async function createPinAction(
     description: formData.get("description"),
     altText: formData.get("altText"),
     image: formData.get("image"),
+    topicId: formData.get("topicId"),
   });
 
   if (!parsed.success) {
@@ -48,6 +49,7 @@ export async function createPinAction(
 
   const pin = await createPinService({
     authorId: session.user.id,
+    topicId: parsed.data.topicId,
     title: parsed.data.title,
     description: parsed.data.description,
     altText: parsed.data.altText,
@@ -59,8 +61,8 @@ export async function createPinAction(
   revalidatePath(`/profile/${session.user.username}`);
 
   return {
-  success: true,
-  pinId: pin.id,
-  username: session.user.username,
-};
+    success: true,
+    pinId: pin.id,
+    username: session.user.username,
+  };
 }

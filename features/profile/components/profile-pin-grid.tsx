@@ -1,4 +1,4 @@
-import { PinCard } from "@/features/pin/components/pin-card";
+import { PinCard } from "@/features/pin/components/card/pin-card";
 import type { PinCardData } from "@/features/pin/types/pin-card";
 
 interface ProfilePinGridProps {

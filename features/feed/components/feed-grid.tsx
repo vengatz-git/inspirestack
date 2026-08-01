@@ -9,12 +9,22 @@ export function FeedGrid({ pins }: FeedGridProps) {
   return (
     <section
       aria-label="Home feed"
-      className="columns-2 gap-4 md:columns-3 xl:columns-4 2xl:columns-5"
+      className="
+        columns-2
+        gap-3
+        sm:columns-2
+        md:columns-3
+        lg:columns-4
+        xl:columns-5
+        2xl:columns-6
+      "
     >
       {pins.map((pin) => (
         <div
           key={pin.id}
-          className="mb-4 break-inside-avoid"
+          className="mb-3 
+          // break-inside-avoid
+          "
         >
           <PinCard pin={pin} />
         </div>

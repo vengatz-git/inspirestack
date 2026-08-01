@@ -3,7 +3,7 @@ import { desc, lt } from "drizzle-orm";
 import { db } from "@/db";
 import { pins } from "@/db/schema";
 
-import type { PinCardData } from "@/features/pin/types/pin-card";
+import { mapPinToCard } from "@/features/pin/lib/map-pin-card";
 import type { FeedResult, GetFeedOptions } from "../types/feed";
 
 export async function getFeed(
@@ -32,16 +32,7 @@ export async function getFeed(
     : null;
 
   return {
-    pins: items.map(
-      (pin): PinCardData => ({
-        id: pin.id,
-        title: pin.title,
-        imageUrl: pin.imageUrl,
-        altText: pin.altText,
-        imageWidth: pin.imageWidth,
-        imageHeight: pin.imageHeight,
-      })
-    ),
+    pins: feedPins.map(mapPinToCard),
     nextCursor,
   };
 }

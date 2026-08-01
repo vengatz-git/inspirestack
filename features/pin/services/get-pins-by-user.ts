@@ -13,12 +13,13 @@ export async function getUserPinsService(
     orderBy: desc(pins.createdAt),
   });
 
-  return userPins.map((pin) => ({
+  return userPins.map((pin): PinCardData => ({
     id: pin.id,
     title: pin.title,
     imageUrl: pin.imageUrl,
     altText: pin.altText,
     imageWidth: pin.imageWidth,
     imageHeight: pin.imageHeight,
+    destinationUrl: null,
   }));
 }

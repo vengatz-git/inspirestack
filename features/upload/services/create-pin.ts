@@ -3,6 +3,7 @@ import { pins } from "@/db/schema";
 
 type CreatePinServiceInput = {
   authorId: string;
+  topicId: string;
   title?: string;
   description?: string;
   altText?: string;
@@ -18,6 +19,7 @@ export async function createPinService(
     .insert(pins)
     .values({
       authorId: input.authorId,
+      topicId: input.topicId,
       title: input.title || null,
       description: input.description || null,
       altText: input.altText || null,
