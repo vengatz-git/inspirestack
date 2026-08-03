@@ -27,7 +27,9 @@ interface CreatePinFormProps {
   topics: TopicOption[];
 }
 
-export function CreatePinForm({ topics }: CreatePinFormProps) {
+export function CreatePinForm({
+  topics,
+}: CreatePinFormProps) {
   const form = useCreatePinForm();
   const router = useRouter();
 
@@ -36,11 +38,7 @@ export function CreatePinForm({ topics }: CreatePinFormProps) {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Topic selection is UI-only for now — not yet persisted.
-  // See features/topic/README.md for the planned Pin <-> Topic relationship.
-  const [selectedTopicId, setSelectedTopicId] = useState
-    <string | null
-  >(null);
+  const selectedTopicId = form.watch("topicId");
 
   useEffect(() => {
     return () => {
@@ -65,12 +63,22 @@ export function CreatePinForm({ topics }: CreatePinFormProps) {
   }
 
   function handleTopicSelect(topicId: string) {
-    setSelectedTopicId((current) =>
-      current === topicId ? null : topicId,
+    const current = form.getValues("topicId");
+
+    form.setValue(
+      "topicId",
+      current === topicId ? "" : topicId,
+      {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      },
     );
   }
 
-  async function onSubmit(values: CreatePinSchema) {
+  async function onSubmit(
+    values: CreatePinSchema,
+  ) {
     try {
       setIsSubmitting(true);
 
@@ -81,7 +89,10 @@ export function CreatePinForm({ topics }: CreatePinFormProps) {
       }
 
       if (values.description) {
-        formData.append("description", values.description);
+        formData.append(
+          "description",
+          values.description,
+        );
       }
 
       if (values.altText) {
@@ -89,10 +100,7 @@ export function CreatePinForm({ topics }: CreatePinFormProps) {
       }
 
       formData.append("image", values.image);
-
-      // Note: selectedTopicId is intentionally NOT appended here.
-      // Topic persistence is out of scope for this sprint.
-      
+      formData.append("topicId", values.topicId);
 
       const result = await createPinAction(formData);
 
@@ -110,14 +118,15 @@ export function CreatePinForm({ topics }: CreatePinFormProps) {
       }
 
       setPreviewUrl(null);
-      setSelectedTopicId(null);
 
       router.push(`/profile/${result.username}`);
       router.refresh();
     } catch (error) {
       console.error(error);
 
-      toast.error("Something went wrong while publishing your Pin.");
+      toast.error(
+        "Something went wrong while publishing your Pin.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -173,7 +182,9 @@ export function CreatePinForm({ topics }: CreatePinFormProps) {
           />
 
           <FieldError
-            errors={[form.formState.errors.description]}
+            errors={[
+              form.formState.errors.description,
+            ]}
           />
         </Field>
 
@@ -195,27 +206,51 @@ export function CreatePinForm({ topics }: CreatePinFormProps) {
           />
         </Field>
 
-        {topics.length > 0 && (
-          <Field>
-            <FieldLabel>Topic</FieldLabel>
+        <Field>
+          <FieldLabel>
+            Topic{" "}
+            <span className="text-destructive">
+              *
+            </span>
+          </FieldLabel>
 
+          {topics.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {topics.map((topic) => (
                 <TopicChip
                   key={topic.id}
                   label={topic.name}
-                  active={topic.id === selectedTopicId}
-                  onClick={() => handleTopicSelect(topic.id)}
+                  active={
+                    topic.id === selectedTopicId
+                  }
+                  onClick={() =>
+                    handleTopicSelect(topic.id)
+                  }
                 />
               ))}
             </div>
-          </Field>
-        )}
+          ) : (
+            <div className="rounded-lg border border-dashed p-4">
+              <p className="text-sm text-muted-foreground">
+                No topics are available yet.
+                Please seed the database before
+                creating pins.
+              </p>
+            </div>
+          )}
+
+          <FieldError
+            errors={[form.formState.errors.topicId]}
+          />
+        </Field>
 
         <div className="flex justify-end">
           <Button
             type="submit"
-            disabled={isSubmitting}
+            disabled={
+              isSubmitting ||
+              topics.length === 0
+            }
           >
             {isSubmitting
               ? "Publishing..."

@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import {
-  Geist_Mono,
-  Plus_Jakarta_Sans,
-} from "next/font/google";
+import { Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 
 import "./globals.css";
 
 import { cn } from "@/lib/utils";
 import { AppProviders } from "@/components/providers/app-providers";
+import { Toaster } from "sonner";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -35,13 +33,12 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(
-        plusJakartaSans.variable,
-        geistMono.variable
-      )}
+      className={cn(plusJakartaSans.variable, geistMono.variable)}
     >
-      <body className="min-h-screen bg-background font-sans antialiased">
+      <body className="bg-background min-h-screen font-sans antialiased">
         <AppProviders>{children}</AppProviders>
+
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );

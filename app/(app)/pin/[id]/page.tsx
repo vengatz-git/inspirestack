@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 
-import { getPinByIdService } from "@/features/pin/services/get-pin-by-id";
 import { PinDetail } from "@/features/pin/components/pin-detail";
+import { getPinByIdService } from "@/features/pin/services/get-pin-by-id";
+import { getRelatedPinsService } from "@/features/pin/services/get-related-pins";
 
 type PinPageProps = {
   params: Promise<{
@@ -20,9 +21,15 @@ export default async function PinPage({
     notFound();
   }
 
+  const relatedPins = await getRelatedPinsService({
+    pinId: pin.id,
+    limit: 40,
+  });
+
   return (
-    <main className="mx-auto max-w-7xl px-6 py-8">
-      <PinDetail pin={pin} />
-    </main>
+    <PinDetail
+      pin={pin}
+      relatedPins={relatedPins}
+    />
   );
 }

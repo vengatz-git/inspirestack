@@ -4,6 +4,8 @@ import { getTopics } from "@/features/topic";
 export default async function CreatePage() {
   const topics = await getTopics();
 
+  console.log("Topics:", topics);
+
   return (
     <main className="container mx-auto max-w-7xl py-8">
       <div className="mb-8 flex items-center justify-between">

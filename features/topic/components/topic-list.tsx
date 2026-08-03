@@ -7,7 +7,11 @@ export async function TopicList() {
   return (
     <div className="flex flex-wrap gap-2">
       {topics.map((topic) => (
-        <TopicChip key={topic.id} label={topic.name} />
+        <TopicChip
+          key={topic.id}
+          label={topic.name}
+          slug={topic.slug}
+        />
       ))}
     </div>
   );

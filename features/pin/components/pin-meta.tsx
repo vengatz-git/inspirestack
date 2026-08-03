@@ -10,21 +10,19 @@ type PinMetaProps = {
   pin: Pin;
 };
 
-export function PinMeta({
-  pin,
-}: PinMetaProps) {
+export function PinMeta({ pin }: PinMetaProps) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Title & Description */}
-      <div className="space-y-5">
+      <div className="space-y-3">
         {pin.title ? (
-          <h1 className="text-4xl font-bold leading-tight tracking-tight lg:text-5xl">
+          <h1 className="text-3xl font-bold leading-tight tracking-tight lg:text-4xl">
             {pin.title}
           </h1>
         ) : null}
 
         {pin.description ? (
-          <p className="max-w-prose text-base leading-7 text-muted-foreground">
+          <p className="text-muted-foreground max-w-prose text-sm leading-7">
             {pin.description}
           </p>
         ) : null}
@@ -33,7 +31,7 @@ export function PinMeta({
       {/* Topic */}
       {pin.topic ? (
         <div>
-          <TopicChip label={pin.topic.name} />
+          <TopicChip label={pin.topic.name} slug={pin.topic.slug} />
         </div>
       ) : null}
 
@@ -59,9 +57,8 @@ export function PinMeta({
 
       {/* Published */}
       <div>
-        <p className="text-sm text-muted-foreground">
-          Published{" "}
-          <span className="mx-2">•</span>
+        <p className="text-muted-foreground text-sm">
+          Published <span className="mx-2">•</span>
           {format(pin.createdAt, "MMMM d, yyyy")}
         </p>
       </div>

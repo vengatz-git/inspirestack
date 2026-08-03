@@ -1,30 +1,34 @@
 import { getPinByIdService } from "../services/get-pin-by-id";
 
-import { PinImage } from "./pin-image";
-import { PinSidebar } from "./pin-sidebar";
-import { RelatedPins } from "./related-pins";
+import { StickyWorkspace } from "./sticky-workspace";
+import { PinDetailLayout } from "./pin-detail-layout";
+import type { PinCardData } from "../types/pin-card";
+import { PinCard } from "./pin-card";
 
-type Pin = NonNullable<
-  Awaited<ReturnType<typeof getPinByIdService>>
->;
+import { FeedGrid } from "@/features/feed/components/feed-grid";
+
+type Pin = NonNullable<Awaited<ReturnType<typeof getPinByIdService>>>;
 
 type PinDetailProps = {
   pin: Pin;
+  relatedPins: PinCardData[];
 };
 
-export function PinDetail({
-  pin,
-}: PinDetailProps) {
-  return (
-    <>
-      <section className="overflow-hidden rounded-3xl border bg-card shadow-xl">
-        <div className="grid h-[85vh] max-h-225 lg:grid-cols-2">
-          <PinImage pin={pin} />
-          <PinSidebar pin={pin} />
-        </div>
-      </section>
+export function PinDetail({ pin, relatedPins }: PinDetailProps) {
+  const sideFeed = relatedPins.slice(0, 4);
+  const bottomFeed = relatedPins.slice(4);
 
-      {/* <RelatedPins pinId={pin.id} /> */}
-    </>
+  return (
+    <PinDetailLayout
+      workspace={<StickyWorkspace pin={pin} />}
+      sideFeed={
+        <div className="space-y-4">
+          {sideFeed.map((relatedPin) => (
+            <PinCard key={relatedPin.id} pin={relatedPin} />
+          ))}
+        </div>
+      }
+      feed={<FeedGrid pins={bottomFeed} />}
+    />
   );
 }

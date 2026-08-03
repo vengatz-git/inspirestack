@@ -17,6 +17,7 @@ export function useCreatePinForm() {
       description: "",
       altText: "",
       image: undefined,
+      topicId: "",
     },
 
     mode: "onBlur",
