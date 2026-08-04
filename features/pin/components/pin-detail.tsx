@@ -2,8 +2,9 @@ import { getPinByIdService } from "../services/get-pin-by-id";
 
 import { StickyWorkspace } from "./sticky-workspace";
 import { PinDetailLayout } from "./pin-detail-layout";
-import type { PinCardData } from "../types/pin-card";
 import { PinCard } from "./pin-card";
+
+import type { PinCardData } from "../types/pin-card";
 
 import { FeedGrid } from "@/features/feed/components/feed-grid";
 
@@ -19,16 +20,18 @@ export function PinDetail({ pin, relatedPins }: PinDetailProps) {
   const bottomFeed = relatedPins.slice(4);
 
   return (
-    <PinDetailLayout
-      workspace={<StickyWorkspace pin={pin} />}
-      sideFeed={
-        <div className="space-y-4">
-          {sideFeed.map((relatedPin) => (
-            <PinCard key={relatedPin.id} pin={relatedPin} />
-          ))}
+    <>
+      <PinDetailLayout>
+        <StickyWorkspace pin={pin} />
+      </PinDetailLayout>
+
+      <section className="mx-auto mt-10 max-w-screen-2xl px-6">
+        <div className="mb-8 flex justify-center">
+          <h2 className="text-2xl font-semibold">More like this</h2>
         </div>
-      }
-      feed={<FeedGrid pins={bottomFeed} />}
-    />
+
+        <FeedGrid pins={relatedPins} />
+      </section>
+    </>
   );
 }

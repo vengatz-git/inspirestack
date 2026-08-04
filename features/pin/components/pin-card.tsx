@@ -24,7 +24,7 @@ export function PinCard({ pin }: PinCardProps) {
           (max-width: 1536px) 33vw,
           25vw
         "
-        className="h-auto w-full rounded-2xl transition-shadow duration-200 group-hover:shadow-xl"
+        className="h-auto w-full rounded-2xl transition-all duration-300 group-hover:shadow-2xl"
       />
     </Link>
   );

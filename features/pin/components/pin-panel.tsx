@@ -17,7 +17,7 @@ export function PinPanel({
   pin,
 }: PinPanelProps) {
   return (
-    <section className="flex h-full flex-col bg-card">
+    <section className="flex h-full flex-col overflow-hidden bg-card">
       <header className="shrink-0 border-b px-8 py-5">
         <PinHeader />
       </header>
