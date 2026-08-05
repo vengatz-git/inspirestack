@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import type { Profile } from "../types/profile";
 import { EditProfileDialog } from "./edit-profile-dialog";
+import { CreateBoardButton } from "@/features/board/components/create-board-button";
 
 type ProfileHeaderProps = {
   profile: Profile;
@@ -15,6 +16,8 @@ export function ProfileHeader({ profile, isOwner }: ProfileHeaderProps) {
         alt={profile.username}
         className="h-28 w-28 rounded-full object-cover"
       />
+
+      <CreateBoardButton />
 
       <h1 className="text-3xl font-bold">
         {profile.displayName ?? profile.username}

@@ -1,16 +1,16 @@
-import dotenv from "dotenv";
-dotenv.config();
+// import dotenv from "dotenv";
+// dotenv.config();
 
-import postgres from "postgres";
+// import postgres from "postgres";
 
-async function main() {
-  const sql = postgres(process.env.DATABASE_URL!);
+// async function main() {
+//   const sql = postgres(process.env.DATABASE_URL!);
 
-  const result = await sql`select version()`;
+//   const result = await sql`select version()`;
 
-  console.log(result);
+//   console.log(result);
 
-  await sql.end();
-}
+//   await sql.end();
+// }
 
-main().catch(console.error);
+// main().catch(console.error);

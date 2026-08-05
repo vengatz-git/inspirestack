@@ -3,20 +3,38 @@
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
-  Bookmark,
   MoreHorizontal,
   Share2,
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import type { BoardSummary } from "@/features/board/types/board";
 
-export function PinHeader() {
+import { getPinByIdService } from "../services/get-pin-by-id";
+
+import { Button } from "@/components/ui/button";
+import { BoardSaveButton } from "@/features/board/components/board-save-button";
+
+type Pin = NonNullable<
+  Awaited<ReturnType<typeof getPinByIdService>>
+>;
+
+interface PinHeaderProps {
+  pin: Pin;
+  boards: BoardSummary[];
+}
+
+export function PinHeader({
+  pin,
+  boards,
+}: PinHeaderProps) {
   const router = useRouter();
 
   async function handleShare() {
     if (!navigator.share) {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(
+        window.location.href,
+      );
 
       toast.success("Link copied to clipboard.");
 
@@ -28,7 +46,7 @@ export function PinHeader() {
         url: window.location.href,
       });
     } catch {
-      // User cancelled sharing.
+      // User cancelled.
     }
   }
 
@@ -38,7 +56,7 @@ export function PinHeader() {
         variant="ghost"
         size="icon"
         aria-label="Go back"
-        className="h-11 w-11 rounded-full transition-colors"
+        className="h-11 w-11 rounded-full"
         onClick={() => router.back()}
       >
         <ArrowLeft className="size-5" />
@@ -49,7 +67,7 @@ export function PinHeader() {
           variant="ghost"
           size="icon"
           aria-label="Share pin"
-          className="h-11 w-11 rounded-full transition-colors"
+          className="h-11 w-11 rounded-full"
           onClick={handleShare}
         >
           <Share2 className="size-5" />
@@ -60,18 +78,15 @@ export function PinHeader() {
           size="icon"
           aria-label="More actions"
           disabled
-          className="h-11 w-11 rounded-full transition-colors"
+          className="h-11 w-11 rounded-full"
         >
           <MoreHorizontal className="size-5" />
         </Button>
 
-        <Button
-          disabled
-          className="h-11 rounded-full px-6"
-        >
-          <Bookmark className="mr-2 size-4" />
-          Save
-        </Button>
+        <BoardSaveButton
+          pinId={pin.id}
+          boards={boards}
+        />
       </div>
     </header>
   );

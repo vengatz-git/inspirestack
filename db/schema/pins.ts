@@ -12,6 +12,7 @@ import { relations } from "drizzle-orm";
 import { topics } from "./topics";
 
 import { users } from "./auth"; // Adjust the import path based on your project structure
+import { boardPins } from "./boards";
 
 export const pinVisibilityEnum = pgEnum("pin_visibility", [
   "PUBLIC",
@@ -80,7 +81,7 @@ export const pins = pgTable(
   }),
 );
 
-export const pinsRelations = relations(pins, ({ one }) => ({
+export const pinsRelations = relations(pins, ({ one, many }) => ({
   author: one(users, {
     fields: [pins.authorId],
     references: [users.id],
@@ -90,6 +91,8 @@ export const pinsRelations = relations(pins, ({ one }) => ({
     fields: [pins.topicId],
     references: [topics.id],
   }),
+
+  boardPins: many(boardPins),
 }));
 
 export type Pin = typeof pins.$inferSelect;

@@ -3,7 +3,7 @@ export function PinDetailSkeleton() {
     <>
       <main className="mx-auto max-w-screen-2xl px-6 py-4">
         <div className="flex justify-center">
-          <div className="h-[70vh] min-h-[560px] max-h-[720px] w-full max-w-[1280px] animate-pulse overflow-hidden rounded-3xl border bg-card">
+          <div className="h-[70vh] min-h-140 max-h-180 w-full max-w-7xl animate-pulse overflow-hidden rounded-3xl border bg-card">
             <div className="grid h-full grid-cols-2">
               <div className="bg-muted" />
 
@@ -33,7 +33,7 @@ export function PinDetailSkeleton() {
             {Array.from({ length: 15 }).map((_, index) => (
               <div
                 key={index}
-                className="aspect-[3/4] animate-pulse rounded-2xl bg-muted"
+                className="aspect-3/4 animate-pulse rounded-2xl bg-muted"
               />
             ))}
           </div>

@@ -9,6 +9,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { pins } from "./pins";
+import { boards } from "./boards";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -106,7 +107,8 @@ export const verificationTokens = pgTable(
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
-  pin: many(pins),
+  pins: many(pins),
+  boards: many(boards),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({

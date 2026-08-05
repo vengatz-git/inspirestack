@@ -1,25 +1,23 @@
 import { getPinByIdService } from "../services/get-pin-by-id";
+import type { BoardSummary } from "@/features/board/types/board";
 
 import { CommentsSection } from "./comments-section";
 import { PinAuthor } from "./pin-author";
 import { PinHeader } from "./pin-header";
 import { PinMeta } from "./pin-meta";
 
-type Pin = NonNullable<
-  Awaited<ReturnType<typeof getPinByIdService>>
->;
+type Pin = NonNullable<Awaited<ReturnType<typeof getPinByIdService>>>;
 
 interface PinPanelProps {
   pin: Pin;
+  boards: BoardSummary[];
 }
 
-export function PinPanel({
-  pin,
-}: PinPanelProps) {
+export function PinPanel({ pin, boards }: PinPanelProps) {
   return (
-    <section className="flex h-full flex-col overflow-hidden bg-card">
+    <section className="bg-card flex h-full flex-col overflow-hidden">
       <header className="shrink-0 border-b px-8 py-5">
-        <PinHeader />
+        <PinHeader pin={pin} boards={boards} />
       </header>
 
       <div className="flex-1 overflow-y-auto">
