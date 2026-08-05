@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { PinDetail } from "@/features/pin/components/pin-detail";
@@ -9,6 +10,59 @@ type PinPageProps = {
     id: string;
   }>;
 };
+
+export async function generateMetadata({
+  params,
+}: PinPageProps): Promise<Metadata> {
+  const { id } = await params;
+
+  const pin = await getPinByIdService(id);
+
+  if (!pin) {
+    return {
+      title: "Pin not found | InspireStack",
+    };
+  }
+
+  const title = pin.title ?? "Untitled Pin";
+
+  const description =
+    pin.description ??
+    `Explore "${title}" on InspireStack.`;
+
+  return {
+    title: `${title} | InspireStack`,
+    description,
+
+    alternates: {
+      canonical: `/pin/${pin.id}`,
+    },
+
+    robots: {
+      index: true,
+      follow: true,
+    },
+
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      images: [
+        {
+          url: pin.imageUrl,
+          alt: pin.altText ?? title,
+        },
+      ],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [pin.imageUrl],
+    },
+  };
+}
 
 export default async function PinPage({
   params,
