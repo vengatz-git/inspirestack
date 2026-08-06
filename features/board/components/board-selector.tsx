@@ -22,7 +22,7 @@ export function BoardSelector({ pinId, boards, onSaved }: BoardSelectorProps) {
       <BoardWorkspace boards={boards} pending={pending} onSave={save} />
 
       <div className="border-t pt-4">
-        <CreateBoardButton />
+        {/* <CreateBoardButton /> */}
       </div>
     </div>
   );

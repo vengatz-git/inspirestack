@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 import type { BoardSummary } from "../types/board";
 
@@ -28,15 +22,7 @@ export function BoardSaveDialog({
 }: BoardSaveDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[1100px] max-w-[95vw] overflow-hidden p-0">
-        <DialogHeader>
-          <DialogTitle>Save to board</DialogTitle>
-
-          <DialogDescription>
-            Choose where you'd like to save this pin.
-          </DialogDescription>
-        </DialogHeader>
-
+      <DialogContent showCloseButton={false} className="w-[900px] max-w-[95vw] overflow-hidden p-0 sm:max-w-[95vw]">
         <BoardSelector
           pinId={pinId}
           boards={boards}

@@ -1,0 +1,1 @@
+export type BoardView = "list" | "grid";

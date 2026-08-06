@@ -4,6 +4,7 @@ export * from "./services/get-board-by-id";
 export * from "./services/get-boards-by-user";
 export * from "./services/save-pin-to-board";
 export * from "./services/remove-pin-from-board";
+export * from "./services/get-recent-boards";
 
 // Types
 export * from "./types/board";

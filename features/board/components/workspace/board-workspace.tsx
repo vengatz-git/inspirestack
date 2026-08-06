@@ -1,9 +1,12 @@
 "use client";
 
-import type { BoardSummary } from "../../types/board";
+import { useState } from "react";
 
-import { BoardSidebar } from "./board-sidebar";
+import type { BoardSummary } from "../../types/board";
+import type { BoardView } from "../../types/board-view";
+
 import { BoardBrowser } from "./board-browser";
+import { BoardSidebar } from "./board-sidebar";
 
 interface BoardWorkspaceProps {
   boards: BoardSummary[];
@@ -16,13 +19,17 @@ export function BoardWorkspace({
   pending,
   onSave,
 }: BoardWorkspaceProps) {
+  const [view, setView] = useState<BoardView>("list");
+
   return (
-    <div className="flex h-175">
+    <div className="flex h-[550px]">
       <BoardSidebar />
 
       <BoardBrowser
         boards={boards}
         pending={pending}
+        view={view}
+        onViewChange={setView}
         onSave={onSave}
       />
     </div>
