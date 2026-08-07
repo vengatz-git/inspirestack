@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Check, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -7,18 +8,20 @@ import { BoardCoverPlaceholder } from "./board-cover-placeholder";
 
 interface BoardGridItemProps {
   board: BoardSummary;
-  pending: boolean;
+  savingBoardId: string | null;
   onSave: (boardId: string) => void;
 }
 
 export function BoardGridItem({
   board,
-  pending,
+  savingBoardId,
   onSave,
 }: BoardGridItemProps) {
+  const isSaving = savingBoardId === board.id;
+
   return (
-    <div className="group overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-200 hover:-translate-y-0.5 hover:border-border hover:shadow-md">
-      <div className="relative aspect-video bg-muted">
+    <div className="group border-border/50 bg-card hover:border-border overflow-hidden rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+      <div className="bg-muted relative aspect-video w-full overflow-hidden">
         {board.coverImageUrl ? (
           <Image
             src={board.coverImageUrl}
@@ -44,20 +47,24 @@ export function BoardGridItem({
         </div>
 
         <Button
-          className="w-full"
-          variant={
-            board.isSaved
-              ? "secondary"
-              : "outline"
-          }
-          disabled={pending || board.isSaved}
+          className="w-full gap-2"
+          variant={board.isSaved ? "secondary" : "outline"}
+          disabled={isSaving || board.isSaved}
           onClick={() => onSave(board.id)}
         >
-          {board.isSaved
-            ? "✓ Saved"
-            : pending
-              ? "Saving..."
-              : "Save"}
+          {board.isSaved ? (
+            <>
+              <Check className="size-4" />
+              Saved
+            </>
+          ) : isSaving ? (
+            <>
+              <Loader2 className="size-4 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            "Save"
+          )}
         </Button>
       </div>
     </div>

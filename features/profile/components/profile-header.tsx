@@ -17,8 +17,6 @@ export function ProfileHeader({ profile, isOwner }: ProfileHeaderProps) {
         className="h-28 w-28 rounded-full object-cover"
       />
 
-      <CreateBoardButton />
-
       <h1 className="text-3xl font-bold">
         {profile.displayName ?? profile.username}
       </h1>

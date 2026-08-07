@@ -9,17 +9,19 @@ import { BoardCoverPlaceholder } from "./board-cover-placeholder";
 
 interface BoardPickerItemProps {
   board: BoardSummary;
-  pending: boolean;
+  savingBoardId: string | null;
   layout?: "list" | "grid";
   onSave: (boardId: string) => void;
 }
 
 export function BoardPickerItem({
   board,
-  pending,
+  savingBoardId,
   layout = "list",
   onSave,
 }: BoardPickerItemProps) {
+  const isSaving = savingBoardId === board.id;
+
   return (
     <div
       className={
@@ -77,7 +79,7 @@ export function BoardPickerItem({
           size="sm"
           className="min-w-22 gap-2"
           variant={board.isSaved ? "secondary" : "outline"}
-          disabled={pending || board.isSaved}
+          disabled={isSaving || board.isSaved}
           onClick={() => onSave(board.id)}
         >
           {board.isSaved ? (
@@ -85,7 +87,7 @@ export function BoardPickerItem({
               <Check className="size-4" />
               Saved
             </>
-          ) : pending ? (
+          ) : isSaving ? (
             <>
               <Loader2 className="size-4 animate-spin" />
               Saving...

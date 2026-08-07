@@ -4,13 +4,14 @@ import { BoardPickerItem } from "./board-picker-item";
 
 interface BoardPickerListProps {
   boards: BoardSummary[];
-  pending: boolean;
+  // pending: boolean;
+  savingBoardId: string | null;
   onSave: (boardId: string) => void;
 }
 
 export function BoardPickerList({
   boards,
-  pending,
+  savingBoardId,
   onSave,
 }: BoardPickerListProps) {
   if (boards.length === 0) {
@@ -27,7 +28,7 @@ export function BoardPickerList({
         <BoardPickerItem
           key={board.id}
           board={board}
-          pending={pending}
+          savingBoardId={savingBoardId}
           onSave={onSave}
         />
       ))}

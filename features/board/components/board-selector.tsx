@@ -11,7 +11,7 @@ interface BoardSelectorProps {
 }
 
 export function BoardSelector({ pinId, boards, onSaved }: BoardSelectorProps) {
-  const { pending, save } = useBoardSave({
+  const { pending, savingBoardId, save } = useBoardSave({
     pinId,
     onSuccess: onSaved,
   });
@@ -19,6 +19,7 @@ export function BoardSelector({ pinId, boards, onSaved }: BoardSelectorProps) {
     <BoardWorkspace
       boards={boards}
       pending={pending}
+      savingBoardId={savingBoardId}
       onSave={save}
       onClose={onSaved ?? (() => {})}
     />

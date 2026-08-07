@@ -13,6 +13,7 @@ import { BOARD_VIEW_STORAGE_KEY } from "../../constants/board-view";
 interface BoardWorkspaceProps {
   boards: BoardSummary[];
   pending: boolean;
+  savingBoardId: string | null;
   onSave: (boardId: string) => void;
   onClose: () => void;
 }
@@ -20,6 +21,7 @@ interface BoardWorkspaceProps {
 export function BoardWorkspace({
   boards,
   pending,
+  savingBoardId,
   onSave,
   onClose,
 }: BoardWorkspaceProps) {
@@ -59,6 +61,7 @@ export function BoardWorkspace({
         <BoardBrowser
           boards={filteredBoards}
           pending={pending}
+          savingBoardId={savingBoardId}
           view={view}
           onSave={onSave}
         />

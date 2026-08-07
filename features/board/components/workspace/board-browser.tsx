@@ -11,6 +11,7 @@ import { BoardSearchEmpty } from "./board-search-empty";
 interface BoardBrowserProps {
   boards: BoardSummary[];
   pending: boolean;
+  savingBoardId: string | null;
   view: BoardView;
   onSave: (boardId: string) => void;
 }
@@ -18,6 +19,7 @@ interface BoardBrowserProps {
 export function BoardBrowser({
   boards,
   pending,
+  savingBoardId,
   view,
   onSave,
 }: BoardBrowserProps) {
@@ -30,13 +32,13 @@ export function BoardBrowser({
           ) : view === "list" ? (
             <BoardPickerList
               boards={boards}
-              pending={pending}
+              savingBoardId={savingBoardId}
               onSave={onSave}
             />
           ) : (
             <BoardPickerGrid
               boards={boards}
-              pending={pending}
+              savingBoardId={savingBoardId}
               onSave={onSave}
             />
           )}

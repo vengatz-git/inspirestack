@@ -4,13 +4,14 @@ import { BoardGridItem } from "./board-grid-item";
 
 interface BoardPickerGridProps {
   boards: BoardSummary[];
-  pending: boolean;
+  // pending: boolean;
+  savingBoardId: string | null;
   onSave: (boardId: string) => void;
 }
 
 export function BoardPickerGrid({
   boards,
-  pending,
+  savingBoardId,
   onSave,
 }: BoardPickerGridProps) {
   if (boards.length === 0) {
@@ -27,7 +28,7 @@ export function BoardPickerGrid({
         <BoardGridItem
           key={board.id}
           board={board}
-          pending={pending}
+          savingBoardId={savingBoardId}
           onSave={onSave}
         />
       ))}
