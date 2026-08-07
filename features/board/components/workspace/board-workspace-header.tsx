@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import type { BoardView } from "../../types/board-view";
 
 import { BoardViewToggle } from "./board-view-toggle";
+import { BoardSearch } from "./board-search";
 
 interface BoardWorkspaceHeaderProps {
   view: BoardView;
@@ -43,11 +44,7 @@ export function BoardWorkspaceHeader({
         </div>
       </div>
 
-      <Input
-        placeholder="Search boards..."
-        value={query}
-        onChange={(e) => onQueryChange(e.target.value)}
-      />
+      <BoardSearch value={query} onChange={onQueryChange} />
     </header>
   );
 }
