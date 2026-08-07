@@ -15,7 +15,7 @@ export async function getBoardsByUserService({
   const result = await db.query.boards.findMany({
     where: eq(boards.ownerId, userId),
 
-    orderBy: (boards, { desc }) => [desc(boards.updatedAt)],
+    orderBy: (boards, { desc }) => [desc(boards.lastUsedAt)],
 
     with: {
       coverPin: {

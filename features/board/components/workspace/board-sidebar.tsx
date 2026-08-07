@@ -3,17 +3,23 @@
 import { Clock3 } from "lucide-react";
 
 import { CreateBoardButton } from "../create-board-button";
+import { RecentBoardList } from "./recent-board-list";
+import { BoardSummary } from "../../types/board";
 
-export function BoardSidebar() {
+interface BoardSidebarProps {
+  boards: BoardSummary[];
+  pending: boolean;
+  onSave: (boardId: string) => void;
+}
+
+export function BoardSidebar({ boards, pending, onSave }: BoardSidebarProps) {
   return (
-    <aside className="flex w-56 shrink-0 flex-col border-r border-border/40 bg-muted/10">
+    <aside className="border-border/40 bg-muted/10 flex w-56 shrink-0 flex-col border-r">
       <div className="space-y-8 p-6">
         <div>
-          <h2 className="text-lg font-semibold">
-            Quick Access
-          </h2>
+          <h2 className="text-lg font-semibold">Quick Access</h2>
 
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="text-muted-foreground mt-2 text-sm">
             Save your inspiration into organized collections.
           </p>
         </div>
@@ -22,18 +28,14 @@ export function BoardSidebar() {
           <div className="mb-3 flex items-center gap-2">
             <Clock3 className="size-4" />
 
-            <span className="text-sm font-medium">
-              Recently Used
-            </span>
+            <span className="text-sm font-medium">Recently Used</span>
           </div>
 
-          <p className="text-sm text-muted-foreground">
-            Your recently used boards will appear here.
-          </p>
+          <RecentBoardList boards={boards} pending={pending} onSave={onSave} />
         </section>
       </div>
 
-      <div className="mt-auto flex justify-center border-t border-border/40 p-6">
+      <div className="border-border/40 mt-auto flex justify-center border-t p-6">
         <CreateBoardButton />
       </div>
     </aside>

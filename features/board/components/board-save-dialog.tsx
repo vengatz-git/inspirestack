@@ -22,7 +22,7 @@ export function BoardSaveDialog({
 }: BoardSaveDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="w-[900px] max-w-[95vw] overflow-hidden p-0 sm:max-w-[95vw]">
+      <DialogContent className="w-225 max-w-[95vw] overflow-hidden p-0 sm:max-w-[95vw]">
         <BoardSelector
           pinId={pinId}
           boards={boards}

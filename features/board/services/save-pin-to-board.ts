@@ -28,7 +28,7 @@ export async function savePinToBoardService({
       ),
     });
 
-    // Already saved → update recency only
+    // Already saved → only update recency.
     if (existing) {
       await tx
         .update(boards)

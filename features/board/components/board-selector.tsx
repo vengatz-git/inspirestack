@@ -2,8 +2,6 @@
 
 import { useBoardSave } from "../hooks/use-board-save";
 import type { BoardSummary } from "../types/board";
-
-import { CreateBoardButton } from "./create-board-button";
 import { BoardWorkspace } from "./workspace/board-workspace";
 
 interface BoardSelectorProps {
@@ -18,12 +16,11 @@ export function BoardSelector({ pinId, boards, onSaved }: BoardSelectorProps) {
     onSuccess: onSaved,
   });
   return (
-    <div className="space-y-6">
-      <BoardWorkspace boards={boards} pending={pending} onSave={save} />
-
-      <div className="border-t pt-4">
-        {/* <CreateBoardButton /> */}
-      </div>
-    </div>
+    <BoardWorkspace
+      boards={boards}
+      pending={pending}
+      onSave={save}
+      onClose={onSaved ?? (() => {})}
+    />
   );
 }
