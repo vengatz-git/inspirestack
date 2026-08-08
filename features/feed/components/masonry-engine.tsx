@@ -11,10 +11,12 @@ import { MasonryItem } from "./masonry-item";
 
 interface MasonryEngineProps {
   pins: PinCardData[];
+  renderItem?: (pin: PinCardData) => React.ReactNode;
 }
 
 export function MasonryEngine({
   pins,
+  renderItem,
 }: MasonryEngineProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -31,11 +33,7 @@ export function MasonryEngine({
         columnCount,
         columnWidth,
       }),
-    [
-      pins,
-      columnCount,
-      columnWidth,
-    ]
+    [pins, columnCount, columnWidth],
   );
 
   return (
@@ -50,12 +48,16 @@ export function MasonryEngine({
           className="flex flex-1 flex-col"
           style={{ gap }}
         >
-          {column.pins.map((pin) => (
-            <MasonryItem
-              key={pin.id}
-              pin={pin}
-            />
-          ))}
+          {column.pins.map((pin) =>
+            renderItem ? (
+              <div key={pin.id}>{renderItem(pin)}</div>
+            ) : (
+              <MasonryItem
+                key={pin.id}
+                pin={pin}
+              />
+            ),
+          )}
         </div>
       ))}
     </div>

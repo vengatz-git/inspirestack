@@ -19,6 +19,9 @@ interface BoardFormProps {
 
   pending: boolean;
 
+  submitLabel?: string;
+  pendingLabel?: string;
+
   onChange: {
     name: (value: string) => void;
     description: (value: string) => void;
@@ -32,6 +35,8 @@ export function BoardForm({
   values,
   errors,
   pending,
+  submitLabel = "Create Board",
+  pendingLabel = "Creating...",
   onChange,
   onSubmit,
 }: BoardFormProps) {
@@ -63,12 +68,8 @@ export function BoardForm({
         onChange={onChange.visibility}
       />
 
-      <Button
-        type="submit"
-        disabled={pending}
-        className="w-full"
-      >
-        {pending ? "Creating..." : "Create Board"}
+      <Button type="submit" disabled={pending} className="w-full">
+        {pending ? pendingLabel : submitLabel}
       </Button>
     </form>
   );

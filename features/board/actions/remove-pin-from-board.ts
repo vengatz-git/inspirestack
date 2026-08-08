@@ -29,9 +29,9 @@ export async function removePinFromBoardAction(
     };
   }
 
-  await removePinFromBoardService(validated.data);
+  await removePinFromBoardService(session.user.id, validated.data);
 
-  revalidatePath(`/pin/${validated.data.pinId}`);
+  revalidatePath(`/board/${validated.data.boardId}`);
 
   return {
     success: true,
