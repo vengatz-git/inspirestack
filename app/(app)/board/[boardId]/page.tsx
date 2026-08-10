@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 
-import { getBoardByIdService } from "@/features/board/services/get-board-by-id";
+import { auth } from "@/auth";
 import { BoardDetail } from "@/features/board/components/board-detail";
+import { getBoardByIdService } from "@/features/board/services/get-board-by-id";
 
 type BoardPageProps = {
   params: Promise<{
@@ -9,10 +10,17 @@ type BoardPageProps = {
   }>;
 };
 
-export default async function BoardPage({ params }: BoardPageProps) {
+export default async function BoardPage({
+  params,
+}: BoardPageProps) {
   const { boardId } = await params;
 
-  const board = await getBoardByIdService(boardId);
+  const session = await auth();
+
+  const board = await getBoardByIdService(
+    boardId,
+    session?.user?.id,
+  );
 
   if (!board) {
     notFound();

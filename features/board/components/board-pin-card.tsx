@@ -2,17 +2,19 @@ import Image from "next/image";
 import Link from "next/link";
 
 import type { PinCardData } from "@/features/pin/types/pin-card";
+
 import { BoardPinMobileActions } from "./board-pin-mobile-actions";
 import { RemovePinFromBoardButton } from "./remove-pin-from-board-button";
 
 type BoardPinCardProps = {
   boardId: string;
   pin: PinCardData;
+  onRemove: (pinId: string) => void;
 };
 
-export function BoardPinCard({ boardId, pin }: BoardPinCardProps) {
+export function BoardPinCard({ boardId, pin, onRemove }: BoardPinCardProps) {
   return (
-    <div className="group relative mb-4 break-inside-avoid">
+    <div className="group relative">
       <Link href={`/pin/${pin.id}`} className="block">
         <Image
           src={pin.imageUrl}
@@ -31,11 +33,19 @@ export function BoardPinCard({ boardId, pin }: BoardPinCardProps) {
 
       <div className="absolute top-3 right-3">
         <div className="hidden opacity-0 transition-opacity group-hover:opacity-100 sm:block">
-          <RemovePinFromBoardButton boardId={boardId} pinId={pin.id} />
+          <RemovePinFromBoardButton
+            boardId={boardId}
+            pinId={pin.id}
+            onSuccess={() => onRemove(pin.id)}
+          />
         </div>
 
         <div className="sm:hidden">
-          <BoardPinMobileActions boardId={boardId} pinId={pin.id} />
+          <BoardPinMobileActions
+            boardId={boardId}
+            pinId={pin.id}
+            onSuccess={() => onRemove(pin.id)}
+          />
         </div>
       </div>
     </div>

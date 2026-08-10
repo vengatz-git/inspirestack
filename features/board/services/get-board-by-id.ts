@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, or } from "drizzle-orm";
 
 import { db } from "@/db";
 import { boards } from "@/db/schema";
@@ -8,9 +8,20 @@ import type { BoardDetail } from "../types/board-detail";
 
 export async function getBoardByIdService(
   boardId: string,
+  viewerId?: string,
 ): Promise<BoardDetail | null> {
+  const accessCondition = viewerId
+    ? or(
+        eq(boards.visibility, "PUBLIC"),
+        eq(boards.ownerId, viewerId),
+      )
+    : eq(boards.visibility, "PUBLIC");
+
   const board = await db.query.boards.findFirst({
-    where: eq(boards.id, boardId),
+    where: and(
+      eq(boards.id, boardId),
+      accessCondition,
+    ),
 
     with: {
       owner: true,

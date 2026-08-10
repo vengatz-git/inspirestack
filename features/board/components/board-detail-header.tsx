@@ -3,17 +3,16 @@ import Image from "next/image";
 import type { BoardDetail } from "../types/board-detail";
 
 import { EditBoardButton } from "./edit-board-button";
+import { Globe2, LockKeyhole } from "lucide-react";
 
 type BoardDetailHeaderProps = {
   board: BoardDetail;
 };
 
-export function BoardDetailHeader({
-  board,
-}: BoardDetailHeaderProps) {
+export function BoardDetailHeader({ board }: BoardDetailHeaderProps) {
   return (
     <header className="flex flex-col gap-6 sm:flex-row sm:items-center">
-      <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-2xl bg-muted sm:w-40">
+      <div className="bg-muted relative aspect-4/3 w-full shrink-0 overflow-hidden rounded-3xl shadow-sm sm:aspect-square sm:w-48">
         {board.coverImageUrl ? (
           <Image
             src={board.coverImageUrl}
@@ -21,10 +20,10 @@ export function BoardDetailHeader({
             fill
             priority
             sizes="(max-width: 640px) 100vw, 160px"
-            className="object-cover"
+            className="object-cover transition-transform duration-500"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+          <div className="text-muted-foreground flex h-full items-center justify-center text-sm">
             No cover
           </div>
         )}
@@ -36,13 +35,19 @@ export function BoardDetailHeader({
         </h1>
 
         {board.description && (
-          <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
+          <p className="text-muted-foreground mt-3 max-w-2xl text-base leading-7">
             {board.description}
           </p>
         )}
 
-        <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-          <span>
+        <div className="text-muted-foreground mt-4 flex flex-wrap items-center gap-2 text-sm">
+          <span className="inline-flex items-center gap-1.5">
+            {board.visibility === "PUBLIC" ? (
+              <Globe2 className="size-4" aria-hidden="true" />
+            ) : (
+              <LockKeyhole className="size-4" aria-hidden="true" />
+            )}
+
             {board.visibility === "PUBLIC" ? "Public" : "Private"}
           </span>
 

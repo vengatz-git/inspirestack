@@ -20,7 +20,7 @@ export default function BoardLoading() {
           {Array.from({ length: 8 }).map((_, index) => (
             <div
               key={index}
-              className="aspect-[3/4] animate-pulse rounded-2xl bg-muted"
+              className="aspect-3/4 animate-pulse rounded-2xl bg-muted"
             />
           ))}
         </div>
