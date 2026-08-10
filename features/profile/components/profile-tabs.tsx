@@ -1,4 +1,11 @@
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
+
+import type { ProfileTab } from "../constants/profile-tabs";
+
+interface ProfileTabsProps {
+  username: string;
+  activeTab: ProfileTab;
+}
 
 const tabs = [
   {
@@ -6,29 +13,39 @@ const tabs = [
     value: "pins",
   },
   {
+    label: "Boards",
+    value: "boards",
+  },
+  {
     label: "Saved",
     value: "saved",
   },
-  {
-    label: "Collections",
-    value: "collections",
-  },
 ] as const;
 
-export function ProfileTabs() {
+export function ProfileTabs({
+  username,
+  activeTab,
+}: ProfileTabsProps) {
   return (
     <section className="border-b">
       <nav className="flex items-center justify-center gap-2">
-        {tabs.map((tab, index) => (
-          <Button
-            key={tab.value}
-            variant={index === 0 ? "default" : "ghost"}
-            disabled={index !== 0}
-            className="rounded-none border-b-2 border-transparent px-6"
-          >
-            {tab.label}
-          </Button>
-        ))}
+        {tabs.map((tab) => {
+          const isActive = tab.value === activeTab;
+
+          return (
+            <Link
+              key={tab.value}
+              href={`/profile/${username}?tab=${tab.value}`}
+              className={
+                isActive
+                  ? "rounded-none border-b-2 border-primary px-6 py-2 font-medium"
+                  : "rounded-none border-b-2 border-transparent px-6 py-2 text-muted-foreground transition-colors hover:text-foreground"
+              }
+            >
+              {tab.label}
+            </Link>
+          );
+        })}
       </nav>
     </section>
   );

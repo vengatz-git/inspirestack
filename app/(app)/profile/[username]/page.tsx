@@ -12,15 +12,27 @@ import {
   ProfileTabs,
 } from "@/features/profile";
 import { getUserPinsService } from "@/features/pin/services/get-pins-by-user";
+import {
+  isProfileTab,
+  type ProfileTab,
+} from "@/features/profile/constants/profile-tabs";
 
 type ProfilePageProps = {
   params: Promise<{
     username: string;
   }>;
+  searchParams: Promise<{
+    tab?: string;
+  }>;
 };
 
-export default async function ProfilePage({ params }: ProfilePageProps) {
+export default async function ProfilePage({
+  params,
+  searchParams,
+}: ProfilePageProps) {
   const { username } = await params;
+  const { tab } = await searchParams;
+  const activeTab: ProfileTab = isProfileTab(tab) ? tab : "pins";
 
   const profile = await getProfileByUsername(username);
 
@@ -46,9 +58,12 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
       <ProfileStats stats={stats} collections={0} />
 
-      <ProfileTabs />
+      <ProfileTabs
+        username={profile.username ?? username}
+        activeTab={activeTab}
+      />
 
-      <ProfileContent pins={pins} />
+      <ProfileContent activeTab={activeTab} pins={pins} boards={[]} />
     </main>
   );
 }
