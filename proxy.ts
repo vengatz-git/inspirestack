@@ -5,11 +5,10 @@ import { auth } from "@/auth";
 const protectedRoutes = [
   "/feed",
   "/create",
-  "/profile",
-  "/pin",
   "/search",
   "/onboarding",
 ];
+
 const authRoutes = ["/login"];
 
 export default auth((request) => {
@@ -23,21 +22,35 @@ export default auth((request) => {
     pathname.startsWith(route),
   );
 
-  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+  const isAuthRoute = authRoutes.some((route) =>
+    pathname.startsWith(route),
+  );
 
   if (isProtectedRoute && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/login", nextUrl));
+    return NextResponse.redirect(
+      new URL("/login", nextUrl),
+    );
   }
 
   if (isAuthRoute && isLoggedIn) {
-    const destination = request.auth?.user?.isOnboarded ? "/feed" : "/onboarding";
+    const destination = request.auth?.user?.isOnboarded
+      ? "/feed"
+      : "/onboarding";
 
-    return NextResponse.redirect(new URL(destination, nextUrl));
+    return NextResponse.redirect(
+      new URL(destination, nextUrl),
+    );
   }
 
   return NextResponse.next();
 });
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/feed/:path*",
+    "/create/:path*",
+    "/search/:path*",
+    "/onboarding/:path*",
+    "/login",
+  ],
 };

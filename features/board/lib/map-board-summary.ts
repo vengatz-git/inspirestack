@@ -12,19 +12,24 @@ type BoardWithRelations = {
     imageUrl: string;
   } | null;
 
-  boardPins: {
+  boardPins?: {
     boardId: string;
     pinId: string;
   }[];
+
+  pinCount?: number;
 };
+
 export function mapBoardSummary(
   board: BoardWithRelations,
   pinId?: string,
+  pinCount?: number,
 ): BoardSummary {
-
   const isSaved =
     pinId != null &&
-    board.boardPins.some((boardPin) => boardPin.pinId === pinId);
+    (board.boardPins?.some(
+      (boardPin) => boardPin.pinId === pinId,
+    ) ?? false);
 
   return {
     id: board.id,
@@ -37,7 +42,7 @@ export function mapBoardSummary(
 
     coverImageUrl: board.coverPin?.imageUrl ?? null,
 
-    pinCount: board.boardPins.length,
+    pinCount: pinCount ?? board.boardPins?.length ?? 0,
 
     isSaved,
 

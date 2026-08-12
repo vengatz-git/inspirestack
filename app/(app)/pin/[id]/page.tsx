@@ -85,6 +85,7 @@ export default async function PinPage({ params }: PinPageProps) {
       ? await getBoardsByUserService({
           userId: session.user.id,
           pinId: pin.id,
+          includePrivate: true,
         })
       : [];
 

@@ -9,6 +9,9 @@ type ProfileHeaderProps = {
 };
 
 export function ProfileHeader({ profile, isOwner }: ProfileHeaderProps) {
+
+  // console.log("PROFILE IMAGE:", profile.image);
+
   return (
     <div className="flex flex-col items-center gap-4 text-center">
       <img
@@ -16,6 +19,7 @@ export function ProfileHeader({ profile, isOwner }: ProfileHeaderProps) {
         alt={profile.username}
         className="h-28 w-28 rounded-full object-cover"
       />
+
 
       <h1 className="text-3xl font-bold">
         {profile.displayName ?? profile.username}
