@@ -5,22 +5,27 @@ import type { ProfileTab } from "../constants/profile-tabs";
 
 import { EmptyProfileContent } from "./empty-profile-content";
 import { ProfilePinGrid } from "./profile-pin-grid";
+import { ProfilePinsClient } from "./profile-pins-client";
 import { ProfileBoardGrid } from "./profile-board-grid";
 
 interface ProfileContentProps {
   activeTab: ProfileTab;
   pins: PinCardData[];
+  pinsCursor: string | null;
   savedPins: PinCardData[];
   boards: BoardSummary[];
   isOwner: boolean;
+  username: string;
 }
 
 export function ProfileContent({
   activeTab,
   pins,
+  pinsCursor,
   savedPins,
   boards,
   isOwner,
+  username,
 }: ProfileContentProps) {
   if (activeTab === "boards") {
     if (boards.length === 0) {
@@ -62,5 +67,11 @@ export function ProfileContent({
     );
   }
 
-  return <ProfilePinGrid pins={pins} />;
+  return (
+    <ProfilePinsClient
+      username={username}
+      initialPins={pins}
+      initialCursor={pinsCursor}
+    />
+  );
 }

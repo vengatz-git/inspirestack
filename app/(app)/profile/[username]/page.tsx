@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 
 import {
-  getProfileByUsername,
   getProfileStatsService,
   ProfileBanner,
   ProfileContent,
@@ -12,6 +11,8 @@ import {
   ProfileStats,
   ProfileTabs,
 } from "@/features/profile";
+
+import { getProfileByUsername } from "@/features/profile/services/get-profile-by-username";
 
 import { getBoardsByUserService } from "@/features/board/services/get-boards-by-user";
 import { getUserPinsService } from "@/features/pin/services/get-pins-by-user";
@@ -39,9 +40,7 @@ export default async function ProfilePage({
   const { username } = await params;
   const { tab } = await searchParams;
 
-  const activeTab: ProfileTab = isProfileTab(tab)
-    ? tab
-    : "pins";
+  const activeTab: ProfileTab = isProfileTab(tab) ? tab : "pins";
 
   const profile = await getProfileByUsername(username);
 
@@ -56,10 +55,17 @@ export default async function ProfilePage({
 
   const isOwner = session?.user.id === profile.id;
 
-  const pins =
+  const pinsResult =
     activeTab === "pins"
-      ? await getUserPinsService(profile.id)
-      : [];
+      ? await getUserPinsService({
+          userId: profile.id,
+        })
+      : {
+          pins: [],
+          nextCursor: null,
+        };
+
+  // const pins = pinsResult.pins;
 
   const boards =
     activeTab === "boards"
@@ -81,17 +87,11 @@ export default async function ProfilePage({
     <main className="container mx-auto max-w-6xl space-y-8 py-8">
       <ProfileBanner />
 
-      <ProfileHeader
-        profile={profile}
-        isOwner={isOwner}
-      />
+      <ProfileHeader profile={profile} isOwner={isOwner} />
 
       <ProfileInfo profile={profile} />
 
-      <ProfileStats
-        stats={stats}
-        collections={0}
-      />
+      <ProfileStats stats={stats} collections={0} />
 
       <ProfileTabs
         username={profile.username ?? username}
@@ -100,10 +100,12 @@ export default async function ProfilePage({
 
       <ProfileContent
         activeTab={activeTab}
-        pins={pins}
+        pins={pinsResult.pins}
+        pinsCursor={pinsResult.nextCursor}
         savedPins={savedPins}
         boards={boards}
         isOwner={isOwner}
+        username={profile.username ?? username}
       />
     </main>
   );
