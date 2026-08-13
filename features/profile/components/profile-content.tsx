@@ -4,16 +4,21 @@ import type { PinCardData } from "@/features/pin/types/pin-card";
 import type { ProfileTab } from "../constants/profile-tabs";
 
 import { EmptyProfileContent } from "./empty-profile-content";
-import { ProfilePinGrid } from "./profile-pin-grid";
-import { ProfilePinsClient } from "./profile-pins-client";
 import { ProfileBoardGrid } from "./profile-board-grid";
+import { ProfilePinsClient } from "./profile-pins-client";
+import { ProfileSavedPinsClient } from "./profile-saved-pins-client";
 
 interface ProfileContentProps {
   activeTab: ProfileTab;
+
   pins: PinCardData[];
   pinsCursor: string | null;
+
   savedPins: PinCardData[];
+  savedPinsCursor: string | null;
+
   boards: BoardSummary[];
+
   isOwner: boolean;
   username: string;
 }
@@ -23,20 +28,12 @@ export function ProfileContent({
   pins,
   pinsCursor,
   savedPins,
+  savedPinsCursor,
   boards,
   isOwner,
   username,
 }: ProfileContentProps) {
   if (activeTab === "boards") {
-    if (boards.length === 0) {
-      return (
-        <EmptyProfileContent
-          title="No Boards Yet"
-          description="This user hasn't created any boards yet."
-        />
-      );
-    }
-
     return (
       <ProfileBoardGrid
         boards={boards}
@@ -49,13 +46,19 @@ export function ProfileContent({
     if (savedPins.length === 0) {
       return (
         <EmptyProfileContent
-          title="Nothing Saved Yet"
-          description="This user hasn't saved any pins yet."
+          title="No Saved Pins Yet"
+          description="This user hasn't saved any inspiration yet."
         />
       );
     }
 
-    return <ProfilePinGrid pins={savedPins} />;
+    return (
+      <ProfileSavedPinsClient
+        username={username}
+        initialPins={savedPins}
+        initialCursor={savedPinsCursor}
+      />
+    );
   }
 
   if (pins.length === 0) {

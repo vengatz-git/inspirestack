@@ -11,7 +11,7 @@ export function PinCard({ pin }: PinCardProps) {
   return (
     <Link
       href={`/pin/${pin.id}`}
-      className="group mb-4 block break-inside-avoid"
+      className="group block"
     >
       <Image
         src={pin.imageUrl}

@@ -10,12 +10,14 @@ export function ProfilePinGrid({
 }: ProfilePinGridProps) {
   return (
     <section>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+      <div className="columns-2 gap-5 md:columns-3 lg:columns-4">
         {pins.map((pin) => (
-          <PinCard
+          <div
             key={pin.id}
-            pin={pin}
-          />
+            className="mb-5 break-inside-avoid"
+          >
+            <PinCard pin={pin} />
+          </div>
         ))}
       </div>
     </section>

@@ -59,13 +59,12 @@ export default async function ProfilePage({
     activeTab === "pins"
       ? await getUserPinsService({
           userId: profile.id,
+          limit: 24,
         })
       : {
           pins: [],
           nextCursor: null,
         };
-
-  // const pins = pinsResult.pins;
 
   const boards =
     activeTab === "boards"
@@ -75,13 +74,16 @@ export default async function ProfilePage({
         })
       : [];
 
-  const savedPins =
+  const savedPinsResult =
     activeTab === "saved"
       ? await getSavedPinsByUserService({
           userId: profile.id,
           includePrivate: isOwner,
         })
-      : [];
+      : {
+          pins: [],
+          nextCursor: null,
+        };
 
   return (
     <main className="container mx-auto max-w-6xl space-y-8 py-8">
@@ -102,7 +104,8 @@ export default async function ProfilePage({
         activeTab={activeTab}
         pins={pinsResult.pins}
         pinsCursor={pinsResult.nextCursor}
-        savedPins={savedPins}
+        savedPins={savedPinsResult.pins}
+        savedPinsCursor={savedPinsResult.nextCursor}
         boards={boards}
         isOwner={isOwner}
         username={profile.username ?? username}
