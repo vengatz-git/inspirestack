@@ -17,6 +17,9 @@ import { getProfileByUsername } from "@/features/profile/services/get-profile-by
 import { getBoardsByUserService } from "@/features/board/services/get-boards-by-user";
 import { getUserPinsService } from "@/features/pin/services/get-pins-by-user";
 import { getSavedPinsByUserService } from "@/features/profile/services/get-saved-pins-by-user";
+import { getRecentBoardsService } from "@/features/board/services/get-recent-boards";
+import { ProfileQuickAccess } from "@/features/profile/components/profile-quick-access";
+import { ProfileAction } from "@/features/profile/components/profile-action";
 
 import {
   isProfileTab,
@@ -55,6 +58,12 @@ export default async function ProfilePage({
 
   const isOwner = session?.user.id === profile.id;
 
+  const quickAccessBoards = await getRecentBoardsService({
+    ownerId: profile.id,
+    limit: 4,
+    includePrivate: isOwner,
+  });
+
   const pinsResult =
     activeTab === "pins"
       ? await getUserPinsService({
@@ -86,30 +95,50 @@ export default async function ProfilePage({
         };
 
   return (
-    <main className="container mx-auto max-w-6xl space-y-8 py-8">
-      <ProfileBanner />
+    <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+      <div className="space-y-0">
+        <ProfileBanner />
 
-      <ProfileHeader profile={profile} isOwner={isOwner} />
+        <div className="relative">
+          <div className="grid gap-5 px-1 pt-0 pb-6 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-end md:gap-8 md:px-6 md:pb-7">
+            <ProfileHeader profile={profile} />
 
-      <ProfileInfo profile={profile} />
+            <ProfileStats stats={stats} />
 
-      <ProfileStats stats={stats} collections={0} />
+            <div className="w-full md:w-auto md:pb-1">
+              <div className="w-full md:w-auto">
+                <ProfileAction profile={profile} isOwner={isOwner} />
+              </div>
+            </div>
+          </div>
 
-      <ProfileTabs
-        username={profile.username ?? username}
-        activeTab={activeTab}
-      />
+          <div className="border-t">
+            <div className="grid gap-8 px-1 py-7 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-12 md:px-6">
+              <ProfileInfo profile={profile} />
 
-      <ProfileContent
-        activeTab={activeTab}
-        pins={pinsResult.pins}
-        pinsCursor={pinsResult.nextCursor}
-        savedPins={savedPinsResult.pins}
-        savedPinsCursor={savedPinsResult.nextCursor}
-        boards={boards}
-        isOwner={isOwner}
-        username={profile.username ?? username}
-      />
+              <ProfileQuickAccess boards={quickAccessBoards} />
+            </div>
+          </div>
+        </div>
+
+        <ProfileTabs
+          username={profile.username ?? username}
+          activeTab={activeTab}
+        />
+
+        <div className="pt-6">
+          <ProfileContent
+            activeTab={activeTab}
+            pins={pinsResult.pins}
+            pinsCursor={pinsResult.nextCursor}
+            savedPins={savedPinsResult.pins}
+            savedPinsCursor={savedPinsResult.nextCursor}
+            boards={boards}
+            isOwner={isOwner}
+            username={profile.username ?? username}
+          />
+        </div>
+      </div>
     </main>
   );
 }

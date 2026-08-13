@@ -1,45 +1,35 @@
 import Image from "next/image";
 
-import { Button } from "@/components/ui/button";
-
 import type { Profile } from "../types/profile";
-
-import { EditProfileDialog } from "./edit-profile-dialog";
 
 type ProfileHeaderProps = {
   profile: Profile;
-  isOwner: boolean;
 };
 
 export function ProfileHeader({
   profile,
-  isOwner,
 }: ProfileHeaderProps) {
   return (
-    <div className="flex flex-col items-center gap-4 text-center">
-      <div className="relative h-28 w-28 overflow-hidden rounded-full">
+    <div className="flex min-w-0 items-end gap-4 max-md:flex-col max-md:items-center max-md:text-center md:-translate-x-1 md:flex-row">
+      <div className="relative -mt-14 h-32 w-32 shrink-0 overflow-hidden rounded-full border-4 border-background bg-muted sm:-mt-16 sm:h-36 sm:w-36 md:-mt-20 md:h-44 md:w-44">
         <Image
           src={profile.image ?? "/default-avatar.png"}
           alt={profile.username}
           fill
-          sizes="112px"
+          sizes="176px"
           className="object-cover"
         />
       </div>
 
-      <h1 className="text-3xl font-bold">
-        {profile.displayName ?? profile.username}
-      </h1>
+      <div className="min-w-0 pb-1">
+        <h1 className="text-2xl font-bold sm:text-3xl">
+          {profile.displayName ?? profile.username}
+        </h1>
 
-      <p className="text-muted-foreground">
-        @{profile.username}
-      </p>
-
-      {isOwner ? (
-        <EditProfileDialog profile={profile} />
-      ) : (
-        <Button>Follow</Button>
-      )}
+        <p className="text-muted-foreground">
+          @{profile.username}
+        </p>
+      </div>
     </div>
   );
 }

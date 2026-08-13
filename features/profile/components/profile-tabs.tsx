@@ -13,7 +13,7 @@ const tabs = [
     value: "pins",
   },
   {
-    label: "Boards",
+    label: "Collections",
     value: "boards",
   },
   {
@@ -28,7 +28,10 @@ export function ProfileTabs({
 }: ProfileTabsProps) {
   return (
     <section className="border-b">
-      <nav className="flex items-center justify-center gap-2">
+      <nav
+        aria-label="Profile content"
+        className="flex overflow-x-auto"
+      >
         {tabs.map((tab) => {
           const isActive = tab.value === activeTab;
 
@@ -36,13 +39,19 @@ export function ProfileTabs({
             <Link
               key={tab.value}
               href={`/profile/${username}?tab=${tab.value}`}
-              className={
+              aria-current={isActive ? "page" : undefined}
+              className={[
+                "relative shrink-0 px-5 py-3 text-sm font-medium transition-colors sm:px-8 sm:py-4",
                 isActive
-                  ? "rounded-none border-b-2 border-primary px-6 py-2 font-medium"
-                  : "rounded-none border-b-2 border-transparent px-6 py-2 text-muted-foreground transition-colors hover:text-foreground"
-              }
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
+              ].join(" ")}
             >
               {tab.label}
+
+              {isActive && (
+                <span className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-primary sm:inset-x-6" />
+              )}
             </Link>
           );
         })}

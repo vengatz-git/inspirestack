@@ -2,16 +2,14 @@ import type { ProfileStats as ProfileStatsData } from "../types/profile-stats";
 
 type ProfileStatsProps = {
   stats: ProfileStatsData;
-  collections: number;
 };
 
 export function ProfileStats({
   stats,
-  collections,
 }: ProfileStatsProps) {
   const items = [
     {
-      label: "Pins",
+      label: "Posted Pins",
       value: stats.posts,
     },
     {
@@ -22,22 +20,21 @@ export function ProfileStats({
       label: "Following",
       value: stats.following,
     },
-    {
-      label: "Collections",
-      value: collections,
-    },
   ];
 
   return (
-    <section className="mt-8 border-y py-6">
-      <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+    <section className="rounded-2xl border px-5 py-4 md:mr-6">
+      <div className="grid grid-cols-3 gap-5">
         {items.map((item) => (
           <div
             key={item.label}
-            className="text-center"
+            className="min-w-20 text-center"
           >
-            <p className="text-2xl font-bold">{item.value}</p>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-2xl font-bold">
+              {item.value}
+            </p>
+
+            <p className="text-muted-foreground whitespace-nowrap text-sm">
               {item.label}
             </p>
           </div>

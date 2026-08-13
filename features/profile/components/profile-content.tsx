@@ -33,48 +33,48 @@ export function ProfileContent({
   isOwner,
   username,
 }: ProfileContentProps) {
-  if (activeTab === "boards") {
-    return (
-      <ProfileBoardGrid
-        boards={boards}
-        isOwner={isOwner}
-      />
-    );
-  }
-
-  if (activeTab === "saved") {
-    if (savedPins.length === 0) {
-      return (
-        <EmptyProfileContent
-          title="No Saved Pins Yet"
-          description="This user hasn't saved any inspiration yet."
-        />
-      );
-    }
-
-    return (
-      <ProfileSavedPinsClient
-        username={username}
-        initialPins={savedPins}
-        initialCursor={savedPinsCursor}
-      />
-    );
-  }
-
-  if (pins.length === 0) {
-    return (
-      <EmptyProfileContent
-        title="No Pins Yet"
-        description="This user hasn't shared any inspiration yet."
-      />
-    );
-  }
-
   return (
-    <ProfilePinsClient
-      username={username}
-      initialPins={pins}
-      initialCursor={pinsCursor}
-    />
+    <section className="pt-2">
+      {activeTab === "boards" && (
+        <ProfileBoardGrid
+          boards={boards}
+          isOwner={isOwner}
+        />
+      )}
+
+      {activeTab === "saved" && (
+        <>
+          {savedPins.length === 0 ? (
+            <EmptyProfileContent
+              title="No Saved Pins Yet"
+              description="This user hasn't saved any inspiration yet."
+            />
+          ) : (
+            <ProfileSavedPinsClient
+              username={username}
+              initialPins={savedPins}
+              initialCursor={savedPinsCursor}
+            />
+          )}
+        </>
+      )}
+
+      {activeTab === "pins" && (
+        <>
+          {pins.length === 0 ? (
+            <EmptyProfileContent
+              title="No Pins Yet"
+              description="This user hasn't shared any inspiration yet."
+            />
+          ) : (
+            <ProfilePinsClient
+              username={username}
+              initialPins={pins}
+              initialCursor={pinsCursor}
+            />
+          )}
+        </>
+      )}
+    </section>
   );
 }
