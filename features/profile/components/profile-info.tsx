@@ -1,3 +1,5 @@
+import { Globe2, MapPin } from "lucide-react";
+
 import type { Profile } from "../types/profile";
 
 import { EditProfileDialog } from "./edit-profile-dialog";
@@ -23,7 +25,7 @@ export function ProfileInfo({
   return (
     <section className="group relative min-w-0">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+        <h2 className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">
           About
         </h2>
 
@@ -36,7 +38,7 @@ export function ProfileInfo({
 
       <div className="space-y-4">
         {profile.bio && (
-          <p className="max-w-2xl text-base leading-7">
+          <p className="max-w-2xl text-base leading-7 whitespace-pre-line">
             {profile.bio}
           </p>
         )}
@@ -48,15 +50,17 @@ export function ProfileInfo({
                 href={profile.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium text-primary hover:underline"
+                className="text-primary inline-flex items-center gap-2 font-medium hover:underline"
               >
-                {profile.website}
+                <Globe2 className="size-4 shrink-0" />
+                <span className="truncate">{profile.website}</span>
               </a>
             )}
 
             {profile.location && (
-              <span className="text-muted-foreground">
-                {profile.location}
+              <span className="text-muted-foreground inline-flex items-center gap-2">
+                <MapPin className="size-4 shrink-0" />
+                <span>{profile.location}</span>
               </span>
             )}
           </div>
