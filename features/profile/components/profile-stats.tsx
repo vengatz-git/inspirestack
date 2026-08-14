@@ -23,18 +23,18 @@ export function ProfileStats({
   ];
 
   return (
-    <section className="rounded-2xl border px-5 py-4 md:mr-6">
-      <div className="grid grid-cols-3 gap-5">
+    <section>
+      <div className="grid grid-cols-3 divide-x">
         {items.map((item) => (
           <div
             key={item.label}
-            className="min-w-20 text-center"
+            className="min-w-24 px-4 text-center first:pl-2 last:pr-2"
           >
-            <p className="text-2xl font-bold">
+            <p className="text-xl font-bold">
               {item.value}
             </p>
 
-            <p className="text-muted-foreground whitespace-nowrap text-sm">
+            <p className="whitespace-nowrap text-xs text-muted-foreground">
               {item.label}
             </p>
           </div>

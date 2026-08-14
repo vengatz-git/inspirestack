@@ -95,26 +95,28 @@ export default async function ProfilePage({
         };
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+    <main className="mx-auto w-full max-w-6xl px-4 pt-0 pb-6 sm:px-6 sm:pt-0 sm:pb-8">
       <div className="space-y-0">
         <ProfileBanner />
 
         <div className="relative">
-          <div className="grid gap-5 px-1 pt-0 pb-6 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-end md:gap-8 md:px-6 md:pb-7">
-            <ProfileHeader profile={profile} />
+          <div className="grid gap-6 px-1 pt-0 pb-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-10 md:px-6 md:pb-7">
+            <ProfileHeader profile={profile} isOwner={isOwner} />
 
-            <ProfileStats stats={stats} />
+            <div className="flex w-full flex-col gap-4 md:w-auto">
+              <ProfileStats stats={stats} />
 
-            <div className="w-full md:w-auto md:pb-1">
-              <div className="w-full md:w-auto">
-                <ProfileAction profile={profile} isOwner={isOwner} />
-              </div>
+              {!isOwner && (
+                <div className="w-full md:hidden [&_button]:w-full">
+                  <ProfileAction profile={profile} isOwner={isOwner} />
+                </div>
+              )}
             </div>
           </div>
 
           <div className="border-t">
-            <div className="grid gap-8 px-1 py-7 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-12 md:px-6">
-              <ProfileInfo profile={profile} />
+            <div className="grid gap-6 px-1 py-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-10 md:px-6">
+              <ProfileInfo profile={profile} isOwner={isOwner} />
 
               <ProfileQuickAccess boards={quickAccessBoards} />
             </div>

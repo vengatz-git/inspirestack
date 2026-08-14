@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
+import { Pencil } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -82,7 +83,18 @@ export function EditProfileDialog({ profile }: EditProfileDialogProps) {
         setOpen(nextOpen);
       }}
     >
-      <DialogTrigger render={<Button>Edit Profile</Button>} />
+      <DialogTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className="rounded-full"
+            aria-label="Edit profile"
+          >
+            <Pencil />
+          </Button>
+        }
+      />
 
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
