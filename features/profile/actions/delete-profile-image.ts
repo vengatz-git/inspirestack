@@ -4,16 +4,12 @@ import { revalidatePath } from "next/cache";
 
 import { auth } from "@/auth";
 
-import { profileMediaSchema } from "../schemas/profile-media-schema";
 import { deleteProfileImage } from "../services/delete-profile-image";
+import { clearProfileImageService } from "../services/clear-profile-image";
 import { getProfileMediaService } from "../services/get-profile-media";
-import {
-  type ProfileImageType,
-  updateProfileImageService,
-} from "../services/update-profile-image";
-import { uploadProfileImage } from "../services/upload-profile-image";
+import type { ProfileImageType } from "../services/update-profile-image";
 
-type UpdateProfileImageResult =
+type DeleteProfileImageResult =
   | {
       success: true;
     }
@@ -22,10 +18,9 @@ type UpdateProfileImageResult =
       error: string;
     };
 
-export async function updateProfileImageAction(
+export async function deleteProfileImageAction(
   type: ProfileImageType,
-  file: File,
-): Promise<UpdateProfileImageResult> {
+): Promise<DeleteProfileImageResult> {
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -42,19 +37,6 @@ export async function updateProfileImageAction(
     };
   }
 
-  const validated = profileMediaSchema.safeParse({
-    image: file,
-  });
-
-  if (!validated.success) {
-    return {
-      success: false,
-      error:
-        validated.error.issues[0]?.message ??
-        "Please select a valid image.",
-    };
-  }
-
   try {
     const currentMedia = await getProfileMediaService(
       session.user.id,
@@ -68,15 +50,9 @@ export async function updateProfileImageAction(
       };
     }
 
-    const uploaded = await uploadProfileImage(
-      validated.data.image,
-    );
-
-    const profile = await updateProfileImageService(
+    const profile = await clearProfileImageService(
       session.user.id,
       type,
-      uploaded.imageUrl,
-      uploaded.publicId,
     );
 
     if (!profile?.username) {
@@ -90,8 +66,8 @@ export async function updateProfileImageAction(
       try {
         await deleteProfileImage(currentMedia.publicId);
       } catch {
-        // The new image is already saved successfully.
-        // A failed cleanup should not make the profile update fail.
+        // The database is already cleared.
+        // A failed Cloudinary cleanup should not fail the profile update.
       }
     }
 
@@ -103,7 +79,7 @@ export async function updateProfileImageAction(
   } catch {
     return {
       success: false,
-      error: "Failed to upload profile image.",
+      error: "Failed to delete profile image.",
     };
   }
 }

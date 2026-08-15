@@ -4,15 +4,19 @@ import type { Profile } from "../types/profile";
 
 import { ProfileAction } from "./profile-action";
 import { ProfileImageUpload } from "./profile-image-upload";
+
 type ProfileHeaderProps = {
   profile: Profile;
   isOwner: boolean;
 };
 
-export function ProfileHeader({ profile, isOwner }: ProfileHeaderProps) {
+export function ProfileHeader({
+  profile,
+  isOwner,
+}: ProfileHeaderProps) {
   return (
-    <div className="flex min-w-0 items-end gap-4 max-md:flex-col max-md:items-center max-md:text-center md:translate-x-4 md:flex-row">
-      <div className="border-background bg-muted relative -mt-16 h-32 w-32 shrink-0 overflow-hidden rounded-full border-4 sm:-mt-18 sm:h-36 sm:w-36 md:-mt-22 md:h-44 md:w-44">
+    <div className="flex min-w-0 items-end gap-5 max-md:flex-col max-md:items-center max-md:text-center md:flex-row">
+      <div className="border-background bg-muted relative h-36 w-36 shrink-0 overflow-hidden rounded-full border-4 sm:h-40 sm:w-40 md:h-52 md:w-52">
         {isOwner ? (
           <ProfileImageUpload
             imageUrl={profile.image}
@@ -23,7 +27,7 @@ export function ProfileHeader({ profile, isOwner }: ProfileHeaderProps) {
             src={profile.image ?? "/default-avatar.png"}
             alt={profile.username}
             fill
-            sizes="176px"
+            sizes="192px"
             className="object-cover"
           />
         )}
@@ -37,12 +41,17 @@ export function ProfileHeader({ profile, isOwner }: ProfileHeaderProps) {
 
           {!isOwner && (
             <div className="hidden md:block">
-              <ProfileAction profile={profile} isOwner={isOwner} />
+              <ProfileAction
+                profile={profile}
+                isOwner={isOwner}
+              />
             </div>
           )}
         </div>
 
-        <p className="text-muted-foreground">@{profile.username}</p>
+        <p className="text-muted-foreground">
+          @{profile.username}
+        </p>
       </div>
     </div>
   );

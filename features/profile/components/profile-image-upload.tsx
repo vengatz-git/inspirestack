@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { updateProfileImageAction } from "../actions/update-profile-image";
+import { ProfileMediaEditor } from "./profile-media-editor";
 
 type ProfileImageUploadProps = {
   imageUrl: string | null;
@@ -21,24 +22,41 @@ export function ProfileImageUpload({
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
   const [isUploading, setIsUploading] = useState(false);
 
-  async function handleChange(
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) {
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
 
     if (!file) {
       return;
     }
 
+    const previewUrl = URL.createObjectURL(file);
+
+    setSelectedImage(previewUrl);
+
+    event.target.value = "";
+  }
+
+  function handleCancel() {
+    if (selectedImage) {
+      URL.revokeObjectURL(selectedImage);
+    }
+
+    setSelectedImage(null);
+  }
+
+  async function handleConfirm(file: File) {
+    if (isUploading) {
+      return;
+    }
+
     setIsUploading(true);
 
     try {
-      const result = await updateProfileImageAction(
-        "avatar",
-        file,
-      );
+      const result = await updateProfileImageAction("avatar", file);
 
       if (!result.success) {
         toast.error(result.error);
@@ -46,15 +64,18 @@ export function ProfileImageUpload({
       }
 
       toast.success("Profile picture updated.");
+
+      if (selectedImage) {
+        URL.revokeObjectURL(selectedImage);
+      }
+
+      setSelectedImage(null);
+
       router.refresh();
     } catch {
       toast.error("Failed to update profile picture.");
     } finally {
       setIsUploading(false);
-
-      if (inputRef.current) {
-        inputRef.current.value = "";
-      }
     }
   }
 
@@ -88,6 +109,15 @@ export function ProfileImageUpload({
         disabled={isUploading}
         onChange={handleChange}
       />
+
+      {selectedImage && (
+        <ProfileMediaEditor
+          imageUrl={selectedImage}
+          aspect={1}
+          onCancel={handleCancel}
+          onConfirm={handleConfirm}
+        />
+      )}
     </>
   );
 }

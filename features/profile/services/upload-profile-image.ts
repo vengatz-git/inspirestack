@@ -4,6 +4,7 @@ import { cloudinary } from "@/features/upload/lib/cloudinary";
 
 export type UploadedProfileImage = {
   imageUrl: string;
+  publicId: string;
 };
 
 export async function uploadProfileImage(
@@ -32,6 +33,7 @@ export async function uploadProfileImage(
 
         resolve({
           imageUrl: result.secure_url,
+          publicId: result.public_id,
         });
       },
     );

@@ -3,25 +3,23 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 
-export type ProfileImageType = "avatar" | "banner";
+import type { ProfileImageType } from "./update-profile-image";
 
-export async function updateProfileImageService(
+export async function clearProfileImageService(
   userId: string,
   type: ProfileImageType,
-  imageUrl: string,
-  publicId: string,
 ) {
   const [profile] = await db
     .update(users)
     .set({
       ...(type === "avatar"
         ? {
-            image: imageUrl,
-            imagePublicId: publicId,
+            image: null,
+            imagePublicId: null,
           }
         : {
-            bannerImage: imageUrl,
-            bannerImagePublicId: publicId,
+            bannerImage: null,
+            bannerImagePublicId: null,
           }),
       updatedAt: new Date(),
     })

@@ -1,9 +1,9 @@
+import { eq } from "drizzle-orm";
 import NextAuth from "next-auth";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 
 import authConfig from "./auth.config";
 import { db } from "@/db";
-
 
 import {
   users,
@@ -12,7 +12,7 @@ import {
   verificationTokens,
 } from "@/db/schema/auth";
 
-export const { handlers, auth, signIn, signOut, unstable_update} = NextAuth({
+export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,
@@ -34,6 +34,22 @@ export const { handlers, auth, signIn, signOut, unstable_update} = NextAuth({
       }
 
       return session;
+    },
+  },
+
+  events: {
+    async signIn({ account, user }) {
+      if (account?.provider !== "google" || !user.id || !user.image) {
+        return;
+      }
+
+      await db
+        .update(users)
+        .set({
+          googleImage: user.image,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, user.id));
     },
   },
 });

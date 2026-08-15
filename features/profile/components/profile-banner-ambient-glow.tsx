@@ -37,14 +37,11 @@ export function ProfileBannerAmbientGlow({
 
   return (
     <div
-      aria-hidden="true"
       className={[
         "pointer-events-none absolute -inset-8 rounded-[3rem]",
         "bg-cover bg-center blur-3xl",
         "transition-all duration-700 ease-out",
-        visible
-          ? "scale-100 opacity-70"
-          : "scale-95 opacity-0",
+        visible ? "scale-100 opacity-70" : "scale-95 opacity-0",
       ].join(" ")}
       style={{
         backgroundImage: `url(${imageUrl})`,

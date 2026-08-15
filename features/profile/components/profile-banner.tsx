@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { Profile } from "../types/profile";
 
 import { ProfileBannerUpload } from "./profile-banner-upload";
+import { ProfileBannerAmbientGlow } from "./profile-banner-ambient-glow";
 
 type ProfileBannerProps = {
   profile: Profile;
@@ -22,18 +23,26 @@ export function ProfileBanner({
   }
 
   return (
-    <section className="relative h-28 w-full overflow-hidden rounded-2xl bg-muted sm:h-32 md:h-36 md:rounded-3xl">
-      {profile.bannerImage ? (
-        <Image
-          src={profile.bannerImage}
-          alt=""
-          fill
-          sizes="100vw"
-          className="object-cover"
+    <div className="relative">
+      {profile.bannerImage && (
+        <ProfileBannerAmbientGlow
+          imageUrl={profile.bannerImage}
         />
-      ) : (
-        <div className="absolute inset-0 bg-muted" />
       )}
-    </section>
+
+      <section className="group relative h-40 w-full overflow-hidden rounded-2xl bg-muted sm:h-44 md:h-56 md:rounded-3xl">
+        {profile.bannerImage ? (
+          <Image
+            src={profile.bannerImage}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-muted" />
+        )}
+      </section>
+    </div>
   );
 }

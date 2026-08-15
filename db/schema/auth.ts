@@ -18,8 +18,11 @@ export const users = pgTable("users", {
   email: text("email").unique(),
   emailVerified: timestamp("emailVerified", {
     mode: "date",
+
   }),
   image: text("image"),
+  imagePublicId: text("image_public_id"),
+  googleImage: text("google_image"),
 
   // InspireStack profile
   username: text("username").unique(),
@@ -30,6 +33,7 @@ export const users = pgTable("users", {
   location: text("location"),
 
   bannerImage: text("banner_image"),
+  bannerImagePublicId: text("banner_image_public_id"),
 
   isOnboarded: boolean("is_onboarded").notNull().default(false),
 
@@ -78,8 +82,8 @@ export const sessions = pgTable("sessions", {
   sessionToken: text("sessionToken").primaryKey(),
 
   userId: uuid("userId")
-  .notNull()
-  .references(() => users.id, { onDelete: "cascade" }),
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
 
   expires: timestamp("expires", {
     mode: "date",
