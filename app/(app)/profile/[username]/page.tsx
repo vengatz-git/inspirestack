@@ -97,10 +97,9 @@ export default async function ProfilePage({
   return (
     <main className="mx-auto w-full max-w-6xl px-4 pt-0 pb-6 sm:px-6 sm:pt-0 sm:pb-8">
       <div className="space-y-0">
-        <ProfileBanner profile={profile} isOwner={isOwner} />
 
-        <div className="relative">
-          <div className="grid gap-6 px-1 pt-0 pb-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-10 md:px-6 md:pb-7">
+        <div className="space-y-0">
+          <div className="grid gap-6 px-1 pb-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-10 md:px-6 md:pb-8">
             <ProfileHeader profile={profile} isOwner={isOwner} />
 
             <div className="flex w-full flex-col gap-4 md:w-auto">
@@ -115,7 +114,7 @@ export default async function ProfilePage({
           </div>
 
           <div className="border-t">
-            <div className="grid gap-6 px-1 py-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-10 md:px-6">
+            <div className="grid gap-6 px-1 py-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-10 md:px-6 md:py-8">
               <ProfileInfo profile={profile} isOwner={isOwner} />
 
               <ProfileQuickAccess boards={quickAccessBoards} />
