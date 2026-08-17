@@ -54,6 +54,7 @@ export async function createPinAction(
     description: parsed.data.description,
     altText: parsed.data.altText,
     imageUrl: image.imageUrl,
+    imagePublicId: image.imagePublicId,
     imageWidth: image.imageWidth,
     imageHeight: image.imageHeight,
   });

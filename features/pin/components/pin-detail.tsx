@@ -15,13 +15,23 @@ interface PinDetailProps {
   pin: Pin;
   relatedPins: PinCardData[];
   boards: BoardSummary[];
+  isOwner: boolean;
 }
 
-export function PinDetail({ pin, relatedPins, boards }: PinDetailProps) {
+export function PinDetail({
+  pin,
+  relatedPins,
+  boards,
+  isOwner,
+}: PinDetailProps) {
   return (
     <>
       <PinDetailLayout>
-        <StickyWorkspace pin={pin} boards={boards} />
+        <StickyWorkspace
+          pin={pin}
+          boards={boards}
+          isOwner={isOwner}
+        />
       </PinDetailLayout>
 
       <section className="mx-auto mt-10 max-w-screen-2xl px-6">

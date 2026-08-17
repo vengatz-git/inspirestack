@@ -1,0 +1,1 @@
+ALTER TABLE "pins" ADD COLUMN "image_public_id" text;

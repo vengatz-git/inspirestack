@@ -8,6 +8,7 @@ type CreatePinServiceInput = {
   description?: string;
   altText?: string;
   imageUrl: string;
+  imagePublicId: string;
   imageWidth: number;
   imageHeight: number;
 };
@@ -24,6 +25,7 @@ export async function createPinService(
       description: input.description || null,
       altText: input.altText || null,
       imageUrl: input.imageUrl,
+      imagePublicId: input.imagePublicId,
       imageWidth: input.imageWidth,
       imageHeight: input.imageHeight,
     })

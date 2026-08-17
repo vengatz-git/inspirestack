@@ -22,11 +22,13 @@ type Pin = NonNullable<
 interface PinHeaderProps {
   pin: Pin;
   boards: BoardSummary[];
+  isOwner: boolean;
 }
 
 export function PinHeader({
   pin,
   boards,
+  isOwner,
 }: PinHeaderProps) {
   const router = useRouter();
 
@@ -73,15 +75,16 @@ export function PinHeader({
           <Share2 className="size-5" />
         </Button>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="More actions"
-          disabled
-          className="h-11 w-11 rounded-full"
-        >
-          <MoreHorizontal className="size-5" />
-        </Button>
+        {isOwner && (
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="More actions"
+            className="h-11 w-11 rounded-full"
+          >
+            <MoreHorizontal className="size-5" />
+          </Button>
+        )}
 
         <BoardSaveButton
           pinId={pin.id}

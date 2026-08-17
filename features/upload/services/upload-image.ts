@@ -4,13 +4,12 @@ import { cloudinary } from "../lib/cloudinary";
 
 export type UploadedImage = {
   imageUrl: string;
+  imagePublicId: string;
   imageWidth: number;
   imageHeight: number;
 };
 
-export async function uploadImage(
-  file: File,
-): Promise<UploadedImage> {
+export async function uploadImage(file: File): Promise<UploadedImage> {
   const arrayBuffer = await file.arrayBuffer();
 
   const buffer = Buffer.from(arrayBuffer);
@@ -21,10 +20,7 @@ export async function uploadImage(
         folder: "inspirestack/pins",
         resource_type: "image",
       },
-      (
-        error,
-        result: UploadApiResponse | undefined,
-      ) => {
+      (error, result: UploadApiResponse | undefined) => {
         if (error || !result) {
           reject(error ?? new Error("Image upload failed."));
           return;
@@ -32,6 +28,7 @@ export async function uploadImage(
 
         resolve({
           imageUrl: result.secure_url,
+          imagePublicId: result.public_id,
           imageWidth: result.width,
           imageHeight: result.height,
         });

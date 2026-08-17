@@ -12,11 +12,13 @@ type Pin = NonNullable<
 interface StickyWorkspaceProps {
   pin: Pin;
   boards: BoardSummary[];
+  isOwner: boolean;
 }
 
 export function StickyWorkspace({
   pin,
   boards,
+  isOwner,
 }: StickyWorkspaceProps) {
   return (
     <section className="w-full">
@@ -27,6 +29,7 @@ export function StickyWorkspace({
           <PinPanel
             pin={pin}
             boards={boards}
+            isOwner={isOwner}
           />
         </div>
       </div>

@@ -1,5 +1,6 @@
-import { getPinByIdService } from "../services/get-pin-by-id";
 import type { BoardSummary } from "@/features/board/types/board";
+
+import { getPinByIdService } from "../services/get-pin-by-id";
 
 import { CommentsSection } from "./comments-section";
 import { PinAuthor } from "./pin-author";
@@ -11,13 +12,22 @@ type Pin = NonNullable<Awaited<ReturnType<typeof getPinByIdService>>>;
 interface PinPanelProps {
   pin: Pin;
   boards: BoardSummary[];
+  isOwner: boolean;
 }
 
-export function PinPanel({ pin, boards }: PinPanelProps) {
+export function PinPanel({
+  pin,
+  boards,
+  isOwner,
+}: PinPanelProps) {
   return (
     <section className="bg-card flex h-full flex-col overflow-hidden">
       <header className="shrink-0 border-b px-8 py-5">
-        <PinHeader pin={pin} boards={boards} />
+        <PinHeader
+          pin={pin}
+          boards={boards}
+          isOwner={isOwner}
+        />
       </header>
 
       <div className="flex-1 overflow-y-auto">

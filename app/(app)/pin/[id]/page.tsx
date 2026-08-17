@@ -28,7 +28,8 @@ export async function generateMetadata({
 
   const title = pin.title ?? "Untitled Pin";
 
-  const description = pin.description ?? `Explore "${title}" on InspireStack.`;
+  const description =
+    pin.description ?? `Explore "${title}" on InspireStack.`;
 
   return {
     title: `${title} | InspireStack`,
@@ -89,5 +90,14 @@ export default async function PinPage({ params }: PinPageProps) {
         })
       : [];
 
-  return <PinDetail pin={pin} relatedPins={relatedPins} boards={boards} />;
+  const isOwner = session?.user?.id === pin.authorId;
+
+  return (
+    <PinDetail
+      pin={pin}
+      relatedPins={relatedPins}
+      boards={boards}
+      isOwner={isOwner}
+    />
+  );
 }
