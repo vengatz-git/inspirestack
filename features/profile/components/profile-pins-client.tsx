@@ -2,13 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { PinCardData } from "@/features/pin/types/pin-card";
+import type { ProfilePinCardData } from "../types/profile-pin-card";
 
 import { ProfilePinGrid } from "./profile-pin-grid";
 
 interface ProfilePinsClientProps {
   username: string;
-  initialPins: PinCardData[];
+  initialPins: ProfilePinCardData[];
   initialCursor: string | null;
 }
 
@@ -18,9 +18,7 @@ export function ProfilePinsClient({
   initialCursor,
 }: ProfilePinsClientProps) {
   const [pins, setPins] = useState(initialPins);
-  const [nextCursor, setNextCursor] = useState(
-    initialCursor,
-  );
+  const [nextCursor, setNextCursor] = useState(initialCursor);
   const [loading, setLoading] = useState(false);
 
   const loadingRef = useRef(false);
@@ -43,30 +41,26 @@ export function ProfilePinsClient({
       }
 
       const data: {
-        pins: PinCardData[];
+        pins: ProfilePinCardData[];
         nextCursor: string | null;
       } = await response.json();
 
-      setPins((currentPins) => [
-        ...currentPins,
-        ...data.pins,
-      ]);
+      setPins((currentPins) => [...currentPins, ...data.pins]);
 
       setNextCursor(data.nextCursor);
     } catch (error) {
-      console.error(
-        "Failed to load profile pins:",
-        error,
-      );
+      console.error("Failed to load profile pins:", error);
     } finally {
       loadingRef.current = false;
       setLoading(false);
     }
   }, [nextCursor, username]);
 
-  const loadMoreRef = useRef<HTMLDivElement | null>(
-    null,
-  );
+  function handleDeleted(pinId: string) {
+    setPins((currentPins) => currentPins.filter((pin) => pin.id !== pinId));
+  }
+
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const element = loadMoreRef.current;
@@ -95,7 +89,7 @@ export function ProfilePinsClient({
 
   return (
     <>
-      <ProfilePinGrid pins={pins} />
+      <ProfilePinGrid pins={pins} onDeleted={handleDeleted} />
 
       {nextCursor && (
         <div

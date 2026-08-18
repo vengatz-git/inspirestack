@@ -1,4 +1,4 @@
-import type { PinCardData } from "./pin-card";
+import type { ProfilePinCardData } from "@/features/profile/types/profile-pin-card";
 
 export interface GetUserPinsOptions {
   userId: string;
@@ -7,6 +7,6 @@ export interface GetUserPinsOptions {
 }
 
 export interface GetUserPinsResult {
-  pins: PinCardData[];
+  pins: ProfilePinCardData[];
   nextCursor: string | null;
 }

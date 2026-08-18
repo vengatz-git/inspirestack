@@ -4,7 +4,6 @@ import { auth } from "@/auth";
 
 import {
   getProfileStatsService,
-  ProfileBanner,
   ProfileContent,
   ProfileHeader,
   ProfileInfo,
@@ -13,6 +12,7 @@ import {
 } from "@/features/profile";
 
 import { getProfileByUsername } from "@/features/profile/services/get-profile-by-username";
+import { getGoogleImageService } from "@/features/profile/services/get-google-image";
 
 import { getBoardsByUserService } from "@/features/board/services/get-boards-by-user";
 import { getUserPinsService } from "@/features/pin/services/get-pins-by-user";
@@ -58,6 +58,10 @@ export default async function ProfilePage({
 
   const isOwner = session?.user.id === profile.id;
 
+  const googleImage = isOwner
+    ? (await getGoogleImageService(profile.id))?.googleImage ?? null
+    : null;
+
   const quickAccessBoards = await getRecentBoardsService({
     ownerId: profile.id,
     limit: 4,
@@ -97,17 +101,23 @@ export default async function ProfilePage({
   return (
     <main className="mx-auto w-full max-w-6xl px-4 pt-0 pb-6 sm:px-6 sm:pt-0 sm:pb-8">
       <div className="space-y-0">
-
         <div className="space-y-0">
           <div className="grid gap-6 px-1 pb-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-10 md:px-6 md:pb-8">
-            <ProfileHeader profile={profile} isOwner={isOwner} />
+            <ProfileHeader
+              profile={profile}
+              isOwner={isOwner}
+              googleImage={googleImage}
+            />
 
             <div className="flex w-full flex-col gap-4 md:w-auto">
               <ProfileStats stats={stats} />
 
               {!isOwner && (
                 <div className="w-full md:hidden [&_button]:w-full">
-                  <ProfileAction profile={profile} isOwner={isOwner} />
+                  <ProfileAction
+                    profile={profile}
+                    isOwner={isOwner}
+                  />
                 </div>
               )}
             </div>
@@ -115,7 +125,10 @@ export default async function ProfilePage({
 
           <div className="border-t">
             <div className="grid gap-6 px-1 py-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-10 md:px-6 md:py-8">
-              <ProfileInfo profile={profile} isOwner={isOwner} />
+              <ProfileInfo
+                profile={profile}
+                isOwner={isOwner}
+              />
 
               <ProfileQuickAccess boards={quickAccessBoards} />
             </div>

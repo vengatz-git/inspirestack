@@ -1,23 +1,25 @@
-import { PinCard } from "@/features/pin/components/card/pin-card";
-import type { PinCardData } from "@/features/pin/types/pin-card";
+import { ProfilePinCard } from "./profile-pin-card";
+
+import type { ProfilePinCardData } from "../types/profile-pin-card";
 
 interface ProfilePinGridProps {
-  pins: PinCardData[];
+  pins: ProfilePinCardData[];
+  onDeleted?: (pinId: string) => void;
 }
 
 export function ProfilePinGrid({
   pins,
+  onDeleted,
 }: ProfilePinGridProps) {
   return (
     <section>
-      <div className="columns-2 gap-5 md:columns-3 lg:columns-4">
+      <div className="grid gap-4 sm:grid-cols-2">
         {pins.map((pin) => (
-          <div
+          <ProfilePinCard
             key={pin.id}
-            className="mb-5 break-inside-avoid"
-          >
-            <PinCard pin={pin} />
-          </div>
+            pin={pin}
+            onDeleted={onDeleted}
+          />
         ))}
       </div>
     </section>

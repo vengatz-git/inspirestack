@@ -8,11 +8,13 @@ import { ProfileImageUpload } from "./profile-image-upload";
 type ProfileHeaderProps = {
   profile: Profile;
   isOwner: boolean;
+  googleImage: string | null;
 };
 
 export function ProfileHeader({
   profile,
   isOwner,
+  googleImage,
 }: ProfileHeaderProps) {
   return (
     <div className="flex min-w-0 items-center gap-4 max-md:flex-col max-md:text-center md:flex-row">
@@ -21,6 +23,7 @@ export function ProfileHeader({
           <ProfileImageUpload
             imageUrl={profile.image}
             username={profile.username}
+            googleImage={googleImage}
           />
         ) : (
           <Image

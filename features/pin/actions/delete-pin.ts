@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import type { ActionResult } from "@/types/action-result";
 
+import { deletePinSchema } from "../schemas/delete-pin-schema";
 import { deletePinService } from "../services/delete-pin";
 
 export async function deletePinAction(
@@ -19,7 +20,11 @@ export async function deletePinAction(
     };
   }
 
-  if (!pinId) {
+  const parsed = deletePinSchema.safeParse({
+    pinId,
+  });
+
+  if (!parsed.success) {
     return {
       success: false,
       error: "Invalid pin.",
@@ -27,14 +32,17 @@ export async function deletePinAction(
   }
 
   try {
-    await deletePinService(session.user.id, pinId);
+    await deletePinService(
+      session.user.id,
+      parsed.data.pinId,
+    );
 
     if (session.user.username) {
       revalidatePath(`/profile/${session.user.username}`);
     }
 
-    revalidatePath(`/feed`);
-    revalidatePath(`/pin/${pinId}`);
+    revalidatePath("/feed");
+    revalidatePath(`/pin/${parsed.data.pinId}`);
 
     return {
       success: true,

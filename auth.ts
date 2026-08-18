@@ -43,6 +43,17 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
         return;
       }
 
+      const existingUser = await db.query.users.findFirst({
+        where: eq(users.id, user.id),
+        columns: {
+          googleImage: true,
+        },
+      });
+
+      if (existingUser?.googleImage) {
+        return;
+      }
+
       await db
         .update(users)
         .set({

@@ -2,13 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import type { PinCardData } from "@/features/pin/types/pin-card";
+import type { ProfilePinCardData } from "../types/profile-pin-card";
 
 import { ProfilePinGrid } from "./profile-pin-grid";
 
 interface ProfileSavedPinsClientProps {
   username: string;
-  initialPins: PinCardData[];
+  initialPins: ProfilePinCardData[];
   initialCursor: string | null;
 }
 
@@ -46,7 +46,7 @@ export function ProfileSavedPinsClient({
       }
 
       const data: {
-        pins: PinCardData[];
+        pins: ProfilePinCardData[];
         nextCursor: string | null;
       } = await response.json();
 

@@ -8,6 +8,8 @@ import type {
   GetUserPinsResult,
 } from "../types/get-pins-by-user";
 
+import { mapProfilePinToCard } from "@/features/profile/lib/map-profile-pin-card";
+
 export async function getUserPinsService({
   userId,
   limit = 24,
@@ -36,6 +38,17 @@ export async function getUserPinsService({
     where: and(...conditions),
     orderBy: desc(pins.createdAt),
     limit: limit + 1,
+
+    with: {
+      author: {
+        columns: {
+          id: true,
+          username: true,
+          displayName: true,
+          image: true,
+        },
+      },
+    },
   });
 
   const hasMore = userPins.length > limit;
@@ -49,15 +62,9 @@ export async function getUserPinsService({
     : null;
 
   return {
-    pins: pagePins.map((pin) => ({
-      id: pin.id,
-      title: pin.title,
-      imageUrl: pin.imageUrl,
-      altText: pin.altText,
-      imageWidth: pin.imageWidth,
-      imageHeight: pin.imageHeight,
-      destinationUrl: null,
-    })),
+    pins: pagePins.map((pin) =>
+      mapProfilePinToCard(pin, userId, false),
+    ),
     nextCursor,
   };
 }

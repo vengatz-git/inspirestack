@@ -1,5 +1,5 @@
 import type { BoardSummary } from "@/features/board/types/board";
-import type { PinCardData } from "@/features/pin/types/pin-card";
+import type { ProfilePinCardData } from "../types/profile-pin-card";
 
 import type { ProfileTab } from "../constants/profile-tabs";
 
@@ -11,10 +11,10 @@ import { ProfileSavedPinsClient } from "./profile-saved-pins-client";
 interface ProfileContentProps {
   activeTab: ProfileTab;
 
-  pins: PinCardData[];
+  pins: ProfilePinCardData[];
   pinsCursor: string | null;
 
-  savedPins: PinCardData[];
+  savedPins: ProfilePinCardData[];
   savedPinsCursor: string | null;
 
   boards: BoardSummary[];
