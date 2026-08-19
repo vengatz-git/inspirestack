@@ -7,7 +7,9 @@ import { getBoardsByUserService } from "@/features/board/services/get-boards-by-
 import { FeedGrid } from "@/features/feed/components/feed-grid";
 import { getPinByIdService } from "@/features/pin/services/get-pin-by-id";
 import { getRelatedPinsService } from "@/features/pin/services/get-related-pins";
+import { getUserPinsService } from "@/features/pin/services/get-pins-by-user";
 
+import { ProfileMoreFromUser } from "@/features/profile/components/profile-more-from-user";
 import { ProfilePinDetails } from "@/features/profile/components/profile-pin-details";
 
 type ProfilePinPageProps = {
@@ -24,10 +26,7 @@ export async function generateMetadata({
 
   const pin = await getPinByIdService(pinId);
 
-  if (
-    !pin ||
-    pin.author.username !== username
-  ) {
+  if (!pin || pin.author.username !== username) {
     return {
       title: "Pin not found | InspireStack",
     };
@@ -36,8 +35,7 @@ export async function generateMetadata({
   const title = pin.title ?? "Untitled Pin";
 
   const description =
-    pin.description ??
-    `Explore "${title}" on InspireStack.`;
+    pin.description ?? `Explore "${title}" on InspireStack.`;
 
   return {
     title: `${title} | InspireStack`,
@@ -80,49 +78,56 @@ export default async function ProfilePinPage({
 
   const pin = await getPinByIdService(pinId);
 
-  if (
-    !pin ||
-    pin.author.username !== username
-  ) {
+  if (!pin || pin.author.username !== username) {
     notFound();
   }
 
-  const [relatedPins, session] =
+  const session = await auth();
+
+  const [relatedPins, moreFromUserResult] =
     await Promise.all([
       getRelatedPinsService({
         pinId: pin.id,
         limit: 40,
       }),
-      auth(),
+
+      getUserPinsService({
+        userId: pin.author.id,
+        viewerUserId: session?.user?.id ?? null,
+        limit: 5,
+        excludePinId: pin.id,
+      }),
     ]);
 
-  const boards =
-    session?.user?.id
-      ? await getBoardsByUserService({
-          userId: session.user.id,
-          pinId: pin.id,
-          includePrivate: true,
-        })
-      : [];
+  const boards = session?.user?.id
+    ? await getBoardsByUserService({
+        userId: session.user.id,
+        pinId: pin.id,
+        includePrivate: true,
+      })
+    : [];
 
   return (
-    <main className="mx-auto w-full max-w-screen-2xl px-4 py-6 sm:px-6">
+    <main className="mx-auto w-full px-4 py-6 sm:px-6">
       <ProfilePinDetails
         pin={pin}
         boards={boards}
       />
 
-      <section className="mt-16">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">
-              Explore More
-            </h2>
+      <ProfileMoreFromUser
+        username={username}
+        pins={moreFromUserResult.pins}
+      />
 
-            <p className="text-muted-foreground mt-1 text-sm">
-              Discover more inspiration from InspireStack.
-            </p>
-          </div>
+      <section className="mt-10">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold tracking-tight">
+            Explore More
+          </h2>
+
+          <p className="text-muted-foreground mt-1 text-sm">
+            Discover more inspiration from InspireStack.
+          </p>
         </div>
 
         <FeedGrid pins={relatedPins} />

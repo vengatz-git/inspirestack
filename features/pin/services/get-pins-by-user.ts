@@ -1,23 +1,31 @@
-import { and, desc, eq, lt } from "drizzle-orm";
+import { and, desc, eq, lt, ne } from "drizzle-orm";
 
 import { db } from "@/db";
 import { pins } from "@/db/schema";
+
+import { mapProfilePinToCard } from "@/features/profile/lib/map-profile-pin-card";
 
 import type {
   GetUserPinsOptions,
   GetUserPinsResult,
 } from "../types/get-pins-by-user";
 
-import { mapProfilePinToCard } from "@/features/profile/lib/map-profile-pin-card";
-
 export async function getUserPinsService({
   userId,
+  viewerUserId = null,
   limit = 24,
   cursor,
+  excludePinId,
 }: GetUserPinsOptions): Promise<GetUserPinsResult> {
   const conditions = [
     eq(pins.authorId, userId),
   ];
+
+  if (excludePinId) {
+    conditions.push(
+      ne(pins.id, excludePinId),
+    );
+  }
 
   if (cursor) {
     const cursorPin = await db.query.pins.findFirst({
@@ -29,7 +37,10 @@ export async function getUserPinsService({
 
     if (cursorPin) {
       conditions.push(
-        lt(pins.createdAt, cursorPin.createdAt),
+        lt(
+          pins.createdAt,
+          cursorPin.createdAt,
+        ),
       );
     }
   }
@@ -63,7 +74,11 @@ export async function getUserPinsService({
 
   return {
     pins: pagePins.map((pin) =>
-      mapProfilePinToCard(pin, userId, false),
+      mapProfilePinToCard(
+        pin,
+        viewerUserId,
+        false,
+      ),
     ),
     nextCursor,
   };

@@ -2,8 +2,8 @@ import type { BoardSummary } from "@/features/board/types/board";
 
 import { getPinByIdService } from "@/features/pin/services/get-pin-by-id";
 
-import { PinImage } from "@/features/pin/components/pin-image";
 import { PinAuthor } from "@/features/pin/components/pin-author";
+import { PinImage } from "@/features/pin/components/pin-image";
 import { PinMeta } from "@/features/pin/components/pin-meta";
 
 import { BoardSaveButton } from "@/features/board/components/board-save-button";
@@ -22,22 +22,26 @@ export function ProfilePinDetails({
   boards,
 }: ProfilePinDetailsProps) {
   return (
-    <section className="overflow-hidden rounded-3xl border bg-card shadow-sm">
-      <div className="grid min-h-[70vh] md:grid-cols-2">
-        <PinImage pin={pin} />
+    <section className="mx-auto w-full max-w-5xl overflow-hidden rounded-3xl border bg-card shadow-sm">
+      <div className="grid md:grid-cols-2">
+        <div className="h-105 min-w-0 md:h-110">
+          <PinImage pin={pin} />
+        </div>
 
-        <section className="flex min-w-0 flex-col">
-          <header className="flex items-center justify-end border-b px-6 py-5 sm:px-8">
+        <section className="flex h-105 min-w-0 flex-col md:h-110">
+          <header className="flex shrink-0 items-center justify-end border-b px-6 py-4 sm:px-8">
             <BoardSaveButton
               pinId={pin.id}
               boards={boards}
             />
           </header>
 
-          <div className="flex-1 space-y-8 overflow-y-auto px-6 py-8 sm:px-8">
-            <PinAuthor pin={pin} />
+          <div className="flex min-h-0 flex-1 flex-col justify-center overflow-y-auto px-6 py-6 sm:px-8">
+            <div className="space-y-7">
+              <PinAuthor pin={pin} />
 
-            <PinMeta pin={pin} />
+              <PinMeta pin={pin} />
+            </div>
           </div>
         </section>
       </div>

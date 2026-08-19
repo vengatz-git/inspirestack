@@ -89,7 +89,7 @@ export function ProfilePinsClient({
 
   return (
     <>
-      <ProfilePinGrid pins={pins} onDeleted={handleDeleted} />
+      <ProfilePinGrid pins={pins} onDeleted={handleDeleted} showDelete />
 
       {nextCursor && (
         <div

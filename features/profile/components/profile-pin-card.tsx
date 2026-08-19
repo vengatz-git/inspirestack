@@ -12,10 +12,17 @@ import type { ProfilePinCardData } from "../types/profile-pin-card";
 interface ProfilePinCardProps {
   pin: ProfilePinCardData;
   onDeleted?: (pinId: string) => void;
+  showDelete?: boolean;
 }
 
-export function ProfilePinCard({ pin, onDeleted }: ProfilePinCardProps) {
-  async function handleDelete(event: React.MouseEvent<HTMLButtonElement>) {
+export function ProfilePinCard({
+  pin,
+  onDeleted,
+  showDelete = false,
+}: ProfilePinCardProps) {
+  async function handleDelete(
+    event: React.MouseEvent<HTMLButtonElement>,
+  ) {
     event.preventDefault();
     event.stopPropagation();
 
@@ -30,7 +37,9 @@ export function ProfilePinCard({ pin, onDeleted }: ProfilePinCardProps) {
     const result = await deletePinAction(pin.id);
 
     if (!result.success) {
-      toast.error(result.error ?? "Failed to delete pin.");
+      toast.error(
+        result.error ?? "Failed to delete pin.",
+      );
       return;
     }
 
@@ -44,71 +53,67 @@ export function ProfilePinCard({ pin, onDeleted }: ProfilePinCardProps) {
     : `/pin/${pin.id}`;
 
   return (
-    <article className="group bg-card relative overflow-hidden rounded-2xl border transition-shadow hover:shadow-lg">
-      <Link
-        href={profilePinHref}
-        className="block"
-        aria-label={pin.title ? `View ${pin.title}` : "View pin"}
-      >
-        <div className="grid grid-cols-[180px_minmax(0,1fr)]">
-          <div className="bg-muted relative aspect-square overflow-hidden">
-            <Image
-              src={pin.imageUrl}
-              alt={pin.altText ?? pin.title ?? "Pin image"}
-              fill
-              sizes="180px"
-              className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-            />
-          </div>
-
-          <div className="flex min-w-0 flex-col p-5">
-            <div className="min-w-0 pr-2">
-              <h3 className="line-clamp-2 text-base font-semibold">
-                {pin.title ?? "Untitled Pin"}
-              </h3>
-
-              {pin.description && (
-                <p className="text-muted-foreground mt-2 line-clamp-3 text-sm leading-6">
-                  {pin.description}
-                </p>
-              )}
-            </div>
-
-            <div className="mt-auto pt-5">
-              <div className="flex min-w-0 items-center gap-2">
-                {pin.author.image ? (
-                  <Image
-                    src={pin.author.image}
-                    alt={pin.author.username ?? "Author"}
-                    width={28}
-                    height={28}
-                    className="size-7 shrink-0 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="bg-muted size-7 shrink-0 rounded-full" />
-                )}
-
-                <span className="text-muted-foreground truncate text-xs">
-                  {pin.author.displayName ??
-                    pin.author.username ??
-                    "Unknown user"}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Link>
-
-      {pin.isOwner && (
-        <button
-          type="button"
-          onClick={handleDelete}
-          className="bg-background/90 hover:bg-background absolute top-3 right-3 z-10 flex size-9 items-center justify-center rounded-full shadow-sm backdrop-blur transition-colors"
-          aria-label="Delete pin"
+    <article className="group relative min-w-0">
+      <div className="bg-muted relative aspect-4/3 overflow-hidden rounded-xl">
+        <Link
+          href={profilePinHref}
+          className="absolute inset-0"
+          aria-label={
+            pin.title
+              ? `View ${pin.title}`
+              : "View pin"
+          }
         >
-          <Trash2 className="text-destructive size-4" />
-        </button>
-      )}
+          <Image
+            src={pin.imageUrl}
+            alt={
+              pin.altText ??
+              pin.title ??
+              "Pin image"
+            }
+            fill
+            sizes="
+              (max-width: 640px) 50vw,
+              (max-width: 1024px) 33vw,
+              20vw
+            "
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+          />
+        </Link>
+
+        {showDelete && pin.isOwner && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="bg-background/90 hover:bg-background absolute top-2 right-2 z-10 flex size-8 items-center justify-center rounded-full shadow-sm backdrop-blur transition-colors"
+            aria-label="Delete pin"
+          >
+            <Trash2 className="text-destructive size-3.5" />
+          </button>
+        )}
+      </div>
+
+      <div className="min-w-0 px-1 pt-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h3 className="truncate text-sm font-semibold">
+              {pin.title ?? "Untitled Pin"}
+            </h3>
+
+            {pin.description && (
+              <p className="text-muted-foreground mt-1 line-clamp-2 text-xs leading-5">
+                {pin.description}
+              </p>
+            )}
+          </div>
+
+          {/* Likes will be added when the reaction system exists. */}
+          <span
+            className="text-muted-foreground shrink-0 text-xs"
+            aria-hidden="true"
+          />
+        </div>
+      </div>
     </article>
   );
 }

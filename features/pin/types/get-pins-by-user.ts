@@ -2,8 +2,10 @@ import type { ProfilePinCardData } from "@/features/profile/types/profile-pin-ca
 
 export interface GetUserPinsOptions {
   userId: string;
+  viewerUserId?: string | null;
   limit?: number;
   cursor?: string;
+  excludePinId?: string;
 }
 
 export interface GetUserPinsResult {

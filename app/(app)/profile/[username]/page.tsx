@@ -59,7 +59,7 @@ export default async function ProfilePage({
   const isOwner = session?.user.id === profile.id;
 
   const googleImage = isOwner
-    ? (await getGoogleImageService(profile.id))?.googleImage ?? null
+    ? ((await getGoogleImageService(profile.id))?.googleImage ?? null)
     : null;
 
   const quickAccessBoards = await getRecentBoardsService({
@@ -72,6 +72,7 @@ export default async function ProfilePage({
     activeTab === "pins"
       ? await getUserPinsService({
           userId: profile.id,
+          viewerUserId: session?.user?.id ?? null,
           limit: 24,
         })
       : {
@@ -114,10 +115,7 @@ export default async function ProfilePage({
 
               {!isOwner && (
                 <div className="w-full md:hidden [&_button]:w-full">
-                  <ProfileAction
-                    profile={profile}
-                    isOwner={isOwner}
-                  />
+                  <ProfileAction profile={profile} isOwner={isOwner} />
                 </div>
               )}
             </div>
@@ -125,10 +123,7 @@ export default async function ProfilePage({
 
           <div className="border-t">
             <div className="grid gap-6 px-1 py-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-10 md:px-6 md:py-8">
-              <ProfileInfo
-                profile={profile}
-                isOwner={isOwner}
-              />
+              <ProfileInfo profile={profile} isOwner={isOwner} />
 
               <ProfileQuickAccess boards={quickAccessBoards} />
             </div>

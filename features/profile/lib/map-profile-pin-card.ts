@@ -13,7 +13,7 @@ type ProfilePinWithAuthor = Pin & {
 
 export function mapProfilePinToCard(
   pin: ProfilePinWithAuthor,
-  userId: string,
+  viewerUserId: string | null,
   isSaved: boolean,
 ): ProfilePinCardData {
   return {
@@ -32,7 +32,10 @@ export function mapProfilePinToCard(
       image: pin.author.image,
     },
 
-    isOwner: pin.authorId === userId,
+    isOwner:
+      viewerUserId !== null &&
+      pin.authorId === viewerUserId,
+
     isSaved,
   };
 }

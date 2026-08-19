@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { auth } from "@/auth";
+
 import { getProfileByUsername } from "@/features/profile/services/get-profile-by-username";
 import { getUserPinsService } from "@/features/pin/services/get-pins-by-user";
 
@@ -17,15 +19,13 @@ export async function GET(
 
   const searchParams = request.nextUrl.searchParams;
 
-  const limit = Number(
-    searchParams.get("limit") ?? 24,
-  );
+  const limit = Number(searchParams.get("limit") ?? 24);
 
-  const cursor =
-    searchParams.get("cursor") ?? undefined;
+  const cursor = searchParams.get("cursor") ?? undefined;
 
-  const profile =
-    await getProfileByUsername(username);
+  const excludePinId = searchParams.get("excludePinId") ?? undefined;
+
+  const profile = await getProfileByUsername(username);
 
   if (!profile) {
     return NextResponse.json(
@@ -38,10 +38,14 @@ export async function GET(
     );
   }
 
+  const session = await auth();
+
   const pins = await getUserPinsService({
     userId: profile.id,
+    viewerUserId: session?.user?.id ?? null,
     limit,
     cursor,
+    excludePinId,
   });
 
   return NextResponse.json(pins);
