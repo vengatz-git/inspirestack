@@ -4,10 +4,13 @@ import { db } from "@/db";
 import { pins } from "@/db/schema";
 
 import { mapPinToCard } from "@/features/pin/lib/map-pin-card";
-import type { FeedResult, GetFeedOptions } from "../types/feed";
+import type {
+  FeedResult,
+  GetFeedOptions,
+} from "../types/feed";
 
 export async function getFeed(
-  options?: GetFeedOptions
+  options?: GetFeedOptions,
 ): Promise<FeedResult> {
   const limit = options?.limit ?? 30;
 
@@ -16,7 +19,9 @@ export async function getFeed(
     : undefined;
 
   const feedPins = await db.query.pins.findMany({
-    where: cursor ? lt(pins.createdAt, cursor) : undefined,
+    where: cursor
+      ? lt(pins.createdAt, cursor)
+      : undefined,
     orderBy: desc(pins.createdAt),
     limit: limit + 1,
   });
@@ -32,7 +37,7 @@ export async function getFeed(
     : null;
 
   return {
-    pins: feedPins.map(mapPinToCard),
+    pins: items.map(mapPinToCard),
     nextCursor,
   };
 }

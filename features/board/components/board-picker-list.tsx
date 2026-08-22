@@ -17,7 +17,7 @@ export function BoardPickerList({
   if (boards.length === 0) {
     return (
       <p className="text-muted-foreground text-sm">
-        You don't have any boards yet.
+        You don&apos;t have any boards yet.
       </p>
     );
   }

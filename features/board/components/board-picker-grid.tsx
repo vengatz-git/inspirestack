@@ -17,7 +17,7 @@ export function BoardPickerGrid({
   if (boards.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
-        You don't have any boards yet.
+        You don&apos;t have any boards yet.
       </p>
     );
   }

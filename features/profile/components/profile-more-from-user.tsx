@@ -1,6 +1,6 @@
 import type { ProfilePinCardData } from "../types/profile-pin-card";
 
-import { ProfilePinGrid } from "./profile-pin-grid";
+import { ProfilePinCard } from "./profile-pin-card";
 
 interface ProfileMoreFromUserProps {
   username: string;
@@ -16,8 +16,8 @@ export function ProfileMoreFromUser({
   }
 
   return (
-    <section className="mx-auto mt-10 w-full max-w-5xl">
-      <div className="mb-6">
+    <section className="mx-auto mt-8 w-full max-w-5xl">
+      <div className="mb-5">
         <h2 className="text-2xl font-bold tracking-tight">
           More from @{username}
         </h2>
@@ -27,7 +27,16 @@ export function ProfileMoreFromUser({
         </p>
       </div>
 
-      <ProfilePinGrid pins={pins} />
+      <div className="scrollbar-none -mx-1 flex gap-4 overflow-x-auto px-1 pb-3">
+        {pins.map((pin) => (
+          <div
+            key={pin.id}
+            className="w-45 shrink-0 sm:w-47.5"
+          >
+            <ProfilePinCard pin={pin} />
+          </div>
+        ))}
+      </div>
     </section>
   );
 }

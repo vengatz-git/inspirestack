@@ -1,7 +1,7 @@
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 
-import type { PinCardData } from "./../../types/pin-card";
+import type { PinCardData } from "../../types/pin-card";
 
 import { PinCardOverlay } from "./pin-card-overlay";
 
@@ -10,15 +10,22 @@ interface PinCardProps {
 }
 
 export function PinCard({ pin }: PinCardProps) {
+  const href =
+    pin.destinationUrl ?? `/pin/${pin.id}`;
+
   return (
     <Link
-      href={`/pin/${pin.id}`}
+      href={href}
       className="group block break-inside-avoid"
     >
       <div className="relative overflow-hidden rounded-2xl">
         <Image
           src={pin.imageUrl}
-          alt={pin.altText ?? pin.title ?? "Pin image"}
+          alt={
+            pin.altText ??
+            pin.title ??
+            "Pin image"
+          }
           width={pin.imageWidth}
           height={pin.imageHeight}
           sizes="

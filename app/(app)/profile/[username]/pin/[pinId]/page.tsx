@@ -35,7 +35,8 @@ export async function generateMetadata({
   const title = pin.title ?? "Untitled Pin";
 
   const description =
-    pin.description ?? `Explore "${title}" on InspireStack.`;
+    pin.description ??
+    `Explore "${title}" on InspireStack.`;
 
   return {
     title: `${title} | InspireStack`,
@@ -119,7 +120,7 @@ export default async function ProfilePinPage({
         pins={moreFromUserResult.pins}
       />
 
-      <section className="mt-10">
+      <section className="mt-16">
         <div className="mb-8">
           <h2 className="text-2xl font-bold tracking-tight">
             Explore More

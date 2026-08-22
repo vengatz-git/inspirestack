@@ -21,6 +21,20 @@ export async function getUserPinsService({
     eq(pins.authorId, userId),
   ];
 
+  /*
+   * Pin visibility is independent from board visibility.
+   *
+   * A PUBLIC pin remains public even when it is saved
+   * to a PRIVATE board.
+   *
+   * Only the pin owner can see their PRIVATE pins.
+   */
+  if (viewerUserId !== userId) {
+    conditions.push(
+      eq(pins.visibility, "PUBLIC"),
+    );
+  }
+
   if (excludePinId) {
     conditions.push(
       ne(pins.id, excludePinId),
