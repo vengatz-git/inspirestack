@@ -27,14 +27,9 @@ export function ProfileMoreFromUser({
         </p>
       </div>
 
-      <div className="scrollbar-none -mx-1 flex gap-4 overflow-x-auto px-1 pb-3">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {pins.map((pin) => (
-          <div
-            key={pin.id}
-            className="w-45 shrink-0 sm:w-47.5"
-          >
-            <ProfilePinCard pin={pin} />
-          </div>
+          <ProfilePinCard key={pin.id} pin={pin} />
         ))}
       </div>
     </section>

@@ -34,9 +34,7 @@ export async function generateMetadata({
 
   const title = pin.title ?? "Untitled Pin";
 
-  const description =
-    pin.description ??
-    `Explore "${title}" on InspireStack.`;
+  const description = pin.description ?? `Explore "${title}" on InspireStack.`;
 
   return {
     title: `${title} | InspireStack`,
@@ -72,9 +70,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProfilePinPage({
-  params,
-}: ProfilePinPageProps) {
+export default async function ProfilePinPage({ params }: ProfilePinPageProps) {
   const { username, pinId } = await params;
 
   const pin = await getPinByIdService(pinId);
@@ -85,20 +81,20 @@ export default async function ProfilePinPage({
 
   const session = await auth();
 
-  const [relatedPins, moreFromUserResult] =
-    await Promise.all([
-      getRelatedPinsService({
-        pinId: pin.id,
-        limit: 40,
-      }),
+  const [relatedPins, moreFromUserResult] = await Promise.all([
+    getRelatedPinsService({
+      pinId: pin.id,
+      limit: 40,
+      excludeAuthorId: pin.authorId,
+    }),
 
-      getUserPinsService({
-        userId: pin.author.id,
-        viewerUserId: session?.user?.id ?? null,
-        limit: 5,
-        excludePinId: pin.id,
-      }),
-    ]);
+    getUserPinsService({
+      userId: pin.author.id,
+      viewerUserId: session?.user?.id ?? null,
+      limit: 40,
+      excludePinId: pin.id,
+    }),
+  ]);
 
   const boards = session?.user?.id
     ? await getBoardsByUserService({
@@ -110,21 +106,13 @@ export default async function ProfilePinPage({
 
   return (
     <main className="mx-auto w-full px-4 py-6 sm:px-6">
-      <ProfilePinDetails
-        pin={pin}
-        boards={boards}
-      />
+      <ProfilePinDetails pin={pin} boards={boards} />
 
-      <ProfileMoreFromUser
-        username={username}
-        pins={moreFromUserResult.pins}
-      />
+      <ProfileMoreFromUser username={username} pins={moreFromUserResult.pins} />
 
       <section className="mt-16">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold tracking-tight">
-            Explore More
-          </h2>
+          <h2 className="text-2xl font-bold tracking-tight">Explore More</h2>
 
           <p className="text-muted-foreground mt-1 text-sm">
             Discover more inspiration from InspireStack.

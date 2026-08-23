@@ -16,17 +16,15 @@ import type { GetRelatedPinsOptions } from "../types/related-pins";
 export async function getRelatedPinsService({
   pinId,
   limit = 20,
+  excludeAuthorId,
 }: GetRelatedPinsOptions): Promise<PinCardData[]> {
   /*
-   * Get the current Pin so we know:
-   *
-   * - who created it
-   * - which topic it belongs to
+   * Get the current Pin so we know which topic
+   * should be preferred for discovery.
    */
   const currentPin = await db.query.pins.findFirst({
     where: eq(pins.id, pinId),
     columns: {
-      authorId: true,
       topicId: true,
     },
   });
@@ -38,74 +36,53 @@ export async function getRelatedPinsService({
   /*
    * First preference:
    *
-   * Public Pins from OTHER users that belong
-   * to the same topic.
+   * Public Pins from the same topic.
+   *
+   * By default, the current author's Pins are allowed.
+   * A caller can optionally exclude an author for contexts
+   * such as "Explore More" on a profile Pin page.
    */
   const relatedPins = await db.query.pins.findMany({
     where: and(
       ne(pins.id, pinId),
-      ne(pins.authorId, currentPin.authorId),
       eq(pins.topicId, currentPin.topicId),
       eq(pins.visibility, "PUBLIC"),
+
+      ...(excludeAuthorId
+        ? [ne(pins.authorId, excludeAuthorId)]
+        : []),
     ),
 
     orderBy: desc(pins.createdAt),
 
     limit,
-
-    with: {
-      author: {
-        columns: {
-          id: true,
-          username: true,
-        },
-      },
-    },
   });
 
   /*
    * If there aren't enough Pins in the same topic,
-   * fill the remaining slots with recent PUBLIC Pins
-   * from OTHER users.
+   * fill the remaining slots with recent PUBLIC Pins.
    */
   if (relatedPins.length < limit) {
-    const existingIds = relatedPins.map(
-      (pin) => pin.id,
-    );
+    const existingIds = relatedPins.map((pin) => pin.id);
 
-    const fallbackPins =
-      await db.query.pins.findMany({
-        where: and(
-          ne(pins.id, pinId),
-          ne(
-            pins.authorId,
-            currentPin.authorId,
-          ),
-          eq(pins.visibility, "PUBLIC"),
+    const fallbackPins = await db.query.pins.findMany({
+      where: and(
+        ne(pins.id, pinId),
+        eq(pins.visibility, "PUBLIC"),
 
-          ...(existingIds.length > 0
-            ? [
-                notInArray(
-                  pins.id,
-                  existingIds,
-                ),
-              ]
-            : []),
-        ),
+        ...(excludeAuthorId
+          ? [ne(pins.authorId, excludeAuthorId)]
+          : []),
 
-        orderBy: desc(pins.createdAt),
+        ...(existingIds.length > 0
+          ? [notInArray(pins.id, existingIds)]
+          : []),
+      ),
 
-        limit: limit - relatedPins.length,
+      orderBy: desc(pins.createdAt),
 
-        with: {
-          author: {
-            columns: {
-              id: true,
-              username: true,
-            },
-          },
-        },
-      });
+      limit: limit - relatedPins.length,
+    });
 
     relatedPins.push(...fallbackPins);
   }
