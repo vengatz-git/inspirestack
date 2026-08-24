@@ -21,7 +21,9 @@ export function RemovePinFromBoardButton({
   const [error, setError] = useState<string | null>(null);
 
   function handleRemove() {
-    const confirmed = window.confirm("Remove this pin from the board?");
+    const confirmed = window.confirm(
+      "Remove this pin from the board?",
+    );
 
     if (!confirmed) {
       return;
@@ -43,6 +45,7 @@ export function RemovePinFromBoardButton({
       onSuccess?.();
     });
   }
+
   return (
     <div className="relative">
       <Button
@@ -51,7 +54,7 @@ export function RemovePinFromBoardButton({
         size="sm"
         onClick={handleRemove}
         disabled={isPending}
-        className="bg-background/95 rounded-full shadow-sm backdrop-blur-sm"
+        className="rounded-full bg-background/95 shadow-sm backdrop-blur-sm"
       >
         {isPending ? "Removing..." : "Remove"}
       </Button>
@@ -59,7 +62,7 @@ export function RemovePinFromBoardButton({
       {error && (
         <p
           role="alert"
-          className="bg-background text-destructive absolute top-full right-0 mt-2 w-48 rounded-lg p-2 text-xs shadow-md"
+          className="absolute top-full right-0 mt-2 w-48 rounded-lg bg-background p-2 text-xs text-destructive shadow-md"
         >
           {error}
         </p>

@@ -26,15 +26,28 @@ export function MasonryEngine({
     gap,
   } = useMasonry(containerRef);
 
-  const layoutResult = useMemo(
-    () =>
-      placePins({
-        pins,
-        columnCount,
-        columnWidth,
-      }),
-    [pins, columnCount, columnWidth],
-  );
+  const layoutResult = useMemo(() => {
+    if (columnCount === 0 || columnWidth === 0) {
+      return {
+        columns: [],
+      };
+    }
+
+    return placePins({
+      pins,
+      columnCount,
+      columnWidth,
+    });
+  }, [pins, columnCount, columnWidth]);
+
+  if (columnCount === 0) {
+    return (
+      <div
+        ref={containerRef}
+        className="min-h-40 w-full"
+      />
+    );
+  }
 
   return (
     <div
@@ -50,7 +63,9 @@ export function MasonryEngine({
         >
           {column.pins.map((pin) =>
             renderItem ? (
-              <div key={pin.id}>{renderItem(pin)}</div>
+              <div key={pin.id}>
+                {renderItem(pin)}
+              </div>
             ) : (
               <MasonryItem
                 key={pin.id}

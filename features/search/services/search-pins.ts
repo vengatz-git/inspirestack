@@ -1,4 +1,10 @@
-import { and, eq, ilike, or } from "drizzle-orm";
+import {
+  and,
+  desc,
+  eq,
+  ilike,
+  or,
+} from "drizzle-orm";
 
 import { db } from "@/db";
 import { pins } from "@/db/schema";
@@ -20,8 +26,14 @@ export async function searchPins({
   const results = await db.query.pins.findMany({
     where: and(
       eq(pins.visibility, "PUBLIC"),
-      or(ilike(pins.title, term), ilike(pins.altText, term)),
+      or(
+        ilike(pins.title, term),
+        ilike(pins.altText, term),
+      ),
     ),
+
+    orderBy: desc(pins.createdAt),
+
     limit,
   });
 

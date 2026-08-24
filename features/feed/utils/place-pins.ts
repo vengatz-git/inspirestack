@@ -1,11 +1,10 @@
 import type { PinCardData } from "@/features/pin/types/pin-card";
 
-import { estimateHeight } from "./estimate-height";
-
 import type {
   MasonryColumn,
   MasonryLayout,
 } from "../types/masonry";
+import { estimateHeight } from "./estimate-height";
 
 const GAP = 12;
 
@@ -32,7 +31,7 @@ export function placePins({
       id: index,
       pins: [],
       estimatedHeight: 0,
-    })
+    }),
   );
 
   for (const pin of pins) {
@@ -53,13 +52,12 @@ export function placePins({
       columnWidth,
     });
 
-    targetColumn.pins.push(pin);
-
-    targetColumn.estimatedHeight += estimatedHeight;
-
-    if (targetColumn.pins.length > 1) {
+    if (targetColumn.pins.length > 0) {
       targetColumn.estimatedHeight += GAP;
     }
+
+    targetColumn.pins.push(pin);
+    targetColumn.estimatedHeight += estimatedHeight;
   }
 
   return {

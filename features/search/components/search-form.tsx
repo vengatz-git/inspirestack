@@ -63,7 +63,20 @@ function SearchFormContent({
     event: React.FormEvent<HTMLFormElement>,
   ) {
     event.preventDefault();
+
+    const trimmed = value.trim();
+
     setShowSuggestions(false);
+
+    if (trimmed === currentQuery) {
+      return;
+    }
+
+    router.push(
+      trimmed
+        ? `/search?query=${encodeURIComponent(trimmed)}`
+        : "/search",
+    );
   }
 
   return (

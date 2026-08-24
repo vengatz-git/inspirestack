@@ -19,6 +19,7 @@ export function SearchSuggestions({
 
   useDebouncedSearch(query, (debouncedQuery) => {
     const trimmed = debouncedQuery.trim();
+
     latestQueryRef.current = trimmed;
 
     if (!trimmed) {

@@ -1,9 +1,10 @@
-import { desc, lt } from "drizzle-orm";
+import { and, desc, eq, lt } from "drizzle-orm";
 
 import { db } from "@/db";
 import { pins } from "@/db/schema";
 
 import { mapPinToCard } from "@/features/pin/lib/map-pin-card";
+
 import type {
   FeedResult,
   GetFeedOptions,
@@ -19,9 +20,10 @@ export async function getFeed(
     : undefined;
 
   const feedPins = await db.query.pins.findMany({
-    where: cursor
-      ? lt(pins.createdAt, cursor)
-      : undefined,
+    where: and(
+      eq(pins.visibility, "PUBLIC"),
+      cursor ? lt(pins.createdAt, cursor) : undefined,
+    ),
     orderBy: desc(pins.createdAt),
     limit: limit + 1,
   });

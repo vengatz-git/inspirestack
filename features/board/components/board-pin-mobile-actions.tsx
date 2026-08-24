@@ -49,7 +49,7 @@ export function BoardPinMobileActions({
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label="More pin actions"
-          className="bg-background/90 flex size-9 items-center justify-center rounded-full shadow-sm backdrop-blur-sm"
+          className="flex size-9 items-center justify-center rounded-full bg-background/90 shadow-sm backdrop-blur-sm"
         >
           <MoreHorizontal className="size-5" />
         </DropdownMenuTrigger>
@@ -68,7 +68,7 @@ export function BoardPinMobileActions({
       {error && (
         <p
           role="alert"
-          className="bg-background text-destructive absolute top-full right-0 mt-2 w-48 rounded-lg p-2 text-xs shadow-md"
+          className="absolute top-full right-0 mt-2 w-48 rounded-lg bg-background p-2 text-xs text-destructive shadow-md"
         >
           {error}
         </p>
