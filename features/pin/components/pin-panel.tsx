@@ -1,4 +1,5 @@
 import type { BoardSummary } from "@/features/board/types/board";
+import type { CommentData } from "@/features/comment/types/comment";
 
 import { getPinByIdService } from "../services/get-pin-by-id";
 
@@ -6,23 +7,32 @@ import { CommentsSection } from "./comments-section";
 import { PinAuthor } from "./pin-author";
 import { PinHeader } from "./pin-header";
 import { PinMeta } from "./pin-meta";
-import { getCommentsByPinService } from "@/features/comment/services/get-comments-by-pin";
 
-type Pin = NonNullable<Awaited<ReturnType<typeof getPinByIdService>>>;
+type Pin = NonNullable<
+  Awaited<ReturnType<typeof getPinByIdService>>
+>;
 
 interface PinPanelProps {
   pin: Pin;
   boards: BoardSummary[];
   isOwner: boolean;
+  comments: CommentData[];
 }
 
-export async function PinPanel({ pin, boards, isOwner }: PinPanelProps) {
-  const comments = await getCommentsByPinService(pin.id);
-
+export function PinPanel({
+  pin,
+  boards,
+  isOwner,
+  comments,
+}: PinPanelProps) {
   return (
     <section className="bg-card flex h-full flex-col overflow-hidden">
       <header className="shrink-0 border-b px-8 py-5">
-        <PinHeader pin={pin} boards={boards} isOwner={isOwner} />
+        <PinHeader
+          pin={pin}
+          boards={boards}
+          isOwner={isOwner}
+        />
       </header>
 
       <div className="flex-1 overflow-y-auto">
@@ -32,7 +42,10 @@ export async function PinPanel({ pin, boards, isOwner }: PinPanelProps) {
         </div>
 
         <div className="border-t px-8 py-6">
-          <CommentsSection comments={comments} />
+          <CommentsSection
+            pinId={pin.id}
+            comments={comments}
+          />
         </div>
       </div>
     </section>
