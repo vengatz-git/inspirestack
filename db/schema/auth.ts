@@ -10,6 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { pins } from "./pins";
 import { boards } from "./boards";
+import { comments } from "./comments";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -18,7 +19,6 @@ export const users = pgTable("users", {
   email: text("email").unique(),
   emailVerified: timestamp("emailVerified", {
     mode: "date",
-
   }),
   image: text("image"),
   imagePublicId: text("image_public_id"),
@@ -113,6 +113,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   pins: many(pins),
   boards: many(boards),
+  comments: many(comments),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({

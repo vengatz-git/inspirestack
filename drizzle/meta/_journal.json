@@ -36,6 +36,13 @@
       "when": 1786973791676,
       "tag": "0004_calm_tinkerer",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1787641828200,
+      "tag": "0005_sloppy_hobgoblin",
+      "breakpoints": true
     }
   ]
 }

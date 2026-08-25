@@ -13,6 +13,7 @@ import { topics } from "./topics";
 
 import { users } from "./auth"; // Adjust the import path based on your project structure
 import { boardPins } from "./boards";
+import { comments } from "./comments";
 
 export const pinVisibilityEnum = pgEnum("pin_visibility", [
   "PUBLIC",
@@ -95,6 +96,8 @@ export const pinsRelations = relations(pins, ({ one, many }) => ({
   }),
 
   boardPins: many(boardPins),
+
+  comments: many(comments),
 }));
 
 export type Pin = typeof pins.$inferSelect;
