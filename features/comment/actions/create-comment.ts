@@ -1,8 +1,11 @@
 "use server";
 
+import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 import { auth } from "@/auth";
+import { db } from "@/db";
+import { comments } from "@/db/schema";
 import type { ActionResult } from "@/types/action-result";
 
 import { createCommentSchema } from "../schemas/create-comment-schema";
@@ -27,6 +30,29 @@ export async function createCommentAction(
       success: false,
       error: "Invalid comment.",
     };
+  }
+
+  if (validated.data.parentId) {
+    const [parentComment] = await db
+      .select({
+        id: comments.id,
+        pinId: comments.pinId,
+      })
+      .from(comments)
+      .where(
+        and(
+          eq(comments.id, validated.data.parentId),
+          eq(comments.pinId, validated.data.pinId),
+        ),
+      )
+      .limit(1);
+
+    if (!parentComment) {
+      return {
+        success: false,
+        error: "Invalid parent comment.",
+      };
+    }
   }
 
   await createCommentService({

@@ -43,6 +43,13 @@
       "when": 1787641828200,
       "tag": "0005_sloppy_hobgoblin",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1787758363612,
+      "tag": "0006_futuristic_revanche",
+      "breakpoints": true
     }
   ]
 }

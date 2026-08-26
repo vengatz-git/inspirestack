@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { auth } from "@/auth";
 import { getBoardsByUserService } from "@/features/board/services/get-boards-by-user";
+import { getCommentsByPinService } from "@/features/comment/services/get-comments-by-pin";
 import { PinDetail } from "@/features/pin/components/pin-detail";
 import { getPinByIdService } from "@/features/pin/services/get-pin-by-id";
 import { getRelatedPinsService } from "@/features/pin/services/get-related-pins";
@@ -28,8 +29,7 @@ export async function generateMetadata({
 
   const title = pin.title ?? "Untitled Pin";
 
-  const description =
-    pin.description ?? `Explore "${title}" on InspireStack.`;
+  const description = pin.description ?? `Explore "${title}" on InspireStack.`;
 
   return {
     title: `${title} | InspireStack`,
@@ -74,12 +74,16 @@ export default async function PinPage({ params }: PinPageProps) {
     notFound();
   }
 
+  const comments = await getCommentsByPinService(pin.id);
+
   const relatedPins = await getRelatedPinsService({
     pinId: pin.id,
     limit: 40,
   });
 
   const session = await auth();
+
+  const currentUserId = session?.user?.id ?? null;
 
   const boards =
     session?.user?.id != null
@@ -98,6 +102,8 @@ export default async function PinPage({ params }: PinPageProps) {
       relatedPins={relatedPins}
       boards={boards}
       isOwner={isOwner}
+      comments={comments}
+      currentUserId={currentUserId}
     />
   );
 }

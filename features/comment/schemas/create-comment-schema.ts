@@ -3,6 +3,8 @@ import { z } from "zod";
 export const createCommentSchema = z.object({
   pinId: z.string().uuid(),
 
+  parentId: z.string().uuid().nullable().optional(),
+
   content: z
     .string()
     .trim()

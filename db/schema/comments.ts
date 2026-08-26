@@ -5,6 +5,7 @@ import {
   text,
   timestamp,
   uuid,
+  type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 
 import { users } from "./auth";
@@ -27,6 +28,13 @@ export const comments = pgTable(
         onDelete: "cascade",
       }),
 
+    parentId: uuid("parent_id").references(
+      (): AnyPgColumn => comments.id,
+      {
+        onDelete: "cascade",
+      },
+    ),
+
     content: text("content").notNull(),
 
     createdAt: timestamp("created_at", {
@@ -47,16 +55,19 @@ export const comments = pgTable(
 
     authorIdx: index("comments_author_idx").on(table.authorId),
 
-    pinCreatedAtIdx: index("comments_pin_created_at_idx").on(
-      table.pinId,
-      table.createdAt,
+    parentIdx: index("comments_parent_idx").on(
+      table.parentId,
     ),
+
+    pinCreatedAtIdx: index(
+      "comments_pin_created_at_idx",
+    ).on(table.pinId, table.createdAt),
   }),
 );
 
 export const commentsRelations = relations(
   comments,
-  ({ one }) => ({
+  ({ one, many }) => ({
     pin: one(pins, {
       fields: [comments.pinId],
       references: [pins.id],
@@ -65,6 +76,16 @@ export const commentsRelations = relations(
     author: one(users, {
       fields: [comments.authorId],
       references: [users.id],
+    }),
+
+    parent: one(comments, {
+      fields: [comments.parentId],
+      references: [comments.id],
+      relationName: "comment_replies",
+    }),
+
+    replies: many(comments, {
+      relationName: "comment_replies",
     }),
   }),
 );

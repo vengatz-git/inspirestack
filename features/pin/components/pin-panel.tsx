@@ -8,15 +8,14 @@ import { PinAuthor } from "./pin-author";
 import { PinHeader } from "./pin-header";
 import { PinMeta } from "./pin-meta";
 
-type Pin = NonNullable<
-  Awaited<ReturnType<typeof getPinByIdService>>
->;
+type Pin = NonNullable<Awaited<ReturnType<typeof getPinByIdService>>>;
 
 interface PinPanelProps {
   pin: Pin;
   boards: BoardSummary[];
   isOwner: boolean;
   comments: CommentData[];
+  currentUserId: string | null;
 }
 
 export function PinPanel({
@@ -24,15 +23,12 @@ export function PinPanel({
   boards,
   isOwner,
   comments,
+  currentUserId,
 }: PinPanelProps) {
   return (
     <section className="bg-card flex h-full flex-col overflow-hidden">
       <header className="shrink-0 border-b px-8 py-5">
-        <PinHeader
-          pin={pin}
-          boards={boards}
-          isOwner={isOwner}
-        />
+        <PinHeader pin={pin} boards={boards} isOwner={isOwner} />
       </header>
 
       <div className="flex-1 overflow-y-auto">
@@ -45,6 +41,7 @@ export function PinPanel({
           <CommentsSection
             pinId={pin.id}
             comments={comments}
+            currentUserId={currentUserId}
           />
         </div>
       </div>

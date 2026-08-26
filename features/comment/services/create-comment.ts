@@ -4,12 +4,14 @@ import { comments } from "@/db/schema";
 interface CreateCommentInput {
   pinId: string;
   authorId: string;
+  parentId?: string | null;
   content: string;
 }
 
 export async function createCommentService({
   pinId,
   authorId,
+  parentId,
   content,
 }: CreateCommentInput) {
   const [comment] = await db
@@ -17,6 +19,7 @@ export async function createCommentService({
     .values({
       pinId,
       authorId,
+      parentId: parentId ?? null,
       content,
     })
     .returning();

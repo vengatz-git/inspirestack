@@ -19,6 +19,7 @@ interface PinDetailProps {
   boards: BoardSummary[];
   isOwner: boolean;
   comments: CommentData[];
+  currentUserId: string | null;
 }
 
 export function PinDetail({
@@ -27,6 +28,7 @@ export function PinDetail({
   boards,
   isOwner,
   comments,
+  currentUserId,
 }: PinDetailProps) {
   return (
     <>
@@ -36,6 +38,7 @@ export function PinDetail({
           boards={boards}
           isOwner={isOwner}
           comments={comments}
+          currentUserId={currentUserId}
         />
       </PinDetailLayout>
 

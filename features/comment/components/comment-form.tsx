@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { createCommentAction } from "../actions/create-comment";
@@ -11,10 +12,13 @@ interface CommentFormProps {
 export function CommentForm({
   pinId,
 }: CommentFormProps) {
+  const router = useRouter();
+
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(
     null,
   );
+
   const [isPending, startTransition] =
     useTransition();
 
@@ -39,11 +43,14 @@ export function CommentForm({
       });
 
       if (!result.success) {
-        setError(result.error ?? "Unable to add comment.");
+        setError(
+          result.error ?? "Unable to add comment.",
+        );
         return;
       }
 
       setContent("");
+      router.refresh();
     });
   }
 
@@ -54,18 +61,27 @@ export function CommentForm({
     >
       <textarea
         value={content}
-        onChange={(event) =>
-          setContent(event.target.value)
-        }
+        onChange={(event) => {
+          setContent(event.target.value);
+
+          if (error) {
+            setError(null);
+          }
+        }}
         placeholder="Add a comment..."
         maxLength={1000}
         rows={3}
         disabled={isPending}
-        className="border-input bg-background placeholder:text-muted-foreground focus-visible:ring-ring w-full resize-none rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-2"
+        aria-label="Comment"
+        aria-invalid={error ? true : undefined}
+        className="border-input bg-background placeholder:text-muted-foreground focus-visible:ring-ring w-full resize-none rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-60"
       />
 
       {error ? (
-        <p className="text-destructive text-sm">
+        <p
+          role="alert"
+          className="text-destructive text-sm"
+        >
           {error}
         </p>
       ) : null}
