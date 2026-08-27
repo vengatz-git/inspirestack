@@ -1,11 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import {
-  ArrowLeft,
-  MoreHorizontal,
-  Share2,
-} from "lucide-react";
+import { MoreHorizontal, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
 import type { BoardSummary } from "@/features/board/types/board";
@@ -53,44 +49,32 @@ export function PinHeader({
   }
 
   return (
-    <header className="flex items-center justify-between">
+    <header className="flex items-center justify-end gap-1">
       <Button
         variant="ghost"
         size="icon"
-        aria-label="Go back"
-        className="h-11 w-11 rounded-full"
-        onClick={() => router.back()}
+        aria-label="Share pin"
+        className="size-9 rounded-md"
+        onClick={handleShare}
       >
-        <ArrowLeft className="size-5" />
+        <Share2 className="size-4" />
       </Button>
 
-      <div className="flex items-center gap-3">
+      {isOwner ? (
         <Button
           variant="ghost"
           size="icon"
-          aria-label="Share pin"
-          className="h-11 w-11 rounded-full"
-          onClick={handleShare}
+          aria-label="More actions"
+          className="size-9 rounded-md"
         >
-          <Share2 className="size-5" />
+          <MoreHorizontal className="size-4" />
         </Button>
+      ) : null}
 
-        {isOwner && (
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="More actions"
-            className="h-11 w-11 rounded-full"
-          >
-            <MoreHorizontal className="size-5" />
-          </Button>
-        )}
-
-        <BoardSaveButton
-          pinId={pin.id}
-          boards={boards}
-        />
-      </div>
+      <BoardSaveButton
+        pinId={pin.id}
+        boards={boards}
+      />
     </header>
   );
 }

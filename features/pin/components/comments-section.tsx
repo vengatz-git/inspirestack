@@ -1,5 +1,10 @@
+"use client";
+
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+
 import { CommentForm } from "@/features/comment/components/comment-form";
-import { CommentDeleteButton } from "@/features/comment/components/comment-delete-button";
+import { CommentItem } from "@/features/comment/components/comment-item";
 import type { CommentData } from "@/features/comment/types/comment";
 
 interface CommentsSectionProps {
@@ -13,54 +18,65 @@ export function CommentsSection({
   comments,
   currentUserId,
 }: CommentsSectionProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<string | null>(
+    null,
+  );
+
+  function handleReply(commentId: string) {
+    setReplyingTo((current) =>
+      current === commentId ? null : commentId,
+    );
+  }
+
   return (
-    <section>
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">
-          Comments
-        </h2>
-
-        <span className="text-muted-foreground text-sm">
-          {comments.length}
+    <section className="flex h-full min-h-0 flex-1 flex-col border-t">
+      <button
+        type="button"
+        onClick={() => setIsExpanded((current) => !current)}
+        aria-expanded={isExpanded}
+        className="flex w-full shrink-0 items-center justify-between py-4 text-left"
+      >
+        <span className="flex items-baseline gap-1.5 text-lg font-semibold">
+          <span>{comments.length}</span>
+          <span>Comments</span>
         </span>
-      </div>
 
-      <CommentForm pinId={pinId} />
+        <ChevronDown
+          className={[
+            "text-muted-foreground size-5 transition-transform",
+            isExpanded ? "rotate-180" : "",
+          ].join(" ")}
+        />
+      </button>
 
-      <div className="mt-6">
-        {comments.length === 0 ? (
-          <p className="text-muted-foreground text-sm">
-            No comments yet. Be the first to comment.
-          </p>
-        ) : (
-          <div className="space-y-5">
-            {comments.map((comment) => (
-              <article
-                key={comment.id}
-                className="group"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <p className="text-sm font-medium">
-                    {comment.author.displayName ??
-                      comment.author.username ??
-                      "InspireStack user"}
-                  </p>
+      {isExpanded ? (
+        <div className="min-h-0 flex-1 overflow-y-auto pr-2">
+          {comments.length === 0 ? (
+            <p className="text-muted-foreground py-2 text-sm">
+              No comments yet. Be the first to comment.
+            </p>
+          ) : (
+            <div className="space-y-6 py-2">
+              {comments.map((comment) => (
+                <CommentItem
+                  key={comment.id}
+                  comment={comment}
+                  pinId={pinId}
+                  currentUserId={currentUserId}
+                  replyingTo={replyingTo}
+                  onReply={handleReply}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="min-h-0 flex-1" />
+      )}
 
-                  {currentUserId === comment.author.id ? (
-                    <CommentDeleteButton
-                      commentId={comment.id}
-                      pinId={pinId}
-                    />
-                  ) : null}
-                </div>
-
-                <p className="text-muted-foreground mt-1 text-sm leading-6">
-                  {comment.content}
-                </p>
-              </article>
-            ))}
-          </div>
-        )}
+      <div className="shrink-0 border-t py-3">
+        <CommentForm pinId={pinId} />
       </div>
     </section>
   );

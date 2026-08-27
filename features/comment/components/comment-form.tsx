@@ -1,26 +1,28 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Send } from "lucide-react";
 import { useState, useTransition } from "react";
 
 import { createCommentAction } from "../actions/create-comment";
 
 interface CommentFormProps {
   pinId: string;
+  parentId?: string;
+  onCancel?: () => void;
 }
 
 export function CommentForm({
   pinId,
+  parentId,
+  onCancel,
 }: CommentFormProps) {
   const router = useRouter();
 
   const [content, setContent] = useState("");
-  const [error, setError] = useState<string | null>(
-    null,
-  );
+  const [error, setError] = useState<string | null>(null);
 
-  const [isPending, startTransition] =
-    useTransition();
+  const [isPending, startTransition] = useTransition();
 
   function handleSubmit(
     event: React.FormEvent<HTMLFormElement>,
@@ -39,6 +41,7 @@ export function CommentForm({
     startTransition(async () => {
       const result = await createCommentAction({
         pinId,
+        parentId,
         content: trimmedContent,
       });
 
@@ -50,6 +53,7 @@ export function CommentForm({
       }
 
       setContent("");
+      onCancel?.();
       router.refresh();
     });
   }
@@ -57,50 +61,68 @@ export function CommentForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-3"
+      className="space-y-2"
     >
-      <textarea
-        value={content}
-        onChange={(event) => {
-          setContent(event.target.value);
+      <div className="border-input bg-background focus-within:ring-ring flex min-h-11 items-center rounded-full border px-3 py-1 transition-shadow focus-within:ring-2">
+        <input
+          value={content}
+          onChange={(event) => {
+            setContent(event.target.value);
 
-          if (error) {
-            setError(null);
+            if (error) {
+              setError(null);
+            }
+          }}
+          placeholder={
+            parentId
+              ? "Write a reply..."
+              : "Add a comment..."
           }
-        }}
-        placeholder="Add a comment..."
-        maxLength={1000}
-        rows={3}
-        disabled={isPending}
-        aria-label="Comment"
-        aria-invalid={error ? true : undefined}
-        className="border-input bg-background placeholder:text-muted-foreground focus-visible:ring-ring w-full resize-none rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-60"
-      />
+          maxLength={1000}
+          disabled={isPending}
+          aria-label={
+            parentId ? "Reply" : "Comment"
+          }
+          aria-invalid={error ? true : undefined}
+          className="min-w-0 flex-1 bg-transparent px-2 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60"
+        />
+
+        <button
+          type="submit"
+          disabled={
+            isPending ||
+            content.trim().length === 0
+          }
+          aria-label={
+            parentId
+              ? "Post reply"
+              : "Post comment"
+          }
+          className="text-primary hover:bg-primary/10 flex size-8 shrink-0 items-center justify-center rounded-full transition-colors disabled:pointer-events-none disabled:opacity-40"
+        >
+          <Send className="size-4" />
+        </button>
+      </div>
 
       {error ? (
         <p
           role="alert"
-          className="text-destructive text-sm"
+          className="text-destructive px-2 text-xs"
         >
           {error}
         </p>
       ) : null}
 
-      <div className="flex items-center justify-between">
-        <span className="text-muted-foreground text-xs">
-          {content.length}/1000
-        </span>
-
+      {parentId && onCancel ? (
         <button
-          type="submit"
-          disabled={
-            isPending || content.trim().length === 0
-          }
-          className="bg-primary text-primary-foreground rounded-md px-4 py-2 text-sm font-medium disabled:pointer-events-none disabled:opacity-50"
+          type="button"
+          onClick={onCancel}
+          disabled={isPending}
+          className="text-muted-foreground hover:text-foreground px-2 text-xs font-medium"
         >
-          {isPending ? "Posting..." : "Comment"}
+          Cancel reply
         </button>
-      </div>
+      ) : null}
     </form>
   );
 }

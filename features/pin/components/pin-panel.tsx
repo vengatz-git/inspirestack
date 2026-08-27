@@ -26,18 +26,22 @@ export function PinPanel({
   currentUserId,
 }: PinPanelProps) {
   return (
-    <section className="bg-card flex h-full flex-col overflow-hidden">
-      <header className="shrink-0 border-b px-8 py-5">
-        <PinHeader pin={pin} boards={boards} isOwner={isOwner} />
+    <section className="bg-card flex h-full min-h-0 flex-col overflow-hidden">
+      <header className="shrink-0 border-b px-4 py-2">
+        <PinHeader
+          pin={pin}
+          boards={boards}
+          isOwner={isOwner}
+        />
       </header>
 
-      <div className="flex-1 overflow-y-auto">
-        <div className="space-y-8 px-8 py-8">
+      <div className="flex min-h-0 flex-1 flex-col px-5 pt-4">
+        <div className="shrink-0 space-y-4">
           <PinAuthor pin={pin} />
           <PinMeta pin={pin} />
         </div>
 
-        <div className="border-t px-8 py-6">
+        <div className="mt-6 flex min-h-0 flex-1 flex-col">
           <CommentsSection
             pinId={pin.id}
             comments={comments}

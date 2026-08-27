@@ -19,44 +19,33 @@ type PinAuthorProps = {
 export function PinAuthor({
   pin,
 }: PinAuthorProps) {
+  const username =
+    pin.author.username ?? "unknown";
+
   const initials =
-    pin.author.name?.charAt(0) ??
-    pin.author.username?.charAt(0) ??
-    "?";
+    pin.author.username?.charAt(0) ?? "?";
 
   const profileHref = `/profile/${pin.author.username}`;
 
   return (
     <section>
-      <div className="flex items-center gap-4">
-        <Link
-          href={profileHref}
-          aria-label={`View ${pin.author.name ?? pin.author.username}'s profile`}
-        >
-          <Avatar className="size-14 transition-opacity hover:opacity-90">
-            <AvatarImage src={pin.author.image ?? undefined} />
+      <Link
+        href={profileHref}
+        aria-label={`View ${username}'s profile`}
+        className="group inline-flex items-center gap-3"
+      >
+        <Avatar className="size-10 transition-opacity group-hover:opacity-90">
+          <AvatarImage src={pin.author.image ?? undefined} />
 
-            <AvatarFallback className="text-base font-semibold">
-              {initials.toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-        </Link>
+          <AvatarFallback className="text-sm font-semibold">
+            {initials.toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
 
-        <div className="min-w-0">
-          <Link
-            href={profileHref}
-            className="block transition-opacity hover:opacity-80"
-          >
-            <h2 className="truncate text-lg font-semibold">
-              {pin.author.name ?? "Unknown User"}
-            </h2>
-          </Link>
-
-          <p className="truncate text-sm text-muted-foreground">
-            @{pin.author.username ?? "unknown"}
-          </p>
-        </div>
-      </div>
+        <span className="max-w-48 truncate text-sm font-semibold transition-opacity group-hover:opacity-80">
+          {username}
+        </span>
+      </Link>
     </section>
   );
 }

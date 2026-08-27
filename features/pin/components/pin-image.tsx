@@ -10,15 +10,15 @@ type PinImageProps = {
 
 export function PinImage({ pin }: PinImageProps) {
   return (
-    <div className="bg-muted/30 flex h-full items-center justify-center p-6">
-      <div className="bg-background relative h-full w-full overflow-hidden rounded-2xl">
+    <div className="bg-muted/30 flex h-full min-h-0 items-center justify-center p-4">
+      <div className="relative h-full w-full overflow-hidden rounded-xl">
         <Image
           src={pin.imageUrl}
           alt={pin.altText ?? pin.title ?? "Pin image"}
           fill
           priority
           sizes="50vw"
-          className="object-contain transition-opacity duration-300"
+          className="object-contain"
         />
       </div>
     </div>

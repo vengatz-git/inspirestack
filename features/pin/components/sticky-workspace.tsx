@@ -25,8 +25,8 @@ export function StickyWorkspace({
 }: StickyWorkspaceProps) {
   return (
     <section className="w-full">
-      <div className="bg-card mx-auto h-[min(760px,calc(100vh-7rem))] max-h-190 min-h-140 w-full max-w-7xl overflow-hidden rounded-3xl border shadow-2xl">
-        <div className="grid h-full grid-cols-[1.2fr_1fr]">
+      <div className="bg-card mx-auto h-[calc(100dvh-8rem)] min-h-0 w-full max-w-5xl overflow-hidden rounded-3xl border shadow-2xl">
+        <div className="grid h-full grid-cols-2">
           <PinImage pin={pin} />
 
           <PinPanel

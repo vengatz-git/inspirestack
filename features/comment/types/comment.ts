@@ -12,4 +12,15 @@ export interface CommentData {
   updatedAt: Date;
 
   author: CommentAuthor;
+
+  replies: CommentReplyData[];
+}
+
+export interface CommentReplyData {
+  id: string;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+
+  author: CommentAuthor;
 }
