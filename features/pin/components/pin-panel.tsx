@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 import type { BoardSummary } from "@/features/board/types/board";
 import type { CommentData } from "@/features/comment/types/comment";
 
@@ -25,6 +29,9 @@ export function PinPanel({
   comments,
   currentUserId,
 }: PinPanelProps) {
+  const [isCommentsExpanded, setIsCommentsExpanded] =
+    useState(false);
+
   return (
     <section className="bg-card flex h-full min-h-0 flex-col overflow-hidden">
       <header className="shrink-0 border-b px-4 py-2">
@@ -32,6 +39,7 @@ export function PinPanel({
           pin={pin}
           boards={boards}
           isOwner={isOwner}
+          onCommentClick={() => setIsCommentsExpanded(true)}
         />
       </header>
 
@@ -41,11 +49,13 @@ export function PinPanel({
           <PinMeta pin={pin} />
         </div>
 
-        <div className="mt-6 flex min-h-0 flex-1 flex-col">
+        <div className="flex min-h-0 flex-1 flex-col">
           <CommentsSection
             pinId={pin.id}
             comments={comments}
             currentUserId={currentUserId}
+            isExpanded={isCommentsExpanded}
+            onExpandedChange={setIsCommentsExpanded}
           />
         </div>
       </div>

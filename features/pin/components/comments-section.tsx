@@ -11,17 +11,18 @@ interface CommentsSectionProps {
   pinId: string;
   comments: CommentData[];
   currentUserId: string | null;
+  isExpanded: boolean;
+  onExpandedChange: (expanded: boolean) => void;
 }
 
 export function CommentsSection({
   pinId,
   comments,
   currentUserId,
+  isExpanded,
+  onExpandedChange,
 }: CommentsSectionProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [replyingTo, setReplyingTo] = useState<string | null>(
-    null,
-  );
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
   function handleReply(commentId: string) {
     setReplyingTo((current) =>
@@ -33,7 +34,7 @@ export function CommentsSection({
     <section className="flex h-full min-h-0 flex-1 flex-col border-t">
       <button
         type="button"
-        onClick={() => setIsExpanded((current) => !current)}
+        onClick={() => onExpandedChange(!isExpanded)}
         aria-expanded={isExpanded}
         className="flex w-full shrink-0 items-center justify-between py-4 text-left"
       >

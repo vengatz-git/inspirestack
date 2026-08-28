@@ -2,6 +2,8 @@ import Image from "next/image";
 
 import { getPinByIdService } from "../services/get-pin-by-id";
 
+import { PinImageActions } from "./pin-image-actions";
+
 type Pin = NonNullable<Awaited<ReturnType<typeof getPinByIdService>>>;
 
 type PinImageProps = {
@@ -9,16 +11,24 @@ type PinImageProps = {
 };
 
 export function PinImage({ pin }: PinImageProps) {
+  const ratio = pin.imageWidth / pin.imageHeight;
+  const isNearSquare = ratio >= 0.8 && ratio <= 1.25;
+
   return (
-    <div className="bg-muted/30 flex h-full min-h-0 items-center justify-center p-4">
-      <div className="relative h-full w-full overflow-hidden rounded-xl">
+    <div className="relative flex h-full min-h-0 w-full items-center justify-center bg-white">
+      <div className="relative h-full w-full overflow-hidden">
         <Image
           src={pin.imageUrl}
           alt={pin.altText ?? pin.title ?? "Pin image"}
           fill
           priority
           sizes="50vw"
-          className="object-contain"
+          className={isNearSquare ? "object-cover" : "object-contain"}
+        />
+
+        <PinImageActions
+          imageUrl={pin.imageUrl}
+          altText={pin.altText ?? pin.title ?? "Pin image"}
         />
       </div>
     </div>
