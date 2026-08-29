@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Send } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useState, useTransition, type Ref } from "react";
 
 import { createCommentAction } from "../actions/create-comment";
 
@@ -10,12 +10,14 @@ interface CommentFormProps {
   pinId: string;
   parentId?: string;
   onCancel?: () => void;
+  inputRef?: Ref<HTMLInputElement>;
 }
 
 export function CommentForm({
   pinId,
   parentId,
   onCancel,
+  inputRef,
 }: CommentFormProps) {
   const router = useRouter();
 
@@ -65,6 +67,7 @@ export function CommentForm({
     >
       <div className="border-input bg-background focus-within:ring-ring flex min-h-11 items-center rounded-full border px-3 py-1 transition-shadow focus-within:ring-2">
         <input
+          ref={inputRef}
           value={content}
           onChange={(event) => {
             setContent(event.target.value);

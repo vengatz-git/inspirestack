@@ -23,7 +23,7 @@ export function mapProfilePinToCard(
     imageUrl: pin.imageUrl,
     imageWidth: pin.imageWidth,
     imageHeight: pin.imageHeight,
-    altText: pin.altText,
+    altText: pin.title,
 
     author: {
       id: pin.author.id,

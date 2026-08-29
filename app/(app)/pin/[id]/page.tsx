@@ -51,7 +51,7 @@ export async function generateMetadata({
       images: [
         {
           url: pin.imageUrl,
-          alt: pin.altText ?? title,
+          alt: title,
         },
       ],
     },

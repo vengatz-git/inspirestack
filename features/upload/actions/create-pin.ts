@@ -18,6 +18,7 @@ type CreatePinActionResult =
       success: false;
       error: string;
     };
+
 export async function createPinAction(
   formData: FormData,
 ): Promise<CreatePinActionResult> {
@@ -33,7 +34,6 @@ export async function createPinAction(
   const parsed = createPinSchema.safeParse({
     title: formData.get("title"),
     description: formData.get("description"),
-    altText: formData.get("altText"),
     image: formData.get("image"),
     topicId: formData.get("topicId"),
   });
@@ -41,9 +41,15 @@ export async function createPinAction(
   if (!parsed.success) {
     return {
       success: false,
-      error: parsed.error.issues[0]?.message ?? "Invalid form data.",
+      error:
+        parsed.error.issues[0]?.message ??
+        "Invalid form data.",
     };
   }
+
+  const tags = formData
+    .getAll("tags")
+    .filter((value): value is string => typeof value === "string");
 
   const image = await uploadImage(parsed.data.image);
 
@@ -52,11 +58,11 @@ export async function createPinAction(
     topicId: parsed.data.topicId,
     title: parsed.data.title,
     description: parsed.data.description,
-    altText: parsed.data.altText,
     imageUrl: image.imageUrl,
     imagePublicId: image.imagePublicId,
     imageWidth: image.imageWidth,
     imageHeight: image.imageHeight,
+    tagNames: tags,
   });
 
   revalidatePath(`/profile/${session.user.username}`);

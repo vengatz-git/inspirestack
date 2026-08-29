@@ -9,11 +9,12 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { topics } from "./topics";
 
-import { users } from "./auth"; // Adjust the import path based on your project structure
+import { topics } from "./topics";
+import { users } from "./auth";
 import { boardPins } from "./boards";
 import { comments } from "./comments";
+import { pinTags } from "./tags";
 
 export const pinVisibilityEnum = pgEnum("pin_visibility", [
   "PUBLIC",
@@ -51,11 +52,9 @@ export const pins = pgTable(
 
     imageHeight: integer("image_height").notNull(),
 
-    altText: varchar("alt_text", {
-      length: 200,
-    }),
-
-    visibility: pinVisibilityEnum("visibility").notNull().default("PUBLIC"),
+    visibility: pinVisibilityEnum("visibility")
+      .notNull()
+      .default("PUBLIC"),
 
     createdAt: timestamp("created_at", {
       withTimezone: true,
@@ -98,6 +97,8 @@ export const pinsRelations = relations(pins, ({ one, many }) => ({
   boardPins: many(boardPins),
 
   comments: many(comments),
+
+  pinTags: many(pinTags),
 }));
 
 export type Pin = typeof pins.$inferSelect;

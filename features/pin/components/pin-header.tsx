@@ -1,17 +1,15 @@
 "use client";
 
 import {
+  ChevronDown,
   Copy,
   Download,
+  Heart,
   MessageCircle,
   MoreHorizontal,
   Share2,
 } from "lucide-react";
 import { toast } from "sonner";
-
-import type { BoardSummary } from "@/features/board/types/board";
-
-import { getPinByIdService } from "../services/get-pin-by-id";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,22 +18,30 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BoardSaveButton } from "@/features/board/components/board-save-button";
 
-type Pin = NonNullable<Awaited<ReturnType<typeof getPinByIdService>>>;
+import { BoardSaveButton } from "@/features/board/components/board-save-button";
+import type { BoardSummary } from "@/features/board/types/board";
+
+import { getPinByIdService } from "../services/get-pin-by-id";
+
+type Pin = NonNullable<
+  Awaited<ReturnType<typeof getPinByIdService>>
+>;
 
 interface PinHeaderProps {
   pin: Pin;
   boards: BoardSummary[];
-  isOwner: boolean;
   onCommentClick: () => void;
+  onToggleDetails: () => void;
+  showDetails: boolean;
 }
 
 export function PinHeader({
   pin,
   boards,
-  isOwner,
   onCommentClick,
+  onToggleDetails,
+  showDetails,
 }: PinHeaderProps) {
   async function handleShare() {
     if (!navigator.share) {
@@ -53,7 +59,9 @@ export function PinHeader({
   }
 
   async function handleCopyLink() {
-    await navigator.clipboard.writeText(window.location.href);
+    await navigator.clipboard.writeText(
+      window.location.href,
+    );
 
     toast.success("Link copied to clipboard.");
   }
@@ -73,6 +81,7 @@ export function PinHeader({
 
       link.href = url;
       link.download = `inspirestack-${pin.id}`;
+
       document.body.appendChild(link);
       link.click();
       link.remove();
@@ -84,28 +93,38 @@ export function PinHeader({
   }
 
   return (
-    <header className="flex items-center justify-end gap-1">
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label="Comments"
-        className="size-8 rounded-md"
-        onClick={onCommentClick}
-      >
-        <MessageCircle className="size-4" />
-      </Button>
+    <header className="flex w-full items-center justify-between">
+      {/* Left-side actions */}
+      <div className="flex items-center gap-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Like pin"
+          className="size-9 rounded-full"
+        >
+          <Heart className="size-5" />
+        </Button>
 
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label="Share pin"
-        className="size-8 rounded-md"
-        onClick={handleShare}
-      >
-        <Share2 className="size-4" />
-      </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Comments"
+          className="size-9 rounded-full"
+          onClick={onCommentClick}
+        >
+          <MessageCircle className="size-5" />
+        </Button>
 
-      {isOwner ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Share pin"
+          className="size-9 rounded-full"
+          onClick={handleShare}
+        >
+          <Share2 className="size-5" />
+        </Button>
+
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
@@ -113,55 +132,60 @@ export function PinHeader({
                 variant="ghost"
                 size="icon"
                 aria-label="More actions"
-                className="size-8 rounded-md"
+                className="size-9 rounded-full"
               />
             }
           >
-            <MoreHorizontal className="size-4" />
+            <MoreHorizontal className="size-5" />
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" sideOffset={8}>
-            <DropdownMenuItem onClick={handleDownload}>
+          <DropdownMenuContent
+            align="start"
+            sideOffset={8}
+          >
+            <DropdownMenuItem
+              onClick={onToggleDetails}
+            >
+              <span>
+                {showDetails
+                  ? "Hide details"
+                  : "See details"}
+              </span>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              onClick={handleDownload}
+            >
               <Download />
               <span>Download</span>
             </DropdownMenuItem>
 
-            <DropdownMenuItem onClick={handleCopyLink}>
+            <DropdownMenuItem
+              onClick={handleCopyLink}
+            >
               <Copy />
               <span>Copy link</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      ) : (
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="More actions"
-                className="size-8 rounded-md"
-              />
-            }
-          >
-            <MoreHorizontal className="size-4" />
-          </DropdownMenuTrigger>
+      </div>
 
-          <DropdownMenuContent align="end" sideOffset={8}>
-            <DropdownMenuItem onClick={handleDownload}>
-              <Download />
-              <span>Download</span>
-            </DropdownMenuItem>
+      {/* Right-side controls */}
+      <div className="flex items-center gap-2">
+        {/* <button
+          type="button"
+          className="text-foreground hover:bg-muted flex items-center gap-1 rounded-full px-3 py-2 text-sm font-medium transition-colors"
+          aria-label={`Topic: ${pin.topic.name}`}
+        >
+          <span>{pin.topic.name}</span>
+          <ChevronDown className="size-4" />
+        </button> */}
 
-            <DropdownMenuItem onClick={handleCopyLink}>
-              <Copy />
-              <span>Copy link</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
-
-      <BoardSaveButton pinId={pin.id} boards={boards} />
+        <BoardSaveButton
+          pinId={pin.id}
+          boards={boards}
+        />
+      </div>
     </header>
   );
 }

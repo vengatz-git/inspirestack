@@ -12,7 +12,7 @@ export function mapPinToCard(
     imageUrl: pin.imageUrl,
     imageWidth: pin.imageWidth,
     imageHeight: pin.imageHeight,
-    altText: pin.altText,
+    altText: pin.title,
 
     destinationUrl: null,
   };

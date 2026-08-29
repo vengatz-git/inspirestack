@@ -2,26 +2,19 @@
 
 import { useEffect, useState } from "react";
 
-import { useRouter } from "next/navigation";
 import { Controller } from "react-hook-form";
-import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldError,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-import { TopicChip } from "@/features/topic/components/topic-chip";
 import type { TopicOption } from "@/features/topic/types/topic";
 
-import { createPinAction } from "../actions/create-pin";
 import { useCreatePinForm } from "../hooks/use-create-pin-form";
-import type { CreatePinSchema } from "../schemas/create-pin-schema";
+import { useCreatePinSubmit } from "../hooks/use-create-pin-submit";
 import { ImageUpload } from "./image-upload";
+import { TagInput } from "./tag-input";
+import { TopicSelect } from "./topic-select";
 
 interface CreatePinFormProps {
   topics: TopicOption[];
@@ -31,14 +24,27 @@ export function CreatePinForm({
   topics,
 }: CreatePinFormProps) {
   const form = useCreatePinForm();
-  const router = useRouter();
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     null,
   );
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [topicSearch, setTopicSearch] = useState("");
+  const [isTopicOpen, setIsTopicOpen] = useState(false);
 
   const selectedTopicId = form.watch("topicId");
+  const tags = form.watch("tags") ?? [];
+  const tagInput = form.watch("tagInput") ?? "";
+
+  const { submit, isSubmitting } = useCreatePinSubmit({
+    previewUrl,
+    onSuccess: () => {
+      form.reset();
+      setPreviewUrl(null);
+      setTopicSearch("");
+      setIsTopicOpen(false);
+    },
+  });
 
   useEffect(() => {
     return () => {
@@ -63,79 +69,36 @@ export function CreatePinForm({
   }
 
   function handleTopicSelect(topicId: string) {
-    const current = form.getValues("topicId");
+    form.setValue("topicId", topicId, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
 
-    form.setValue(
-      "topicId",
-      current === topicId ? "" : topicId,
-      {
-        shouldDirty: true,
-        shouldTouch: true,
-        shouldValidate: true,
-      },
-    );
+    setIsTopicOpen(false);
+    setTopicSearch("");
   }
 
-  async function onSubmit(
-    values: CreatePinSchema,
-  ) {
-    try {
-      setIsSubmitting(true);
+  function handleTagsChange(nextTags: string[]) {
+    form.setValue("tags", nextTags, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
+  }
 
-      const formData = new FormData();
-
-      if (values.title) {
-        formData.append("title", values.title);
-      }
-
-      if (values.description) {
-        formData.append(
-          "description",
-          values.description,
-        );
-      }
-
-      if (values.altText) {
-        formData.append("altText", values.altText);
-      }
-
-      formData.append("image", values.image);
-      formData.append("topicId", values.topicId);
-
-      const result = await createPinAction(formData);
-
-      if (!result.success) {
-        toast.error(result.error);
-        return;
-      }
-
-      toast.success("Pin published successfully.");
-
-      form.reset();
-
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
-
-      setPreviewUrl(null);
-
-      router.push(`/profile/${result.username}`);
-      router.refresh();
-    } catch (error) {
-      console.error(error);
-
-      toast.error(
-        "Something went wrong while publishing your Pin.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+  function handleTagInputChange(value: string) {
+    form.setValue("tagInput", value, {
+      shouldDirty: true,
+      shouldTouch: true,
+    });
   }
 
   return (
     <form
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="grid gap-10 lg:grid-cols-[380px_1fr]"
+      id="create-pin-form"
+      onSubmit={form.handleSubmit(submit)}
+      className="grid gap-10 px-6 py-8 lg:grid-cols-[minmax(280px,380px)_minmax(0,640px)] lg:justify-center lg:gap-16"
     >
       <Controller
         control={form.control}
@@ -150,7 +113,7 @@ export function CreatePinForm({
         )}
       />
 
-      <div className="space-y-6">
+      <div className="min-w-0 space-y-6">
         <Field>
           <FieldLabel htmlFor="title">
             Title
@@ -175,66 +138,39 @@ export function CreatePinForm({
 
           <Textarea
             id="description"
-            rows={6}
+            rows={5}
             placeholder="Describe your Pin"
             disabled={isSubmitting}
             {...form.register("description")}
           />
 
           <FieldError
-            errors={[
-              form.formState.errors.description,
-            ]}
+            errors={[form.formState.errors.description]}
           />
         </Field>
 
         <Field>
-          <FieldLabel htmlFor="altText">
-            Alt text
-          </FieldLabel>
-
-          <Textarea
-            id="altText"
-            rows={3}
-            placeholder="Describe the image for accessibility"
-            disabled={isSubmitting}
-            {...form.register("altText")}
-          />
-
-          <FieldError
-            errors={[form.formState.errors.altText]}
-          />
-        </Field>
-
-        <Field>
-          <FieldLabel>
+          <FieldLabel htmlFor="topic">
             Topic{" "}
-            <span className="text-destructive">
-              *
-            </span>
+            <span className="text-destructive">*</span>
           </FieldLabel>
 
           {topics.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {topics.map((topic) => (
-                <TopicChip
-                  key={topic.id}
-                  label={topic.name}
-                  active={
-                    topic.id === selectedTopicId
-                  }
-                  onClick={() =>
-                    handleTopicSelect(topic.id)
-                  }
-                />
-              ))}
-            </div>
+            <TopicSelect
+              topics={topics}
+              value={selectedTopicId}
+              search={topicSearch}
+              isOpen={isTopicOpen}
+              disabled={isSubmitting}
+              onSearchChange={setTopicSearch}
+              onOpenChange={setIsTopicOpen}
+              onSelect={handleTopicSelect}
+            />
           ) : (
             <div className="rounded-lg border border-dashed p-4">
               <p className="text-sm text-muted-foreground">
-                No topics are available yet.
-                Please seed the database before
-                creating pins.
+                No topics are available yet. Please seed
+                the database before creating Pins.
               </p>
             </div>
           )}
@@ -244,19 +180,19 @@ export function CreatePinForm({
           />
         </Field>
 
-        <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={
-              isSubmitting ||
-              topics.length === 0
-            }
-          >
-            {isSubmitting
-              ? "Publishing..."
-              : "Publish"}
-          </Button>
-        </div>
+        <Controller
+          control={form.control}
+          name="tags"
+          render={() => (
+            <TagInput
+              tags={tags}
+              value={tagInput}
+              disabled={isSubmitting}
+              onChange={handleTagInputChange}
+              onTagsChange={handleTagsChange}
+            />
+          )}
+        />
       </div>
     </form>
   );

@@ -9,6 +9,12 @@ export async function getPinByIdService(id: string) {
     with: {
       author: true,
       topic: true,
+
+      pinTags: {
+        with: {
+          tag: true,
+        },
+      },
     },
   });
 }

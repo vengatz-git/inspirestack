@@ -99,7 +99,7 @@ export async function getSavedPinsByUserService({
       imageUrl: pin.imageUrl,
       imageWidth: pin.imageWidth,
       imageHeight: pin.imageHeight,
-      altText: pin.altText,
+      altText: pin.title,
 
       author: {
         id: author.id,

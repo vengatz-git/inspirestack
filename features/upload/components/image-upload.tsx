@@ -3,7 +3,7 @@
 import type { ChangeEvent } from "react";
 
 import Image from "next/image";
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, Upload } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -32,38 +32,55 @@ export function ImageUpload({
     }
 
     onSelect(file);
+
+    event.target.value = "";
   }
 
   return (
-    <div className="space-y-4">
+    <div className="w-full">
       <label
         htmlFor="pin-image"
         aria-disabled={disabled}
         className={cn(
-          "relative flex aspect-3/4 w-full items-center justify-center overflow-hidden rounded-3xl border-2 border-dashed transition-colors",
+          "group relative block aspect-square w-full overflow-hidden rounded-2xl border bg-muted/30 transition-colors",
           previewUrl
             ? "border-border"
-            : "border-muted-foreground/30 hover:border-primary",
-          disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
+            : "border-dashed border-muted-foreground/30 hover:border-foreground/40",
+          disabled
+            ? "cursor-not-allowed opacity-60"
+            : "cursor-pointer",
         )}
       >
         {previewUrl ? (
-          <Image
-            src={previewUrl}
-            alt="Pin preview"
-            fill
-            sizes="100vw"
-            className="object-cover"
-            unoptimized
-          />
+          <>
+            <Image
+              src={previewUrl}
+              alt="Pin preview"
+              fill
+              sizes="(max-width: 1024px) 280px, 280px"
+              className="object-contain"
+              unoptimized
+            />
+
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center bg-linear-to-t from-black/40 to-transparent px-4 pb-4 pt-10 opacity-0 transition-opacity group-hover:opacity-100">
+              <span className="inline-flex items-center gap-1.5 rounded-lg bg-background/90 px-3 py-1.5 text-xs font-medium text-foreground shadow-sm">
+                <Upload className="size-3.5" />
+                Change image
+              </span>
+            </div>
+          </>
         ) : (
-          <div className="flex flex-col items-center gap-4 px-6 text-center">
-            <ImageIcon className="text-muted-foreground h-10 w-10" />
+          <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
+            <div className="flex size-11 items-center justify-center rounded-full bg-muted">
+              <ImageIcon className="size-5 text-muted-foreground" />
+            </div>
 
             <div>
-              <p className="font-medium">Upload an image</p>
+              <p className="text-sm font-medium">
+                Choose an image
+              </p>
 
-              <p className="text-muted-foreground mt-1 text-sm">
+              <p className="mt-1 text-xs text-muted-foreground">
                 PNG, JPG or WEBP
               </p>
             </div>
@@ -73,7 +90,7 @@ export function ImageUpload({
         <input
           id="pin-image"
           type="file"
-          accept="image/*"
+          accept="image/png,image/jpeg,image/webp"
           className="hidden"
           disabled={disabled}
           aria-invalid={!!error}
@@ -82,7 +99,10 @@ export function ImageUpload({
       </label>
 
       {error ? (
-        <p className="text-destructive text-sm" role="alert">
+        <p
+          className="mt-2 text-xs text-destructive"
+          role="alert"
+        >
           {error}
         </p>
       ) : null}

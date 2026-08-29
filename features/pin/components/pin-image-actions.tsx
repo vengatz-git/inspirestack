@@ -7,12 +7,10 @@ import { Button } from "@/components/ui/button";
 
 interface PinImageActionsProps {
   imageUrl: string;
-  altText: string;
 }
 
 export function PinImageActions({
   imageUrl,
-  altText,
 }: PinImageActionsProps) {
   const router = useRouter();
 
@@ -37,7 +35,7 @@ export function PinImageActions({
     const fullscreenImage = document.createElement("img");
 
     fullscreenImage.src = imageUrl;
-    fullscreenImage.alt = altText;
+    fullscreenImage.alt = "Pin image";
 
     Object.assign(fullscreenImage.style, {
       maxWidth: "100%",

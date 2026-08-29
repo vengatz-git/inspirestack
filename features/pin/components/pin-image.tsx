@@ -19,17 +19,14 @@ export function PinImage({ pin }: PinImageProps) {
       <div className="relative h-full w-full overflow-hidden">
         <Image
           src={pin.imageUrl}
-          alt={pin.altText ?? pin.title ?? "Pin image"}
+          alt={pin.title ?? "Pin image"}
           fill
           priority
           sizes="50vw"
           className={isNearSquare ? "object-cover" : "object-contain"}
         />
 
-        <PinImageActions
-          imageUrl={pin.imageUrl}
-          altText={pin.altText ?? pin.title ?? "Pin image"}
-        />
+        <PinImageActions imageUrl={pin.imageUrl} />
       </div>
     </div>
   );

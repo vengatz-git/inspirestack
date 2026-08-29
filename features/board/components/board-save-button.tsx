@@ -28,7 +28,7 @@ export function BoardSaveButton({
   return (
     <>
       <Button
-        className="h-11 rounded-full px-6"
+        className="h-10 rounded-xl px-5 text-md font-semibold"
         variant={isSaved ? "secondary" : "default"}
         onClick={() => setOpen(true)}
       >

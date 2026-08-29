@@ -1,4 +1,4 @@
-import { UploadApiResponse } from "cloudinary";
+import type { UploadApiResponse } from "cloudinary";
 
 import { cloudinary } from "../lib/cloudinary";
 
@@ -9,9 +9,10 @@ export type UploadedImage = {
   imageHeight: number;
 };
 
-export async function uploadImage(file: File): Promise<UploadedImage> {
+export async function uploadImage(
+  file: File,
+): Promise<UploadedImage> {
   const arrayBuffer = await file.arrayBuffer();
-
   const buffer = Buffer.from(arrayBuffer);
 
   return new Promise((resolve, reject) => {
@@ -20,9 +21,15 @@ export async function uploadImage(file: File): Promise<UploadedImage> {
         folder: "inspirestack/pins",
         resource_type: "image",
       },
-      (error, result: UploadApiResponse | undefined) => {
+      (
+        error,
+        result: UploadApiResponse | undefined,
+      ) => {
         if (error || !result) {
-          reject(error ?? new Error("Image upload failed."));
+          reject(
+            error ??
+              new Error("Image upload failed."),
+          );
           return;
         }
 

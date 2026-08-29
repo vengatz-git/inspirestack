@@ -50,6 +50,13 @@
       "when": 1787758363612,
       "tag": "0006_futuristic_revanche",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1788011706721,
+      "tag": "0007_calm_squirrel_girl",
+      "breakpoints": true
     }
   ]
 }

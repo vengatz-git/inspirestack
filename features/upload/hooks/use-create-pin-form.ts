@@ -4,22 +4,25 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 import {
-  createPinSchema,
-  type CreatePinSchema,
+  createPinFormSchema,
+  type CreatePinFormValues,
 } from "../schemas/create-pin-schema";
 
 export function useCreatePinForm() {
-  return useForm<CreatePinSchema>({
-    resolver: zodResolver(createPinSchema),
+  return useForm<CreatePinFormValues>({
+    resolver: zodResolver(createPinFormSchema),
 
     defaultValues: {
       title: "",
       description: "",
-      altText: "",
       image: undefined,
       topicId: "",
+      tags: [],
+      tagInput: "",
     },
 
     mode: "onBlur",
   });
 }
+
+export { CreatePinFormValues };
