@@ -34,7 +34,7 @@ export function PinAuthor({
         aria-label={`View ${username}'s profile`}
         className="group inline-flex items-center gap-3"
       >
-        <Avatar className="size-10 transition-opacity group-hover:opacity-90">
+        <Avatar className="size-8 transition-opacity group-hover:opacity-90">
           <AvatarImage src={pin.author.image ?? undefined} />
 
           <AvatarFallback className="text-sm font-semibold">
