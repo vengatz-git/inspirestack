@@ -42,7 +42,7 @@ export function ImageUpload({
         htmlFor="pin-image"
         aria-disabled={disabled}
         className={cn(
-          "group relative block aspect-square w-full overflow-hidden rounded-2xl border bg-muted/30 transition-colors",
+          "group relative flex min-h-120 w-full items-center justify-center overflow-hidden rounded-2xl border bg-muted/30 transition-colors",
           previewUrl
             ? "border-border"
             : "border-dashed border-muted-foreground/30 hover:border-foreground/40",
@@ -57,7 +57,7 @@ export function ImageUpload({
               src={previewUrl}
               alt="Pin preview"
               fill
-              sizes="(max-width: 1024px) 280px, 280px"
+              sizes="(max-width: 1024px) 100vw, 480px"
               className="object-contain"
               unoptimized
             />
@@ -70,7 +70,7 @@ export function ImageUpload({
             </div>
           </>
         ) : (
-          <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
+          <div className="flex flex-col items-center justify-center gap-3 px-6 text-center">
             <div className="flex size-11 items-center justify-center rounded-full bg-muted">
               <ImageIcon className="size-5 text-muted-foreground" />
             </div>

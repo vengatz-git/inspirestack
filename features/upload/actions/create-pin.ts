@@ -6,6 +6,7 @@ import { auth } from "@/auth";
 
 import { createPinSchema } from "../schemas/create-pin-schema";
 import { createPinService } from "../services/create-pin";
+import { deleteImage } from "../services/delete-image";
 import { uploadImage } from "../services/upload-image";
 
 type CreatePinActionResult =
@@ -49,27 +50,50 @@ export async function createPinAction(
 
   const tags = formData
     .getAll("tags")
-    .filter((value): value is string => typeof value === "string");
+    .filter(
+      (value): value is string =>
+        typeof value === "string",
+    );
 
-  const image = await uploadImage(parsed.data.image);
+  let image: Awaited<
+    ReturnType<typeof uploadImage>
+  > | null = null;
 
-  const pin = await createPinService({
-    authorId: session.user.id,
-    topicId: parsed.data.topicId,
-    title: parsed.data.title,
-    description: parsed.data.description,
-    imageUrl: image.imageUrl,
-    imagePublicId: image.imagePublicId,
-    imageWidth: image.imageWidth,
-    imageHeight: image.imageHeight,
-    tagNames: tags,
-  });
+  try {
+    image = await uploadImage(parsed.data.image);
 
-  revalidatePath(`/profile/${session.user.username}`);
+    try {
+      const pin = await createPinService({
+        authorId: session.user.id,
+        topicId: parsed.data.topicId,
+        title: parsed.data.title,
+        description: parsed.data.description,
+        imageUrl: image.imageUrl,
+        imagePublicId: image.imagePublicId,
+        imageWidth: image.imageWidth,
+        imageHeight: image.imageHeight,
+        tagNames: tags,
+      });
 
-  return {
-    success: true,
-    pinId: pin.id,
-    username: session.user.username,
-  };
+      revalidatePath(
+        `/profile/${session.user.username}`,
+      );
+
+      return {
+        success: true,
+        pinId: pin.id,
+        username: session.user.username,
+      };
+    } catch (error) {
+      await deleteImage(image.imagePublicId);
+      throw error;
+    }
+  } catch (error) {
+    console.error("Failed to create Pin:", error);
+
+    return {
+      success: false,
+      error: "Failed to publish your Pin.",
+    };
+  }
 }

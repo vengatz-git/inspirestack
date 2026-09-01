@@ -13,14 +13,5 @@ export interface CommentData {
 
   author: CommentAuthor;
 
-  replies: CommentReplyData[];
-}
-
-export interface CommentReplyData {
-  id: string;
-  content: string;
-  createdAt: Date;
-  updatedAt: Date;
-
-  author: CommentAuthor;
+  replies: CommentData[];
 }

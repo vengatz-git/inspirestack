@@ -19,9 +19,12 @@ export function useCreatePinSubmit({
 }: UseCreatePinSubmitOptions) {
   const router = useRouter();
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] =
+    useState(false);
 
-  async function submit(values: CreatePinFormValues) {
+  async function submit(
+    values: CreatePinFormValues,
+  ) {
     try {
       setIsSubmitting(true);
 
@@ -32,7 +35,10 @@ export function useCreatePinSubmit({
       }
 
       if (values.description) {
-        formData.append("description", values.description);
+        formData.append(
+          "description",
+          values.description,
+        );
       }
 
       formData.append("image", values.image);
@@ -53,14 +59,17 @@ export function useCreatePinSubmit({
 
       onSuccess();
 
-      if (previewUrl) {
+      if (previewUrl?.startsWith("blob:")) {
         URL.revokeObjectURL(previewUrl);
       }
 
       router.push(`/profile/${result.username}`);
       router.refresh();
     } catch (error) {
-      console.error(error);
+      console.error(
+        "Failed to publish Pin:",
+        error,
+      );
 
       toast.error(
         "Something went wrong while publishing your Pin.",

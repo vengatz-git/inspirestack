@@ -57,6 +57,13 @@
       "when": 1788011706721,
       "tag": "0007_calm_squirrel_girl",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1788174599271,
+      "tag": "0008_chief_leo",
+      "breakpoints": true
     }
   ]
 }

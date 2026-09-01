@@ -32,7 +32,7 @@ export function BoardSaveButton({
         variant={isSaved ? "secondary" : "default"}
         onClick={() => setOpen(true)}
       >
-        {isSaved && <Check className="size-4" />}
+        {isSaved}
         {isSaved ? "Saved" : "Save"}
       </Button>
 

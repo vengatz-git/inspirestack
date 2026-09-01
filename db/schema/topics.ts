@@ -6,6 +6,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
+import { drafts } from "./drafts";
 import { pins } from "./pins";
 
 export const topics = pgTable("topics", {
@@ -41,6 +42,7 @@ export const topicsRelations = relations(
   topics,
   ({ many }) => ({
     pins: many(pins),
+    drafts: many(drafts),
   }),
 );
 

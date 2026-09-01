@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const MAX_IMAGE_SIZE = 20 * 1024 * 1024;
+
 export const createPinSchema = z.object({
   title: z
     .string()
@@ -13,9 +15,18 @@ export const createPinSchema = z.object({
     .max(1000, "Description cannot exceed 1000 characters.")
     .optional(),
 
-  image: z.instanceof(File, {
-    message: "Please select an image.",
-  }),
+  image: z
+    .instanceof(File, {
+      message: "Please select an image.",
+    })
+    .refine(
+      (file) => file.size <= MAX_IMAGE_SIZE,
+      "Image must be 20 MB or smaller.",
+    )
+    .refine(
+      (file) => ["image/png", "image/jpeg", "image/webp"].includes(file.type),
+      "Only PNG, JPG, and WEBP images are supported.",
+    ),
 
   topicId: z
     .string({
@@ -34,6 +45,4 @@ export const createPinFormSchema = createPinSchema.extend({
 
 export type CreatePinSchema = z.infer<typeof createPinSchema>;
 
-export type CreatePinFormValues = z.infer<
-  typeof createPinFormSchema
->;
+export type CreatePinFormValues = z.infer<typeof createPinFormSchema>;

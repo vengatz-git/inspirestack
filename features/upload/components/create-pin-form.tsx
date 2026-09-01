@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import type { UseFormReturn } from "react-hook-form";
 import { Controller } from "react-hook-form";
 
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
@@ -10,28 +11,24 @@ import { Textarea } from "@/components/ui/textarea";
 
 import type { TopicOption } from "@/features/topic/types/topic";
 
-import { useCreatePinForm } from "../hooks/use-create-pin-form";
+import type { CreatePinFormValues } from "../hooks/use-create-pin-form";
 import { useCreatePinSubmit } from "../hooks/use-create-pin-submit";
 import { ImageUpload } from "./image-upload";
 import { TagInput } from "./tag-input";
 import { TopicSelect } from "./topic-select";
 
 interface CreatePinFormProps {
+  form: UseFormReturn<CreatePinFormValues>;
   topics: TopicOption[];
 }
 
-export function CreatePinForm({
-  topics,
-}: CreatePinFormProps) {
-  const form = useCreatePinForm();
-
-  const [previewUrl, setPreviewUrl] = useState<string | null>(
-    null,
-  );
+export function CreatePinForm({ form, topics }: CreatePinFormProps) {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const [topicSearch, setTopicSearch] = useState("");
   const [isTopicOpen, setIsTopicOpen] = useState(false);
 
+  const image = form.watch("image");
   const selectedTopicId = form.watch("topicId");
   const tags = form.watch("tags") ?? [];
   const tagInput = form.watch("tagInput") ?? "";
@@ -48,24 +45,46 @@ export function CreatePinForm({
 
   useEffect(() => {
     return () => {
-      if (previewUrl) {
+      if (previewUrl?.startsWith("blob:")) {
         URL.revokeObjectURL(previewUrl);
       }
     };
   }, [previewUrl]);
 
   function handleImageSelect(file: File) {
-    if (previewUrl) {
+    if (file.size > 20 * 1024 * 1024) {
+      form.setError("image", {
+        type: "validate",
+        message: "Image must be 20 MB or smaller.",
+      });
+
+      return;
+    }
+
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
+      form.setError("image", {
+        type: "validate",
+        message: "Only PNG, JPG, and WEBP images are supported.",
+      });
+
+      return;
+    }
+
+    form.clearErrors("image");
+
+    if (previewUrl?.startsWith("blob:")) {
       URL.revokeObjectURL(previewUrl);
     }
+
+    const nextPreviewUrl = URL.createObjectURL(file);
+
+    setPreviewUrl(nextPreviewUrl);
 
     form.setValue("image", file, {
       shouldDirty: true,
       shouldTouch: true,
       shouldValidate: true,
     });
-
-    setPreviewUrl(URL.createObjectURL(file));
   }
 
   function handleTopicSelect(topicId: string) {
@@ -98,7 +117,7 @@ export function CreatePinForm({
     <form
       id="create-pin-form"
       onSubmit={form.handleSubmit(submit)}
-      className="grid gap-10 px-6 py-8 lg:grid-cols-[minmax(280px,380px)_minmax(0,640px)] lg:justify-center lg:gap-16"
+      className="grid gap-10 lg:grid-cols-[minmax(280px,380px)_minmax(0,640px)] lg:justify-center lg:gap-16"
     >
       <Controller
         control={form.control}
@@ -113,46 +132,37 @@ export function CreatePinForm({
         )}
       />
 
-      <div className="min-w-0 space-y-6">
+      <div className="min-w-0 space-y-6 lg:pt-10">
         <Field>
-          <FieldLabel htmlFor="title">
-            Title
-          </FieldLabel>
+          <FieldLabel htmlFor="title">Title</FieldLabel>
 
           <Input
             id="title"
             placeholder="Tell everyone what your Pin is about"
-            disabled={isSubmitting}
+            disabled={!image || isSubmitting}
             {...form.register("title")}
           />
 
-          <FieldError
-            errors={[form.formState.errors.title]}
-          />
+          <FieldError errors={[form.formState.errors.title]} />
         </Field>
 
         <Field>
-          <FieldLabel htmlFor="description">
-            Description
-          </FieldLabel>
+          <FieldLabel htmlFor="description">Description</FieldLabel>
 
           <Textarea
             id="description"
             rows={5}
             placeholder="Describe your Pin"
-            disabled={isSubmitting}
+            disabled={!image || isSubmitting}
             {...form.register("description")}
           />
 
-          <FieldError
-            errors={[form.formState.errors.description]}
-          />
+          <FieldError errors={[form.formState.errors.description]} />
         </Field>
 
         <Field>
           <FieldLabel htmlFor="topic">
-            Topic{" "}
-            <span className="text-destructive">*</span>
+            Topic <span className="text-destructive">*</span>
           </FieldLabel>
 
           {topics.length > 0 ? (
@@ -161,23 +171,21 @@ export function CreatePinForm({
               value={selectedTopicId}
               search={topicSearch}
               isOpen={isTopicOpen}
-              disabled={isSubmitting}
-              onSearchChange={setTopicSearch}
+              disabled={!image || isSubmitting}
               onOpenChange={setIsTopicOpen}
+              onSearchChange={setTopicSearch}
               onSelect={handleTopicSelect}
             />
           ) : (
             <div className="rounded-lg border border-dashed p-4">
-              <p className="text-sm text-muted-foreground">
-                No topics are available yet. Please seed
-                the database before creating Pins.
+              <p className="text-muted-foreground text-sm">
+                No topics are available yet. Please seed the database before
+                creating Pins.
               </p>
             </div>
           )}
 
-          <FieldError
-            errors={[form.formState.errors.topicId]}
-          />
+          <FieldError errors={[form.formState.errors.topicId]} />
         </Field>
 
         <Controller
@@ -187,7 +195,7 @@ export function CreatePinForm({
             <TagInput
               tags={tags}
               value={tagInput}
-              disabled={isSubmitting}
+              disabled={!image || isSubmitting}
               onChange={handleTagInputChange}
               onTagsChange={handleTagsChange}
             />

@@ -11,6 +11,7 @@ import {
 import { pins } from "./pins";
 import { boards } from "./boards";
 import { comments } from "./comments";
+import { drafts } from "./drafts";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -114,6 +115,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   pins: many(pins),
   boards: many(boards),
   comments: many(comments),
+  drafts: many(drafts),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({

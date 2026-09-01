@@ -40,7 +40,7 @@ export function ProfilePinDetails({
             <div className="space-y-7">
               <PinAuthor pin={pin} />
 
-              <PinMeta pin={pin} />
+              <PinMeta pin={pin} showDetails/>
             </div>
           </div>
         </section>

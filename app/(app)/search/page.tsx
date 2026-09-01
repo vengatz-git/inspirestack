@@ -7,9 +7,7 @@ type SearchPageProps = {
   }>;
 };
 
-export default async function SearchPage({
-  searchParams,
-}: SearchPageProps) {
+export default async function SearchPage({ searchParams }: SearchPageProps) {
   const { query } = await searchParams;
 
   const normalizedQuery = query?.trim() ?? "";
@@ -18,11 +16,9 @@ export default async function SearchPage({
     <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6">
       <div className="mx-auto max-w-3xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">
-            Search
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Search</h1>
 
-          <p className="mt-2 text-muted-foreground">
+          <p className="text-muted-foreground mt-2">
             Discover inspiration from across InspireStack.
           </p>
         </div>
@@ -34,7 +30,7 @@ export default async function SearchPage({
         <section className="mt-10">
           <div className="mb-6">
             <h2 className="text-xl font-semibold">
-              Results for "{normalizedQuery}"
+              Results for &quot;{normalizedQuery}&quot;
             </h2>
           </div>
 

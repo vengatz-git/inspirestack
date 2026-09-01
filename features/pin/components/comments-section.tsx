@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 import { CommentForm } from "@/features/comment/components/comment-form";
@@ -28,17 +23,10 @@ export const CommentsSection = forwardRef<
   CommentsSectionHandle,
   CommentsSectionProps
 >(function CommentsSection(
-  {
-    pinId,
-    comments,
-    currentUserId,
-    isExpanded,
-    onExpandedChange,
-  },
+  { pinId, comments, currentUserId, isExpanded, onExpandedChange },
   ref,
 ) {
-  const [replyingTo, setReplyingTo] =
-    useState<string | null>(null);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -49,27 +37,30 @@ export const CommentsSection = forwardRef<
   }));
 
   function handleReply(commentId: string) {
-    setReplyingTo((current) =>
-      current === commentId ? null : commentId,
-    );
+    setReplyingTo((current) => (current === commentId ? null : commentId));
+
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+    });
   }
 
+  const replyTarget = replyingTo
+    ? comments.find((comment) => comment.id === replyingTo)
+    : null;
+
+  const replyToUsername = replyTarget?.author.username ?? "unknown";
+
   return (
-    <section className="flex h-full min-h-0 flex-1 flex-col">
+    <section className="flex h-full min-h-0 flex-col">
       {comments.length > 0 ? (
         <button
           type="button"
-          onClick={() =>
-            onExpandedChange(!isExpanded)
-          }
+          onClick={() => onExpandedChange(!isExpanded)}
           aria-expanded={isExpanded}
-          className="flex w-full shrink-0 items-center justify-between py-4 text-left"
+          className="flex w-full shrink-0 items-center justify-between py-3 text-left"
         >
           <span className="text-lg font-semibold">
-            {comments.length}{" "}
-            {comments.length === 1
-              ? "Comment"
-              : "Comments"}
+            {comments.length} {comments.length === 1 ? "Comment" : "Comments"}
           </span>
 
           <ChevronDown
@@ -82,7 +73,7 @@ export const CommentsSection = forwardRef<
       ) : null}
 
       {comments.length > 0 && isExpanded ? (
-        <div className="min-h-0 flex-1 overflow-y-auto pr-2">
+        <div className="min-h-0 flex-1 overflow-y-auto">
           <div className="space-y-6 py-2">
             {comments.map((comment) => (
               <CommentItem
@@ -102,7 +93,11 @@ export const CommentsSection = forwardRef<
 
       <div className="shrink-0 py-3">
         <CommentForm
+          key={replyingTo ?? "comment"}
           pinId={pinId}
+          parentId={replyingTo ?? undefined}
+          replyToUsername={replyingTo ? replyToUsername : undefined}
+          onCancel={() => setReplyingTo(null)}
           inputRef={inputRef}
         />
       </div>

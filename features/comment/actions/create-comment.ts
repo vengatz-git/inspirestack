@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 import { auth } from "@/auth";
 import { db } from "@/db";
-import { comments } from "@/db/schema";
+import { comments, users } from "@/db/schema";
 import type { ActionResult } from "@/types/action-result";
 
 import { createCommentSchema } from "../schemas/create-comment-schema";
@@ -32,11 +32,14 @@ export async function createCommentAction(
     };
   }
 
+  let content = validated.data.content;
+
   if (validated.data.parentId) {
     const [parentComment] = await db
       .select({
         id: comments.id,
         pinId: comments.pinId,
+        authorId: comments.authorId,
       })
       .from(comments)
       .where(
@@ -53,10 +56,24 @@ export async function createCommentAction(
         error: "Invalid parent comment.",
       };
     }
+
+    const [parentAuthor] = await db
+      .select({
+        username: users.username,
+      })
+      .from(users)
+      .where(eq(users.id, parentComment.authorId))
+      .limit(1);
+
+    if (parentAuthor?.username) {
+      content = `@${parentAuthor.username} ${content}`;
+    }
   }
 
   await createCommentService({
-    ...validated.data,
+    pinId: validated.data.pinId,
+    parentId: validated.data.parentId,
+    content,
     authorId: session.user.id,
   });
 
