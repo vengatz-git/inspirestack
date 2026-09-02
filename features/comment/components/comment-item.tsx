@@ -77,7 +77,10 @@ export function CommentItem({
             </button>
 
             {isOwner ? (
-              <CommentDeleteButton commentId={comment.id} pinId={pinId} />
+              <CommentDeleteButton
+                commentId={comment.id}
+                pinId={pinId}
+              />
             ) : null}
           </div>
 
@@ -105,7 +108,7 @@ function CommentReplies({
   pinId,
   currentUserId,
 }: CommentRepliesProps) {
-  const [isExpanded, setIsExpanded] = useState(replies.length === 1);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   if (replies.length === 1) {
     return (
@@ -161,7 +164,11 @@ interface ReplyItemProps {
   currentUserId: string | null;
 }
 
-function ReplyItem({ reply, pinId, currentUserId }: ReplyItemProps) {
+function ReplyItem({
+  reply,
+  pinId,
+  currentUserId,
+}: ReplyItemProps) {
   const username = reply.author.username ?? "unknown";
   const initials = reply.author.username?.charAt(0) ?? "?";
 
@@ -200,18 +207,14 @@ function ReplyItem({ reply, pinId, currentUserId }: ReplyItemProps) {
           {reply.content}
         </p>
 
-        <div className="mt-2 flex items-center gap-1">
-          <button
-            type="button"
-            className="text-muted-foreground hover:text-foreground rounded-md px-1 py-0.5 text-xs font-medium transition-colors"
-          >
-            Reply
-          </button>
-
-          {isOwner ? (
-            <CommentDeleteButton commentId={reply.id} pinId={pinId} />
-          ) : null}
-        </div>
+        {isOwner ? (
+          <div className="mt-2 flex items-center">
+            <CommentDeleteButton
+              commentId={reply.id}
+              pinId={pinId}
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );

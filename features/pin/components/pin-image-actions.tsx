@@ -61,7 +61,7 @@ export function PinImageActions({
         variant="ghost"
         size="icon"
         aria-label="Go back"
-        className="absolute left-4 top-4 z-10 size-12 rounded-md bg-black/40 text-white backdrop-blur-sm hover:bg-black/60 hover:text-white"
+        className="absolute left-4 top-4 z-10 hidden size-12 rounded-md bg-black/40 text-white backdrop-blur-sm hover:bg-black/60 hover:text-white md:flex"
         onClick={() => router.back()}
       >
         <ArrowLeft className="size-4.5" />
@@ -72,7 +72,7 @@ export function PinImageActions({
         variant="ghost"
         size="icon"
         aria-label="View image fullscreen"
-        className="absolute bottom-4 right-4 z-10 size-12 rounded-md bg-black/40 text-white backdrop-blur-sm hover:bg-black/60 hover:text-white"
+        className="absolute bottom-4 right-4 z-10 hidden size-12 rounded-md bg-black/40 text-white backdrop-blur-sm hover:bg-black/60 hover:text-white md:flex"
         onClick={handleFullscreen}
       >
         <Maximize2 className="size-4.5" />

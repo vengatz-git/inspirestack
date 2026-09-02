@@ -25,17 +25,33 @@ export function StickyWorkspace({
 }: StickyWorkspaceProps) {
   return (
     <section className="w-full">
-      <div className="bg-card mx-auto h-[calc(100dvh-8rem)] min-h-0 w-full max-w-5xl overflow-hidden rounded-3xl border shadow-2xl">
-        <div className="grid h-full grid-cols-2">
-          <PinImage pin={pin} />
+      <div
+        className="
+          mx-auto
+          w-full
+          max-w-[1088px]
+          overflow-hidden
+          rounded-3xl
+          border
+          bg-card
+          shadow-2xl
+          md:h-[504px]
+        "
+      >
+        <div className="grid min-h-0 grid-cols-1 md:h-full md:grid-cols-2">
+          <div className="aspect-[4/5] min-h-0 min-w-0 md:aspect-auto">
+            <PinImage pin={pin} />
+          </div>
 
-          <PinPanel
-            pin={pin}
-            boards={boards}
-            isOwner={isOwner}
-            comments={comments}
-            currentUserId={currentUserId}
-          />
+          <div className="min-h-0 min-w-0 overflow-hidden">
+            <PinPanel
+              pin={pin}
+              boards={boards}
+              isOwner={isOwner}
+              comments={comments}
+              currentUserId={currentUserId}
+            />
+          </div>
         </div>
       </div>
     </section>

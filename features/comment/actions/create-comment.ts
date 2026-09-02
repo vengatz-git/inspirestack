@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 import { auth } from "@/auth";
 import { db } from "@/db";
-import { comments, users } from "@/db/schema";
+import { comments } from "@/db/schema";
 import type { ActionResult } from "@/types/action-result";
 
 import { createCommentSchema } from "../schemas/create-comment-schema";
@@ -32,14 +32,12 @@ export async function createCommentAction(
     };
   }
 
-  let content = validated.data.content;
-
   if (validated.data.parentId) {
     const [parentComment] = await db
       .select({
         id: comments.id,
         pinId: comments.pinId,
-        authorId: comments.authorId,
+        parentId: comments.parentId,
       })
       .from(comments)
       .where(
@@ -57,23 +55,18 @@ export async function createCommentAction(
       };
     }
 
-    const [parentAuthor] = await db
-      .select({
-        username: users.username,
-      })
-      .from(users)
-      .where(eq(users.id, parentComment.authorId))
-      .limit(1);
-
-    if (parentAuthor?.username) {
-      content = `@${parentAuthor.username} ${content}`;
+    if (parentComment.parentId !== null) {
+      return {
+        success: false,
+        error: "Replies can only target top-level comments.",
+      };
     }
   }
 
   await createCommentService({
     pinId: validated.data.pinId,
     parentId: validated.data.parentId,
-    content,
+    content: validated.data.content,
     authorId: session.user.id,
   });
 
