@@ -30,8 +30,8 @@ export function MobileCommentsSheet({
             bg-black/40
             transition-opacity
             duration-200
-            data-[ending-style]:opacity-0
-            data-[starting-style]:opacity-0
+            data-ending-style:opacity-0
+            data-starting-style:opacity-0
             md:hidden
           "
         />
@@ -53,8 +53,8 @@ export function MobileCommentsSheet({
             outline-none
             transition-transform
             duration-300
-            data-[ending-style]:translate-y-full
-            data-[starting-style]:translate-y-full
+            data-ending-style:translate-y-full
+            data-starting-style:translate-y-full
             md:hidden
           "
         >

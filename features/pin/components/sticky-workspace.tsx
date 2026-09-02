@@ -39,7 +39,7 @@ export function StickyWorkspace({
         "
       >
         <div className="grid min-h-0 grid-cols-1 md:h-full md:grid-cols-2">
-          <div className="aspect-[4/5] min-h-0 min-w-0 md:aspect-auto">
+          <div className="aspect-4/5 min-h-0 min-w-0 md:aspect-auto">
             <PinImage pin={pin} />
           </div>
 

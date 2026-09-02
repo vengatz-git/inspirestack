@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 
+import { BOARD_VIEW_STORAGE_KEY } from "../../constants/board-view";
 import type { BoardSummary } from "../../types/board";
 import type { BoardView } from "../../types/board-view";
 
 import { BoardBrowser } from "./board-browser";
 import { BoardSidebar } from "./board-sidebar";
 import { BoardWorkspaceHeader } from "./board-workspace-header";
-import { BOARD_VIEW_STORAGE_KEY } from "../../constants/board-view";
 
 interface BoardWorkspaceProps {
   boards: BoardSummary[];
@@ -30,24 +30,37 @@ export function BoardWorkspace({
       return "list";
     }
 
-    const saved = localStorage.getItem(BOARD_VIEW_STORAGE_KEY);
+    const saved = localStorage.getItem(
+      BOARD_VIEW_STORAGE_KEY,
+    );
 
     return saved === "grid" ? "grid" : "list";
   });
 
   useEffect(() => {
-    localStorage.setItem(BOARD_VIEW_STORAGE_KEY, view);
+    localStorage.setItem(
+      BOARD_VIEW_STORAGE_KEY,
+      view,
+    );
   }, [view]);
 
   const [query, setQuery] = useState("");
 
   const filteredBoards = boards.filter((board) =>
-    board.name.toLowerCase().includes(query.toLowerCase()),
+    board.name
+      .toLowerCase()
+      .includes(query.toLowerCase()),
   );
 
   return (
-    <div className="flex h-[550]">
-      <BoardSidebar boards={boards} pending={pending} onSave={onSave} />
+    <div className="flex h-137.5">
+      <div className="hidden md:flex">
+        <BoardSidebar
+          boards={boards}
+          pending={pending}
+          onSave={onSave}
+        />
+      </div>
 
       <div className="flex min-w-0 flex-1 flex-col">
         <BoardWorkspaceHeader
