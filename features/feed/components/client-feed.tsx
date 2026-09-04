@@ -5,7 +5,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { FeedGrid } from "./feed-grid";
 
 import type { FeedResult } from "../types/feed";
-import { FeedSkeletonGrid } from "./feed-skeleton-grid";
+// import { FeedSkeletonGrid } from "./feed-skeleton-grid";
+import { FeedRouteSkeleton } from "./feed-route-skeleton";
 
 interface ClientFeedProps {
   initialFeed: FeedResult;
@@ -80,7 +81,7 @@ export function ClientFeed({ initialFeed }: ClientFeedProps) {
 
       <div ref={loadMoreRef} className="h-10" />
 
-      {loading && <FeedSkeletonGrid count={6} />}
+      {loading && <FeedRouteSkeleton count={6} />}
     </>
   );
 }

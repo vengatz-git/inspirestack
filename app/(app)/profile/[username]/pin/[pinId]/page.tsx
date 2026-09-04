@@ -110,17 +110,19 @@ export default async function ProfilePinPage({ params }: ProfilePinPageProps) {
 
       <ProfileMoreFromUser username={username} pins={moreFromUserResult.pins} />
 
-      <section className="mt-16">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold tracking-tight">Explore More</h2>
+      {relatedPins.length > 0 && (
+        <section className="mt-16">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold tracking-tight">Explore More</h2>
 
-          <p className="text-muted-foreground mt-1 text-sm">
-            Discover more inspiration from InspireStack.
-          </p>
-        </div>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Discover more inspiration from InspireStack.
+            </p>
+          </div>
 
-        <FeedGrid pins={relatedPins} />
-      </section>
+          <FeedGrid pins={relatedPins} />
+        </section>
+      )}
     </main>
   );
 }

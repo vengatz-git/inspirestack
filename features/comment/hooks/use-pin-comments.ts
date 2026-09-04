@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type { CommentData } from "../types/comment";
 
@@ -8,6 +8,8 @@ interface UsePinCommentsProps {
   pinId: string;
   initialComments: CommentData[];
 }
+
+const POLL_INTERVAL = 10_000;
 
 export function usePinComments({
   pinId,
@@ -19,24 +21,27 @@ export function usePinComments({
   const [replyingTo, setReplyingTo] =
     useState<string | null>(null);
 
-  /*
-   * Keep local state synchronized with server-rendered
-   * comments when the parent server tree refreshes.
-   */
+  const isFetchingRef = useRef(false);
+
   useEffect(() => {
     setComments(initialComments);
   }, [initialComments]);
 
-  /*
-   * Poll only the comments endpoint.
-   *
-   * This keeps realtime comment updates without refreshing
-   * the entire Pin Details server tree.
-   */
   useEffect(() => {
     let isMounted = true;
+    let intervalId: number | null = null;
 
     async function fetchComments() {
+      if (
+        !isMounted ||
+        document.visibilityState !== "visible" ||
+        isFetchingRef.current
+      ) {
+        return;
+      }
+
+      isFetchingRef.current = true;
+
       try {
         const response = await fetch(
           `/api/pin/${pinId}/comments`,
@@ -46,16 +51,12 @@ export function usePinComments({
           },
         );
 
-        if (!response.ok) {
+        if (!response.ok || !isMounted) {
           return;
         }
 
         const data = (await response.json()) as unknown;
         const nextComments = deserializeComments(data);
-
-        if (!isMounted) {
-          return;
-        }
 
         setComments((currentComments) => {
           const previousSerialized =
@@ -72,24 +73,56 @@ export function usePinComments({
         });
       } catch {
         // Ignore transient polling failures.
+      } finally {
+        isFetchingRef.current = false;
       }
     }
 
-    const interval = window.setInterval(
-      fetchComments,
-      3000,
+    function startPolling() {
+      if (intervalId !== null) {
+        return;
+      }
+
+      void fetchComments();
+
+      intervalId = window.setInterval(
+        fetchComments,
+        POLL_INTERVAL,
+      );
+    }
+
+    function stopPolling() {
+      if (intervalId === null) {
+        return;
+      }
+
+      window.clearInterval(intervalId);
+      intervalId = null;
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        startPolling();
+      } else {
+        stopPolling();
+      }
+    }
+
+    if (document.visibilityState === "visible") {
+      startPolling();
+    }
+
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange,
     );
 
     return () => {
       isMounted = false;
-      window.clearInterval(interval);
+      stopPolling();
     };
   }, [pinId]);
 
-  /*
-   * If the comment being replied to disappears,
-   * cancel reply mode.
-   */
   useEffect(() => {
     if (!replyingTo) {
       return;

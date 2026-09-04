@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { auth } from "@/auth";
+import type { BoardSummary } from "@/features/board/types/board";
 import { getBoardsByUserService } from "@/features/board/services/get-boards-by-user";
 import { getCommentsByPinService } from "@/features/comment/services/get-comments-by-pin";
 import { PinDetail } from "@/features/pin/components/pin-detail";
@@ -29,7 +30,8 @@ export async function generateMetadata({
 
   const title = pin.title ?? "Untitled Pin";
 
-  const description = pin.description ?? `Explore "${title}" on InspireStack.`;
+  const description =
+    pin.description ?? `Explore "${title}" on InspireStack.`;
 
   return {
     title: `${title} | InspireStack`,
@@ -65,7 +67,9 @@ export async function generateMetadata({
   };
 }
 
-export default async function PinPage({ params }: PinPageProps) {
+export default async function PinPage({
+  params,
+}: PinPageProps) {
   const { id } = await params;
 
   const pin = await getPinByIdService(id);
@@ -85,14 +89,15 @@ export default async function PinPage({ params }: PinPageProps) {
 
   const currentUserId = session?.user?.id ?? null;
 
-  const boards =
-    session?.user?.id != null
-      ? await getBoardsByUserService({
-          userId: session.user.id,
-          pinId: pin.id,
-          includePrivate: true,
-        })
-      : [];
+  let boards: BoardSummary[] = [];
+
+  if (session?.user?.id != null) {
+    boards = await getBoardsByUserService({
+      userId: session.user.id,
+      pinId: pin.id,
+      includePrivate: true,
+    });
+  }
 
   const isOwner = session?.user?.id === pin.authorId;
 
