@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-} from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { ChevronDown } from "lucide-react";
 
 import { CommentForm } from "@/features/comment/components/comment-form";
@@ -46,8 +42,7 @@ export const CommentsSection = forwardRef<
   },
   ref,
 ) {
-  const inputRef =
-    useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useImperativeHandle(ref, () => ({
     focusInput() {
@@ -55,22 +50,27 @@ export const CommentsSection = forwardRef<
     },
   }));
 
+  useEffect(() => {
+    if (!replyingTo) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+    });
+  }, [replyingTo]);
+
   return (
     <section className="flex h-full min-h-0 flex-col">
       {showHeader && comments.length > 0 ? (
         <button
           type="button"
-          onClick={() =>
-            onExpandedChange(!isExpanded)
-          }
+          onClick={() => onExpandedChange(!isExpanded)}
           aria-expanded={isExpanded}
           className="flex w-full shrink-0 items-center justify-between py-3 text-left"
         >
           <span className="text-lg font-semibold">
-            {comments.length}{" "}
-            {comments.length === 1
-              ? "Comment"
-              : "Comments"}
+            {comments.length} {comments.length === 1 ? "Comment" : "Comments"}
           </span>
 
           <ChevronDown
@@ -106,11 +106,7 @@ export const CommentsSection = forwardRef<
           key={replyingTo ?? "comment"}
           pinId={pinId}
           parentId={replyingTo ?? undefined}
-          replyToUsername={
-            replyingTo
-              ? replyToUsername
-              : undefined
-          }
+          replyToUsername={replyingTo ? replyToUsername : undefined}
           onCancel={onCancelReply}
           inputRef={inputRef}
         />
