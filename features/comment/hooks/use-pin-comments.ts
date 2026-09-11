@@ -18,14 +18,31 @@ export function usePinComments({
   const [comments, setComments] =
     useState<CommentData[]>(initialComments);
 
+  const [prevInitialComments, setPrevInitialComments] =
+    useState(initialComments);
+
+  if (initialComments !== prevInitialComments) {
+    setPrevInitialComments(initialComments);
+    setComments(initialComments);
+  }
+
   const [replyingTo, setReplyingTo] =
     useState<string | null>(null);
 
-  const isFetchingRef = useRef(false);
+  const [prevComments, setPrevComments] = useState(comments);
 
-  useEffect(() => {
-    setComments(initialComments);
-  }, [initialComments]);
+  if (comments !== prevComments) {
+    setPrevComments(comments);
+
+    if (
+      replyingTo &&
+      !comments.some((comment) => comment.id === replyingTo)
+    ) {
+      setReplyingTo(null);
+    }
+  }
+
+  const isFetchingRef = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -122,20 +139,6 @@ export function usePinComments({
       stopPolling();
     };
   }, [pinId]);
-
-  useEffect(() => {
-    if (!replyingTo) {
-      return;
-    }
-
-    const replyTargetExists = comments.some(
-      (comment) => comment.id === replyingTo,
-    );
-
-    if (!replyTargetExists) {
-      setReplyingTo(null);
-    }
-  }, [comments, replyingTo]);
 
   function handleReply(commentId: string) {
     setReplyingTo((current) =>
