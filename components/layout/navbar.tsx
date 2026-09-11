@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 import { auth } from "@/auth";
-import { Input } from "@/components/ui/input";
 import { ProfileDropdown } from "@/components/layout/profile-dropdown";
+import { SearchForm } from "@/features/search/components/search-form";
 
 export async function Navbar() {
   const session = await auth();
@@ -13,7 +13,10 @@ export async function Navbar() {
       <div className="mx-auto flex h-20 max-w-7xl items-center gap-4 px-4 sm:px-6">
         {/* Left */}
         <div className="flex shrink-0 items-center gap-6">
-          <Link href="/feed" className="text-xl font-bold">
+          <Link
+            href="/feed"
+            className="text-xl font-bold"
+          >
             InspireStack
           </Link>
 
@@ -25,15 +28,7 @@ export async function Navbar() {
 
         {/* Center */}
         <div className="min-w-0 flex-1">
-          <Link href="/search" aria-label="Search">
-            <Input
-              type="text"
-              placeholder="Search"
-              readOnly
-              tabIndex={-1}
-              className="pointer-events-none w-full rounded-full bg-muted"
-            />
-          </Link>
+          <SearchForm />
         </div>
 
         {/* Right */}
