@@ -1,7 +1,12 @@
 import { and, desc, eq, ilike, or } from "drizzle-orm";
 
 import { db } from "@/db";
-import { pins } from "@/db/schema";
+import {
+  pinTags,
+  pins,
+  tags,
+  topics,
+} from "@/db/schema";
 
 import { mapPinToCard } from "@/features/pin/lib/map-pin-card";
 import type { PinCardData } from "@/features/pin/types/pin-card";
@@ -15,18 +20,39 @@ export async function searchPins({
   query,
   limit = 30,
 }: SearchPinsOptions): Promise<PinCardData[]> {
-  const term = `%${query}%`;
+  const trimmed = query.trim();
+  const normalized = trimmed.replace(/^#/, "");
+  const term = `%${normalized}%`;
 
-  const results = await db.query.pins.findMany({
-    where: and(
-      eq(pins.visibility, "PUBLIC"),
-      or(ilike(pins.title, term), ilike(pins.description, term)),
-    ),
+  const rows = await db
+    .selectDistinct({ pin: pins })
+    .from(pins)
+    .leftJoin(
+      topics,
+      eq(pins.topicId, topics.id),
+    )
+    .leftJoin(
+      pinTags,
+      eq(pins.id, pinTags.pinId),
+    )
+    .leftJoin(
+      tags,
+      eq(pinTags.tagId, tags.id),
+    )
+    .where(
+      and(
+        eq(pins.visibility, "PUBLIC"),
+        or(
+          ilike(pins.title, term),
+          ilike(pins.description, term),
+          ilike(topics.name, term),
+          ilike(topics.slug, term),
+          ilike(tags.name, term),
+        ),
+      ),
+    )
+    .orderBy(desc(pins.createdAt))
+    .limit(limit);
 
-    orderBy: desc(pins.createdAt),
-
-    limit,
-  });
-
-  return results.map(mapPinToCard);
+  return rows.map(({ pin }) => mapPinToCard(pin));
 }

@@ -30,9 +30,14 @@ export function SearchInput({
         onChange(event.target.value)
       }
       onFocus={onFocus}
+      onMouseDown={() => {
+        if (!expanded) {
+          onFocus();
+        }
+      }}
       onKeyDown={onKeyDown}
       placeholder="Search"
-      aria-label="Search pins"
+      aria-label="Search pins and people"
       role="combobox"
       aria-autocomplete="list"
       aria-expanded={expanded}
