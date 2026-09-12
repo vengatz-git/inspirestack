@@ -28,7 +28,6 @@ export async function savePinToBoardService({
       ),
     });
 
-    // Already saved → only update recency.
     if (existing) {
       await tx
         .update(boards)
@@ -37,7 +36,10 @@ export async function savePinToBoardService({
         })
         .where(eq(boards.id, boardId));
 
-      return existing;
+      return {
+        saved: existing,
+        isNew: false,
+      };
     }
 
     const [saved] = await tx
@@ -59,6 +61,9 @@ export async function savePinToBoardService({
       })
       .where(eq(boards.id, boardId));
 
-    return saved;
+    return {
+      saved,
+      isNew: true,
+    };
   });
 }

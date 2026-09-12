@@ -4,19 +4,21 @@ import { auth } from "@/auth";
 import { ProfileDropdown } from "@/components/layout/profile-dropdown";
 import { SearchForm } from "@/features/search/components/search-form";
 
+import { NotificationDropdown } from "@/features/notification/components/notification-dropdown";
+import { getUnreadNotificationCount } from "@/features/notification/actions/get-unread-notification-count";
+
 export async function Navbar() {
   const session = await auth();
   const user = session?.user;
 
+  const unreadCount = user?.id ? await getUnreadNotificationCount() : 0;
+
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
+    <header className="bg-background/80 sticky top-0 z-50 border-b backdrop-blur-sm">
       <div className="mx-auto flex h-20 max-w-7xl items-center gap-4 px-4 sm:px-6">
         {/* Left */}
         <div className="flex shrink-0 items-center gap-6">
-          <Link
-            href="/feed"
-            className="text-xl font-bold"
-          >
+          <Link href="/feed" className="text-xl font-bold">
             InspireStack
           </Link>
 
@@ -32,7 +34,11 @@ export async function Navbar() {
         </div>
 
         {/* Right */}
-        <div className="flex shrink-0 items-center">
+        <div className="flex shrink-0 items-center gap-1">
+          {user?.id ? (
+            <NotificationDropdown initialUnreadCount={unreadCount} />
+          ) : null}
+
           {user?.username ? (
             <ProfileDropdown
               user={{

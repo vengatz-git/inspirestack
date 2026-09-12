@@ -1,68 +1,102 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
-const STORAGE_KEY = "inspirestack:recent-searches";
+const STORAGE_KEY =
+  "inspirestack:recent-searches";
+
 const MAX_RECENT_SEARCHES = 20;
 
 export function useSearchRecent() {
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [recentSearches, setRecentSearches] =
+    useState<string[]>([]);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+    async function loadRecentSearches() {
+      await Promise.resolve();
 
-      if (!stored) return;
+      try {
+        const stored =
+          localStorage.getItem(STORAGE_KEY);
 
-      const parsed: unknown = JSON.parse(stored);
+        if (!stored) {
+          return;
+        }
 
-      if (Array.isArray(parsed)) {
-        setRecentSearches(
-          parsed
-            .filter(
-              (item): item is string =>
-                typeof item === "string" && item.trim() !== "",
-            )
-            .slice(0, MAX_RECENT_SEARCHES),
-        );
+        const parsed: unknown =
+          JSON.parse(stored);
+
+        if (Array.isArray(parsed)) {
+          setRecentSearches(
+            parsed
+              .filter(
+                (item): item is string =>
+                  typeof item === "string" &&
+                  item.trim() !== "",
+              )
+              .slice(0, MAX_RECENT_SEARCHES),
+          );
+        }
+      } catch {
+        localStorage.removeItem(STORAGE_KEY);
       }
-    } catch {
-      localStorage.removeItem(STORAGE_KEY);
     }
+
+    void loadRecentSearches();
   }, []);
 
-  const saveRecentSearch = useCallback((query: string) => {
-    const normalized = query.trim();
+  const saveRecentSearch = useCallback(
+    (query: string) => {
+      const normalized = query.trim();
 
-    if (!normalized) return;
+      if (!normalized) {
+        return;
+      }
 
-    setRecentSearches((current) => {
-      const next = [
-        normalized,
-        ...current.filter(
+      setRecentSearches((current) => {
+        const next = [
+          normalized,
+          ...current.filter(
+            (item) =>
+              item.toLowerCase() !==
+              normalized.toLowerCase(),
+          ),
+        ].slice(0, MAX_RECENT_SEARCHES);
+
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify(next),
+        );
+
+        return next;
+      });
+    },
+    [],
+  );
+
+  const removeRecentSearch = useCallback(
+    (query: string) => {
+      setRecentSearches((current) => {
+        const next = current.filter(
           (item) =>
-            item.toLowerCase() !== normalized.toLowerCase(),
-        ),
-      ].slice(0, MAX_RECENT_SEARCHES);
+            item.toLowerCase() !==
+            query.toLowerCase(),
+        );
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify(next),
+        );
 
-      return next;
-    });
-  }, []);
-
-  const removeRecentSearch = useCallback((query: string) => {
-    setRecentSearches((current) => {
-      const next = current.filter(
-        (item) =>
-          item.toLowerCase() !== query.toLowerCase(),
-      );
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-
-      return next;
-    });
-  }, []);
+        return next;
+      });
+    },
+    [],
+  );
 
   return {
     recentSearches,

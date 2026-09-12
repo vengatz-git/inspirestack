@@ -134,9 +134,12 @@ function SearchFormContent({ currentQuery }: SearchFormContentProps) {
       event.preventDefault();
       setOpen(false);
       resetSelection();
+
+      event.currentTarget.blur();
+
       return;
     }
-
+    
     if (!open || items.length === 0) {
       return;
     }

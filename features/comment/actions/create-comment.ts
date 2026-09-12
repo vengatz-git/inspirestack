@@ -1,12 +1,14 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 import { auth } from "@/auth";
 import { db } from "@/db";
-import { comments } from "@/db/schema";
+import { comments, pins } from "@/db/schema";
 import type { ActionResult } from "@/types/action-result";
+
+import { createNotificationService } from "@/features/notification/services/create-notification";
 
 import { createCommentSchema } from "../schemas/create-comment-schema";
 import { createCommentService } from "../services/create-comment";
@@ -32,23 +34,30 @@ export async function createCommentAction(
     };
   }
 
-  if (validated.data.parentId) {
+  const { pinId, parentId, content } = validated.data;
+
+  let recipientId: string | null = null;
+  let notificationType:
+    | "COMMENT"
+    | "REPLY"
+    | null = null;
+
+  if (parentId) {
     const [parentComment] = await db
       .select({
         id: comments.id,
         pinId: comments.pinId,
         parentId: comments.parentId,
+        authorId: comments.authorId,
       })
       .from(comments)
-      .where(
-        and(
-          eq(comments.id, validated.data.parentId),
-          eq(comments.pinId, validated.data.pinId),
-        ),
-      )
+      .where(eq(comments.id, parentId))
       .limit(1);
 
-    if (!parentComment) {
+    if (
+      !parentComment ||
+      parentComment.pinId !== pinId
+    ) {
       return {
         success: false,
         error: "Invalid parent comment.",
@@ -61,16 +70,47 @@ export async function createCommentAction(
         error: "Replies can only target top-level comments.",
       };
     }
+
+    recipientId = parentComment.authorId;
+    notificationType = "REPLY";
+  } else {
+    const [pin] = await db
+      .select({
+        authorId: pins.authorId,
+      })
+      .from(pins)
+      .where(eq(pins.id, pinId))
+      .limit(1);
+
+    if (!pin) {
+      return {
+        success: false,
+        error: "Pin not found.",
+      };
+    }
+
+    recipientId = pin.authorId;
+    notificationType = "COMMENT";
   }
 
-  await createCommentService({
-    pinId: validated.data.pinId,
-    parentId: validated.data.parentId,
-    content: validated.data.content,
+  const comment = await createCommentService({
+    pinId,
+    parentId,
+    content,
     authorId: session.user.id,
   });
 
-  revalidatePath(`/pin/${validated.data.pinId}`);
+  if (recipientId && notificationType) {
+    await createNotificationService({
+      recipientId,
+      actorId: session.user.id,
+      type: notificationType,
+      pinId,
+      commentId: comment.id,
+    });
+  }
+
+  revalidatePath(`/pin/${pinId}`);
 
   return {
     success: true,
