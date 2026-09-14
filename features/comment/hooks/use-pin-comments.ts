@@ -9,14 +9,17 @@ interface UsePinCommentsProps {
   initialComments: CommentData[];
 }
 
-const POLL_INTERVAL = 10_000;
+interface CommentStreamEvent {
+  type: "connected" | "created" | "deleted";
+  commentId?: string;
+  pinId?: string;
+}
 
 export function usePinComments({
   pinId,
   initialComments,
 }: UsePinCommentsProps) {
-  const [comments, setComments] =
-    useState<CommentData[]>(initialComments);
+  const [comments, setComments] = useState<CommentData[]>(initialComments);
 
   const [prevInitialComments, setPrevInitialComments] =
     useState(initialComments);
@@ -26,18 +29,14 @@ export function usePinComments({
     setComments(initialComments);
   }
 
-  const [replyingTo, setReplyingTo] =
-    useState<string | null>(null);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
   const [prevComments, setPrevComments] = useState(comments);
 
   if (comments !== prevComments) {
     setPrevComments(comments);
 
-    if (
-      replyingTo &&
-      !comments.some((comment) => comment.id === replyingTo)
-    ) {
+    if (replyingTo && !comments.some((comment) => comment.id === replyingTo)) {
       setReplyingTo(null);
     }
   }
@@ -46,7 +45,7 @@ export function usePinComments({
 
   useEffect(() => {
     let isMounted = true;
-    let intervalId: number | null = null;
+    let source: EventSource | null = null;
 
     async function fetchComments() {
       if (
@@ -60,27 +59,23 @@ export function usePinComments({
       isFetchingRef.current = true;
 
       try {
-        const response = await fetch(
-          `/api/pin/${pinId}/comments`,
-          {
-            method: "GET",
-            cache: "no-store",
-          },
-        );
+        const response = await fetch(`/api/pin/${pinId}/comments`, {
+          method: "GET",
+          cache: "no-store",
+        });
 
         if (!response.ok || !isMounted) {
           return;
         }
 
         const data = (await response.json()) as unknown;
+
         const nextComments = deserializeComments(data);
 
         setComments((currentComments) => {
-          const previousSerialized =
-            JSON.stringify(currentComments);
+          const previousSerialized = JSON.stringify(currentComments);
 
-          const nextSerialized =
-            JSON.stringify(nextComments);
+          const nextSerialized = JSON.stringify(nextComments);
 
           if (previousSerialized === nextSerialized) {
             return currentComments;
@@ -89,61 +84,66 @@ export function usePinComments({
           return nextComments;
         });
       } catch {
-        // Ignore transient polling failures.
+        // Ignore transient comment refresh failures.
       } finally {
         isFetchingRef.current = false;
       }
     }
 
-    function startPolling() {
-      if (intervalId !== null) {
+    function connect() {
+      if (source) {
         return;
       }
 
-      void fetchComments();
+      source = new EventSource(`/api/pin/${pinId}/comments/stream`);
 
-      intervalId = window.setInterval(
-        fetchComments,
-        POLL_INTERVAL,
-      );
+      source.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data) as CommentStreamEvent;
+
+          if (data.type === "created" || data.type === "deleted") {
+            void fetchComments();
+          }
+        } catch {
+          // Ignore malformed SSE events.
+        }
+      };
+
+      source.onerror = () => {
+        // EventSource automatically reconnects.
+      };
     }
 
-    function stopPolling() {
-      if (intervalId === null) {
-        return;
-      }
-
-      window.clearInterval(intervalId);
-      intervalId = null;
+    function disconnect() {
+      source?.close();
+      source = null;
     }
 
     function handleVisibilityChange() {
       if (document.visibilityState === "visible") {
-        startPolling();
+        connect();
+        void fetchComments();
       } else {
-        stopPolling();
+        disconnect();
       }
     }
 
     if (document.visibilityState === "visible") {
-      startPolling();
+      connect();
     }
 
-    document.addEventListener(
-      "visibilitychange",
-      handleVisibilityChange,
-    );
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       isMounted = false;
-      stopPolling();
+      disconnect();
+
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [pinId]);
 
   function handleReply(commentId: string) {
-    setReplyingTo((current) =>
-      current === commentId ? null : commentId,
-    );
+    setReplyingTo((current) => (current === commentId ? null : commentId));
   }
 
   function handleCancelReply() {
@@ -151,13 +151,10 @@ export function usePinComments({
   }
 
   const replyTarget = replyingTo
-    ? comments.find(
-        (comment) => comment.id === replyingTo,
-      )
+    ? comments.find((comment) => comment.id === replyingTo)
     : null;
 
-  const replyToUsername =
-    replyTarget?.author.username ?? "unknown";
+  const replyToUsername = replyTarget?.author.username ?? "unknown";
 
   return {
     comments,
@@ -168,9 +165,7 @@ export function usePinComments({
   };
 }
 
-function deserializeComments(
-  value: unknown,
-): CommentData[] {
+function deserializeComments(value: unknown): CommentData[] {
   if (!Array.isArray(value)) {
     return [];
   }

@@ -1,5 +1,6 @@
 "use server";
 
+import postgres from "postgres";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -13,6 +14,13 @@ import { createNotificationService } from "@/features/notification/services/crea
 import { createCommentSchema } from "../schemas/create-comment-schema";
 import { createCommentService } from "../services/create-comment";
 
+const sql = postgres(
+  process.env.DATABASE_DIRECT_URL!,
+  {
+    max: 1,
+  },
+);
+
 export async function createCommentAction(
   data: unknown,
 ): Promise<ActionResult> {
@@ -25,7 +33,8 @@ export async function createCommentAction(
     };
   }
 
-  const validated = createCommentSchema.safeParse(data);
+  const validated =
+    createCommentSchema.safeParse(data);
 
   if (!validated.success) {
     return {
@@ -34,7 +43,8 @@ export async function createCommentAction(
     };
   }
 
-  const { pinId, parentId, content } = validated.data;
+  const { pinId, parentId, content } =
+    validated.data;
 
   let recipientId: string | null = null;
   let notificationType:
@@ -67,7 +77,8 @@ export async function createCommentAction(
     if (parentComment.parentId !== null) {
       return {
         success: false,
-        error: "Replies can only target top-level comments.",
+        error:
+          "Replies can only target top-level comments.",
       };
     }
 
@@ -99,6 +110,15 @@ export async function createCommentAction(
     content,
     authorId: session.user.id,
   });
+
+  await sql.notify(
+    "inspirestack_comments",
+    JSON.stringify({
+      type: "created",
+      commentId: comment.id,
+      pinId,
+    }),
+  );
 
   if (recipientId && notificationType) {
     await createNotificationService({

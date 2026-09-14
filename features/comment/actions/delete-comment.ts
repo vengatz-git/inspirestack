@@ -1,5 +1,6 @@
 "use server";
 
+import postgres from "postgres";
 import { revalidatePath } from "next/cache";
 
 import { auth } from "@/auth";
@@ -7,6 +8,13 @@ import type { ActionResult } from "@/types/action-result";
 
 import { deleteCommentSchema } from "../schemas/delete-comment-schema";
 import { deleteCommentService } from "../services/delete-comment";
+
+const sql = postgres(
+  process.env.DATABASE_DIRECT_URL!,
+  {
+    max: 1,
+  },
+);
 
 export async function deleteCommentAction(
   commentId: string,
@@ -36,6 +44,15 @@ export async function deleteCommentAction(
     await deleteCommentService(
       session.user.id,
       parsed.data.commentId,
+    );
+
+    await sql.notify(
+      "inspirestack_comments",
+      JSON.stringify({
+        type: "deleted",
+        commentId: parsed.data.commentId,
+        pinId,
+      }),
     );
 
     revalidatePath(`/pin/${pinId}`);
