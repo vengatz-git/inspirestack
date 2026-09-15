@@ -10,6 +10,7 @@ import { Bell } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
+import { clearNotifications } from "../actions/clear-notifications";
 import { getNotifications } from "../actions/get-notifications";
 import { markAllNotificationsAsRead } from "../actions/mark-all-notifications-as-read";
 import { markNotificationAsRead } from "../actions/mark-notification-as-read";
@@ -34,6 +35,7 @@ export function NotificationDropdown({
   const [unreadCount, setUnreadCount] =
     useState(initialUnreadCount);
   const [loading, setLoading] = useState(false);
+  const [clearing, setClearing] = useState(false);
 
   const refreshNotifications =
     useCallback(async () => {
@@ -150,6 +152,23 @@ export function NotificationDropdown({
     setUnreadCount(0);
   }
 
+  async function handleClearNotifications() {
+    setClearing(true);
+
+    try {
+      const result = await clearNotifications();
+
+      if (!result.success) {
+        return;
+      }
+
+      setNotifications([]);
+      setUnreadCount(0);
+    } finally {
+      setClearing(false);
+    }
+  }
+
   return (
     <div
       ref={containerRef}
@@ -191,6 +210,20 @@ export function NotificationDropdown({
                 Mark all as read
               </button>
             )}
+
+            {unreadCount === 0 &&
+              notifications.length > 0 && (
+                <button
+                  type="button"
+                  disabled={clearing}
+                  onClick={handleClearNotifications}
+                  className="text-muted-foreground text-xs hover:text-foreground disabled:opacity-50"
+                >
+                  {clearing
+                    ? "Clearing..."
+                    : "Clear notifications"}
+                </button>
+              )}
           </div>
 
           <div className="max-h-[70vh] overflow-y-auto">

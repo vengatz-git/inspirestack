@@ -9,9 +9,7 @@ import { FeedGrid } from "@/features/feed/components/feed-grid";
 import { StickyWorkspace } from "./sticky-workspace";
 import { PinDetailLayout } from "./pin-detail-layout";
 
-type Pin = NonNullable<
-  Awaited<ReturnType<typeof getPinByIdService>>
->;
+type Pin = NonNullable<Awaited<ReturnType<typeof getPinByIdService>>>;
 
 interface PinDetailProps {
   pin: Pin;
@@ -20,6 +18,8 @@ interface PinDetailProps {
   isOwner: boolean;
   comments: CommentData[];
   currentUserId: string | null;
+  likeCount: number;
+  isLiked: boolean;
 }
 
 export function PinDetail({
@@ -29,6 +29,8 @@ export function PinDetail({
   isOwner,
   comments,
   currentUserId,
+  likeCount,
+  isLiked,
 }: PinDetailProps) {
   return (
     <>
@@ -39,14 +41,14 @@ export function PinDetail({
           isOwner={isOwner}
           comments={comments}
           currentUserId={currentUserId}
+          likeCount={likeCount}
+          isLiked={isLiked}
         />
       </PinDetailLayout>
 
       <section className="mx-auto mt-10 max-w-screen-2xl px-6">
         <div className="mb-8 flex justify-center">
-          <h2 className="text-2xl font-semibold">
-            More like this
-          </h2>
+          <h2 className="text-2xl font-semibold">More like this</h2>
         </div>
 
         <FeedGrid pins={relatedPins} />

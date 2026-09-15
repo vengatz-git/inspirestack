@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ChevronDown,
   Copy,
   Download,
   Heart,
@@ -23,10 +22,9 @@ import { BoardSaveButton } from "@/features/board/components/board-save-button";
 import type { BoardSummary } from "@/features/board/types/board";
 
 import { getPinByIdService } from "../services/get-pin-by-id";
+import { PinLikeButton } from "@/features/like/components/pin-like-button";
 
-type Pin = NonNullable<
-  Awaited<ReturnType<typeof getPinByIdService>>
->;
+type Pin = NonNullable<Awaited<ReturnType<typeof getPinByIdService>>>;
 
 interface PinHeaderProps {
   pin: Pin;
@@ -34,6 +32,9 @@ interface PinHeaderProps {
   onCommentClick: () => void;
   onToggleDetails: () => void;
   showDetails: boolean;
+  likeCount: number;
+  isLiked: boolean;
+  currentUserId: string | null;
 }
 
 export function PinHeader({
@@ -42,6 +43,9 @@ export function PinHeader({
   onCommentClick,
   onToggleDetails,
   showDetails,
+  likeCount,
+  isLiked,
+  currentUserId,
 }: PinHeaderProps) {
   async function handleShare() {
     if (!navigator.share) {
@@ -59,9 +63,7 @@ export function PinHeader({
   }
 
   async function handleCopyLink() {
-    await navigator.clipboard.writeText(
-      window.location.href,
-    );
+    await navigator.clipboard.writeText(window.location.href);
 
     toast.success("Link copied to clipboard.");
   }
@@ -96,14 +98,12 @@ export function PinHeader({
     <header className="flex w-full items-center justify-between">
       {/* Left-side actions */}
       <div className="flex items-center gap-1">
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Like pin"
-          className="size-9 rounded-full"
-        >
-          <Heart className="size-5" />
-        </Button>
+        <PinLikeButton
+          pinId={pin.id}
+          initialIsLiked={isLiked}
+          initialLikeCount={likeCount}
+          currentUserId={currentUserId}
+        />
 
         <Button
           variant="ghost"
@@ -139,30 +139,17 @@ export function PinHeader({
             <MoreHorizontal className="size-5" />
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent
-            align="start"
-            sideOffset={8}
-          >
-            <DropdownMenuItem
-              onClick={onToggleDetails}
-            >
-              <span>
-                {showDetails
-                  ? "Hide details"
-                  : "See details"}
-              </span>
+          <DropdownMenuContent align="start" sideOffset={8}>
+            <DropdownMenuItem onClick={onToggleDetails}>
+              <span>{showDetails ? "Hide details" : "See details"}</span>
             </DropdownMenuItem>
 
-            <DropdownMenuItem
-              onClick={handleDownload}
-            >
+            <DropdownMenuItem onClick={handleDownload}>
               <Download />
               <span>Download</span>
             </DropdownMenuItem>
 
-            <DropdownMenuItem
-              onClick={handleCopyLink}
-            >
+            <DropdownMenuItem onClick={handleCopyLink}>
               <Copy />
               <span>Copy link</span>
             </DropdownMenuItem>
@@ -172,19 +159,7 @@ export function PinHeader({
 
       {/* Right-side controls */}
       <div className="flex items-center gap-2">
-        {/* <button
-          type="button"
-          className="text-foreground hover:bg-muted flex items-center gap-1 rounded-full px-3 py-2 text-sm font-medium transition-colors"
-          aria-label={`Topic: ${pin.topic.name}`}
-        >
-          <span>{pin.topic.name}</span>
-          <ChevronDown className="size-4" />
-        </button> */}
-
-        <BoardSaveButton
-          pinId={pin.id}
-          boards={boards}
-        />
+        <BoardSaveButton pinId={pin.id} boards={boards} />
       </div>
     </header>
   );

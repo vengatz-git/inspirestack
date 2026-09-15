@@ -6,7 +6,7 @@ import { notifications } from "@/db/schema";
 interface CreateNotificationInput {
   recipientId: string;
   actorId: string;
-  type: "COMMENT" | "REPLY" | "SAVE";
+  type: "COMMENT" | "REPLY" | "SAVE" | "LIKE";
   pinId?: string | null;
   commentId?: string | null;
 }

@@ -11,9 +11,12 @@ import {
 export function useOnboardingForm() {
   return useForm<OnboardingFormValues>({
     resolver: zodResolver(onboardingSchema),
+
     defaultValues: {
       username: "",
+      dateOfBirth: "",
     },
+
     mode: "onBlur",
   });
 }

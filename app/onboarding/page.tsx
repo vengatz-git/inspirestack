@@ -11,7 +11,7 @@ export default async function OnboardingPage() {
   }
 
   if (session.user.isOnboarded) {
-    redirect("/dashboard");
+    redirect("/feed");
   }
 
   return (

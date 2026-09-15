@@ -16,7 +16,7 @@ export async function GET() {
   const recipientId = session.user.id;
 
   let unsubscribe: (() => void) | undefined;
-  let heartbeat: ReturnType<typeof setInterval>;
+  let heartbeat: ReturnType<typeof setInterval> | undefined;
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -40,7 +40,7 @@ export async function GET() {
           (event) => {
             send(
               JSON.stringify({
-                type: "notification",
+                type: event.type,
                 notificationId:
                   event.notificationId,
               }),
@@ -57,7 +57,10 @@ export async function GET() {
 
     cancel() {
       unsubscribe?.();
-      clearInterval(heartbeat);
+
+      if (heartbeat) {
+        clearInterval(heartbeat);
+      }
     },
   });
 

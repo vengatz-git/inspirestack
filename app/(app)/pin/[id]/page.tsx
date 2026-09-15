@@ -8,6 +8,7 @@ import { getCommentsByPinService } from "@/features/comment/services/get-comment
 import { PinDetail } from "@/features/pin/components/pin-detail";
 import { getPinByIdService } from "@/features/pin/services/get-pin-by-id";
 import { getRelatedPinsService } from "@/features/pin/services/get-related-pins";
+import { getPinLikeData } from "@/features/like/services/get-pin-like-data";
 
 type PinPageProps = {
   params: Promise<{
@@ -30,8 +31,7 @@ export async function generateMetadata({
 
   const title = pin.title ?? "Untitled Pin";
 
-  const description =
-    pin.description ?? `Explore "${title}" on InspireStack.`;
+  const description = pin.description ?? `Explore "${title}" on InspireStack.`;
 
   return {
     title: `${title} | InspireStack`,
@@ -67,9 +67,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function PinPage({
-  params,
-}: PinPageProps) {
+export default async function PinPage({ params }: PinPageProps) {
   const { id } = await params;
 
   const pin = await getPinByIdService(id);
@@ -88,6 +86,8 @@ export default async function PinPage({
   const session = await auth();
 
   const currentUserId = session?.user?.id ?? null;
+
+  const likeData = await getPinLikeData(pin.id, currentUserId ?? undefined);
 
   let boards: BoardSummary[] = [];
 
@@ -109,6 +109,8 @@ export default async function PinPage({
       isOwner={isOwner}
       comments={comments}
       currentUserId={currentUserId}
+      likeCount={likeData.likeCount}
+      isLiked={likeData.isLiked}
     />
   );
 }

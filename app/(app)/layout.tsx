@@ -1,5 +1,3 @@
-import { redirect } from "next/navigation";
-
 import { auth } from "@/auth";
 import { Navbar } from "@/components/layout/navbar";
 import { Container } from "@/components/layout/container";
@@ -14,11 +12,15 @@ export default async function AppLayout({
   const session = await auth();
 
   if (!session) {
-    redirect("/login");
+    return (
+      <Container className="py-6">
+        {children}
+      </Container>
+    );
   }
 
   if (!session.user.isOnboarded) {
-    redirect("/onboarding");
+    return children;
   }
 
   return (

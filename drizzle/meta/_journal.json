@@ -71,6 +71,27 @@
       "when": 1789205498233,
       "tag": "0009_eminent_adam_warlock",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1789379690524,
+      "tag": "0010_strong_namora",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1789459919735,
+      "tag": "0011_perfect_tarot",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1789485527021,
+      "tag": "0012_friendly_lucky_pierre",
+      "breakpoints": true
     }
   ]
 }

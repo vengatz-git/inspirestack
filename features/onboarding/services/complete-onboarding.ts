@@ -9,12 +9,16 @@ import { RESERVED_USERNAMES } from "../constants/reserved-usernames";
 interface CompleteOnboardingParams {
   userId: string;
   username: string;
+  dateOfBirth: string;
 }
 
 export async function completeOnboardingService({
   userId,
   username,
-}: CompleteOnboardingParams): Promise<ActionResult<void, OnboardingField>> {
+  dateOfBirth,
+}: CompleteOnboardingParams): Promise<
+  ActionResult<void, OnboardingField>
+> {
   const normalizedUsername = username.trim().toLowerCase();
 
   if (RESERVED_USERNAMES.includes(normalizedUsername)) {
@@ -27,7 +31,8 @@ export async function completeOnboardingService({
   }
 
   const existingUser = await db.query.users.findFirst({
-    where: (users, { eq }) => eq(users.username, normalizedUsername),
+    where: (users, { eq }) =>
+      eq(users.username, normalizedUsername),
   });
 
   if (existingUser && existingUser.id !== userId) {
@@ -43,7 +48,9 @@ export async function completeOnboardingService({
     .update(users)
     .set({
       username: normalizedUsername,
+      dateOfBirth: new Date(`${dateOfBirth}T00:00:00.000Z`),
       isOnboarded: true,
+      updatedAt: new Date(),
     })
     .where(eq(users.id, userId));
 

@@ -1,7 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import {
   Bookmark,
+  Heart,
   MessageCircle,
   Reply,
 } from "lucide-react";
@@ -11,6 +14,38 @@ import type { Notification } from "../types/notification";
 interface NotificationItemProps {
   notification: Notification;
   onRead: (id: string) => void;
+}
+
+function formatNotificationTime(
+  date: Date,
+) {
+  const seconds = Math.floor(
+    (Date.now() - date.getTime()) / 1000,
+  );
+
+  if (seconds < 60) {
+    return "just now";
+  }
+
+  const minutes = Math.floor(seconds / 60);
+
+  if (minutes < 60) {
+    return `${minutes}m`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+
+  if (hours < 24) {
+    return `${hours}h`;
+  }
+
+  const days = Math.floor(hours / 24);
+
+  if (days < 7) {
+    return `${days}d`;
+  }
+
+  return date.toLocaleDateString();
 }
 
 export function NotificationItem({
@@ -27,14 +62,18 @@ export function NotificationItem({
       ? "commented on your Pin"
       : notification.type === "REPLY"
         ? "replied to your comment"
-        : "saved your Pin";
+        : notification.type === "LIKE"
+          ? "liked your Pin"
+          : "saved your Pin";
 
   const Icon =
     notification.type === "COMMENT"
       ? MessageCircle
       : notification.type === "REPLY"
         ? Reply
-        : Bookmark;
+        : notification.type === "LIKE"
+          ? Heart
+          : Bookmark;
 
   const href = notification.pinId
     ? `/pin/${notification.pinId}`
@@ -69,12 +108,18 @@ export function NotificationItem({
           {message}
         </p>
 
-        <div className="text-muted-foreground mt-1 flex items-center gap-1 text-xs">
+        <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
           <Icon className="size-3.5" />
 
           <span className="truncate">
             {notification.pinTitle ??
               "View activity"}
+          </span>
+
+          <span className="shrink-0">
+            · {formatNotificationTime(
+              notification.createdAt,
+            )}
           </span>
         </div>
       </div>

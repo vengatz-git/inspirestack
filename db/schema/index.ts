@@ -6,3 +6,4 @@ export * from "./comments";
 export * from "./tags";
 export * from "./drafts";
 export * from "./notifications";
+export * from "./likes";

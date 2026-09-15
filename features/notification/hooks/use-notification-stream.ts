@@ -3,13 +3,13 @@
 import { useEffect } from "react";
 
 interface NotificationStreamEvent {
-  type: "connected" | "notification";
+  type: "connected" | "created" | "deleted";
   notificationId?: string;
 }
 
 interface UseNotificationStreamOptions {
   onNotification: (
-    notificationId: string,
+    event: NotificationStreamEvent,
   ) => void;
 }
 
@@ -29,10 +29,10 @@ export function useNotificationStream({
           ) as NotificationStreamEvent;
 
         if (
-          data.type === "notification" &&
-          data.notificationId
+          data.type === "created" ||
+          data.type === "deleted"
         ) {
-          onNotification(data.notificationId);
+          onNotification(data);
         }
       } catch (error) {
         console.error(

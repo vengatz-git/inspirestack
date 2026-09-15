@@ -16,9 +16,7 @@ import { PinAuthor } from "./pin-author";
 import { PinHeader } from "./pin-header";
 import { PinMeta } from "./pin-meta";
 
-type Pin = NonNullable<
-  Awaited<ReturnType<typeof getPinByIdService>>
->;
+type Pin = NonNullable<Awaited<ReturnType<typeof getPinByIdService>>>;
 
 interface PinPanelProps {
   pin: Pin;
@@ -26,6 +24,8 @@ interface PinPanelProps {
   isOwner: boolean;
   comments: CommentData[];
   currentUserId: string | null;
+  likeCount: number;
+  isLiked: boolean;
 }
 
 export function PinPanel({
@@ -34,21 +34,18 @@ export function PinPanel({
   isOwner,
   comments: initialComments,
   currentUserId,
+  likeCount,
+  isLiked,
 }: PinPanelProps) {
-  const [isCommentsExpanded, setIsCommentsExpanded] =
-    useState(false);
+  const [isCommentsExpanded, setIsCommentsExpanded] = useState(false);
 
-  const [isMobileCommentsOpen, setIsMobileCommentsOpen] =
-    useState(false);
+  const [isMobileCommentsOpen, setIsMobileCommentsOpen] = useState(false);
 
-  const [showDetails, setShowDetails] =
-    useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
-  const desktopCommentsRef =
-    useRef<CommentsSectionHandle>(null);
+  const desktopCommentsRef = useRef<CommentsSectionHandle>(null);
 
-  const mobileCommentsRef =
-    useRef<CommentsSectionHandle>(null);
+  const mobileCommentsRef = useRef<CommentsSectionHandle>(null);
 
   const {
     comments,
@@ -62,9 +59,7 @@ export function PinPanel({
   });
 
   function handleCommentClick() {
-    const isMobile = window.matchMedia(
-      "(max-width: 767px)",
-    ).matches;
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
 
     if (isMobile) {
       setIsMobileCommentsOpen(true);
@@ -85,16 +80,17 @@ export function PinPanel({
 
   return (
     <>
-      <section className="flex h-auto min-h-0 flex-col overflow-hidden bg-card md:h-full">
+      <section className="bg-card flex h-auto min-h-0 flex-col overflow-hidden md:h-full">
         <header className="shrink-0 px-4 py-2">
           <PinHeader
             pin={pin}
             boards={boards}
             onCommentClick={handleCommentClick}
-            onToggleDetails={() =>
-              setShowDetails((current) => !current)
-            }
+            onToggleDetails={() => setShowDetails((current) => !current)}
             showDetails={showDetails}
+            likeCount={likeCount}
+            isLiked={isLiked}
+            currentUserId={currentUserId}
           />
         </header>
 
@@ -102,10 +98,7 @@ export function PinPanel({
           <div className="shrink-0 space-y-4">
             <PinAuthor pin={pin} />
 
-            <PinMeta
-              pin={pin}
-              showDetails={showDetails}
-            />
+            <PinMeta pin={pin} showDetails={showDetails} />
           </div>
 
           {/* Desktop comments */}
@@ -116,9 +109,7 @@ export function PinPanel({
               comments={comments}
               currentUserId={currentUserId}
               isExpanded={isCommentsExpanded}
-              onExpandedChange={
-                setIsCommentsExpanded
-              }
+              onExpandedChange={setIsCommentsExpanded}
               replyingTo={replyingTo}
               replyToUsername={replyToUsername}
               onReply={handleReply}

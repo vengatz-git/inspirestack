@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
+import { getFeed } from "@/features/feed/services/get-feed";
+import { LandingPage } from "@/features/landing/components/landing-page";
 
-export default async function LandingPage() {
+export default async function LandingRoute() {
   const session = await auth();
 
   if (session?.user) {
@@ -13,11 +15,9 @@ export default async function LandingPage() {
     );
   }
 
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <h1 className="text-4xl font-bold">
-        InspireStack
-      </h1>
-    </main>
-  );
+  const feed = await getFeed({
+    limit: 12,
+  });
+
+  return <LandingPage pins={feed.pins} />;
 }

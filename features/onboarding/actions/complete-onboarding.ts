@@ -37,6 +37,7 @@ export async function completeOnboarding(
     const result = await completeOnboardingService({
       userId: session.user.id,
       username: parsed.data.username,
+      dateOfBirth: parsed.data.dateOfBirth,
     });
 
     if (!result.success) {

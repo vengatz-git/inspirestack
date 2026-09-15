@@ -14,6 +14,8 @@ interface StickyWorkspaceProps {
   isOwner: boolean;
   comments: CommentData[];
   currentUserId: string | null;
+  likeCount: number;
+  isLiked: boolean;
 }
 
 export function StickyWorkspace({
@@ -22,22 +24,12 @@ export function StickyWorkspace({
   isOwner,
   comments,
   currentUserId,
+  likeCount,
+  isLiked,
 }: StickyWorkspaceProps) {
   return (
     <section className="w-full">
-      <div
-        className="
-          mx-auto
-          w-full
-          max-w-[1088px]
-          overflow-hidden
-          rounded-3xl
-          border
-          bg-card
-          shadow-2xl
-          md:h-[504px]
-        "
-      >
+      <div className="bg-card mx-auto w-full max-w-[1088px] overflow-hidden rounded-3xl border shadow-2xl md:h-[504px]">
         <div className="grid min-h-0 grid-cols-1 md:h-full md:grid-cols-2">
           <div className="aspect-4/5 min-h-0 min-w-0 md:aspect-auto">
             <PinImage pin={pin} />
@@ -50,6 +42,8 @@ export function StickyWorkspace({
               isOwner={isOwner}
               comments={comments}
               currentUserId={currentUserId}
+              likeCount={likeCount}
+              isLiked={isLiked}
             />
           </div>
         </div>

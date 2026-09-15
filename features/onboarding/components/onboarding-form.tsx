@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { completeOnboarding } from "../actions/complete-onboarding";
 import { useOnboardingForm } from "../hooks/use-onboarding-form";
 import type { OnboardingFormValues } from "../schemas/onboarding-schema";
+
+import { DateOfBirthField } from "./date-of-birth-field";
 import { UsernameField } from "./username-field";
 
 export function OnboardingForm() {
@@ -42,6 +44,13 @@ export function OnboardingForm() {
         });
       }
 
+      if (result.fieldErrors?.dateOfBirth) {
+        setError("dateOfBirth", {
+          type: "server",
+          message: result.fieldErrors.dateOfBirth,
+        });
+      }
+
       return;
     }
 
@@ -50,16 +59,32 @@ export function OnboardingForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-6"
+    >
       <UsernameField
         registration={register("username")}
         error={errors.username}
       />
 
-      {serverError && <p className="text-destructive text-sm">{serverError}</p>}
+      <DateOfBirthField
+        registration={register("dateOfBirth")}
+        error={errors.dateOfBirth}
+      />
 
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Completing..." : "Continue"}
+      {serverError && (
+        <p className="text-destructive text-sm">
+          {serverError}
+        </p>
+      )}
+
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "Creating profile..." : "Continue"}
       </Button>
     </form>
   );
