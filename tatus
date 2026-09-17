@@ -1,0 +1,370 @@
+[1mdiff --git a/app/globals.css b/app/globals.css[m
+[1mindex 871a399..8f93fe1 100644[m
+[1m--- a/app/globals.css[m
+[1m+++ b/app/globals.css[m
+[36m@@ -128,6 +128,7 @@[m
+     text-rendering: optimizeLegibility;[m
+     -webkit-font-smoothing: antialiased;[m
+     -moz-osx-font-smoothing: grayscale;[m
+[32m+[m[32m    scroll-behavior: smooth;[m
+   }[m
+ [m
+   body {[m
+[36m@@ -190,4 +191,4 @@[m
+ [m
+ [data-sonner-toast] [data-title] {[m
+   font-weight: 600;[m
+[31m-}[m
+\ No newline at end of file[m
+[32m+[m[32m}[m
+[1mdiff --git a/app/login/page.tsx b/app/login/page.tsx[m
+[1mindex b074e63..4384706 100644[m
+[1m--- a/app/login/page.tsx[m
+[1m+++ b/app/login/page.tsx[m
+[36m@@ -1,23 +1,9 @@[m
+[31m-import { signIn } from "@/auth";[m
+[32m+[m[32mimport { LandingAuth } from "@/features/landing/components/landing-auth";[m
+ [m
+ export default function LoginPage() {[m
+   return ([m
+[31m-    <main className="flex min-h-screen items-center justify-center">[m
+[31m-      <form[m
+[31m-        action={async () => {[m
+[31m-          "use server";[m
+[31m-          await signIn("google", {[m
+[31m-            redirectTo: "/",[m
+[31m-          });[m
+[31m-        }}[m
+[31m-      >[m
+[31m-        <button[m
+[31m-          type="submit"[m
+[31m-          className="rounded-lg bg-black px-6 py-3 text-white"[m
+[31m-        >[m
+[31m-          Continue with Google[m
+[31m-        </button>[m
+[31m-      </form>[m
+[32m+[m[32m    <main className="min-h-screen overflow-hidden bg-background">[m
+[32m+[m[32m      <LandingAuth standalone />[m
+     </main>[m
+   );[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/features/landing/components/google-auth-button.tsx b/features/landing/components/google-auth-button.tsx[m
+[1mindex 6651e5c..d771aac 100644[m
+[1m--- a/features/landing/components/google-auth-button.tsx[m
+[1m+++ b/features/landing/components/google-auth-button.tsx[m
+[36m@@ -1,7 +1,6 @@[m
+ "use client";[m
+ [m
+ import { signIn } from "next-auth/react";[m
+[31m-import { Globe } from "lucide-react";[m
+ import { useState } from "react";[m
+ [m
+ export function GoogleAuthButton() {[m
+[36m@@ -22,11 +21,38 @@[m [mexport function GoogleAuthButton() {[m
+       disabled={isLoading}[m
+       className="flex h-12 w-full items-center justify-center gap-3 rounded-xl border bg-background text-sm font-medium transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"[m
+     >[m
+[31m-      <Globe className="size-5" />[m
+[32m+[m[32m      <GoogleIcon />[m
+ [m
+       {isLoading[m
+         ? "Connecting..."[m
+         : "Continue with Google"}[m
+     </button>[m
+   );[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunction GoogleIcon() {[m
+[32m+[m[32m  return ([m
+[32m+[m[32m    <svg[m
+[32m+[m[32m      viewBox="0 0 24 24"[m
+[32m+[m[32m      aria-hidden="true"[m
+[32m+[m[32m      className="size-5"[m
+[32m+[m[32m    >[m
+[32m+[m[32m      <path[m
+[32m+[m[32m        fill="#4285F4"[m
+[32m+[m[32m        d="M21.6 12.23c0-.71-.06-1.4-.18-2.05H12v3.88h5.38a4.6 4.6 0 0 1-1.99 3.02v2.51h3.22c1.89-1.74 2.99-4.3 2.99-7.36Z"[m
+[32m+[m[32m      />[m
+[32m+[m[32m      <path[m
+[32m+[m[32m        fill="#34A853"[m
+[32m+[m[32m        d="M12 22c2.7 0 4.96-.9 6.61-2.41l-3.22-2.51c-.9.6-2.05.96-3.39.96-2.61 0-4.82-1.76-5.61-4.13H3.06v2.59A9.99 9.99 0 0 0 12 22Z"[m
+[32m+[m[32m      />[m
+[32m+[m[32m      <path[m
+[32m+[m[32m        fill="#FBBC05"[m
+[32m+[m[32m        d="M6.39 13.91A6 6 0 0 1 6.08 12c0-.66.11-1.3.31-1.91V7.5H3.06A10 10 0 0 0 2 12c0 1.61.38 3.13 1.06 4.5l3.33-2.59Z"[m
+[32m+[m[32m      />[m
+[32m+[m[32m      <path[m
+[32m+[m[32m        fill="#EA4335"[m
+[32m+[m[32m        d="M12 5.96c1.47 0 2.79.51 3.83 1.51l2.87-2.87C16.96 2.92 14.7 2 12 2a9.99 9.99 0 0 0-8.94 5.5l3.33 2.59C7.18 7.72 9.39 5.96 12 5.96Z"[m
+[32m+[m[32m      />[m
+[32m+[m[32m    </svg>[m
+[32m+[m[32m  );[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/features/landing/components/landing-page.tsx b/features/landing/components/landing-page.tsx[m
+[1mindex d2caf81..7eb3b52 100644[m
+[1m--- a/features/landing/components/landing-page.tsx[m
+[1m+++ b/features/landing/components/landing-page.tsx[m
+[36m@@ -1,199 +1,83 @@[m
+ "use client";[m
+ [m
+[31m-import Image from "next/image";[m
+[31m-import Link from "next/link";[m
+[31m-import { AnimatePresence, motion } from "framer-motion";[m
+[31m-import { ArrowRight, Sparkles } from "lucide-react";[m
+[31m-import { useState } from "react";[m
+[32m+[m[32mimport { motion } from "framer-motion";[m
+ [m
+ import type { PinCardData } from "@/features/pin/types/pin-card";[m
+ [m
+[31m-import { GoogleAuthButton } from "./google-auth-button";[m
+[32m+[m[32mimport { LandingAuth } from "./landing-auth";[m
+[32m+[m[32mimport { LandingHero } from "./landing-hero";[m
+[32m+[m[32mimport { LandingFooter } from "./landing-footer";[m
+ [m
+ interface LandingPageProps {[m
+   pins: PinCardData[];[m
+ }[m
+ [m
+[31m-export function LandingPage({[m
+[31m-  pins,[m
+[31m-}: LandingPageProps) {[m
+[31m-  const [showAuth, setShowAuth] = useState(false);[m
+[32m+[m[32mexport function LandingPage({ pins }: LandingPageProps) {[m
+[32m+[m[32m  function scrollToAuth() {[m
+[32m+[m[32m    document.getElementById("join")?.scrollIntoView({[m
+[32m+[m[32m      behavior: "smooth",[m
+[32m+[m[32m      block: "start",[m
+[32m+[m[32m    });[m
+[32m+[m[32m  }[m
+ [m
+   return ([m
+[31m-    <main className="relative min-h-screen overflow-hidden bg-background">[m
+[31m-      <header className="absolute inset-x-0 top-0 z-20">[m
+[31m-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8">[m
+[31m-          <Link[m
+[31m-            href="/"[m
+[31m-            className="text-xl font-bold tracking-tight"[m
+[31m-          >[m
+[31m-            InspireStack[m
+[31m-          </Link>[m
+[31m-[m
+[31m-          <Link[m
+[31m-            href="/login"[m
+[31m-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"[m
+[31m-          >[m
+[31m-            Log in[m
+[31m-          </Link>[m
+[31m-        </div>[m
+[31m-      </header>[m
+[31m-[m
+[31m-      <AnimatePresence mode="wait">[m
+[31m-        {!showAuth ? ([m
+[31m-          <motion.section[m
+[31m-            key="discover"[m
+[31m-            initial={{ opacity: 0 }}[m
+[31m-            animate={{ opacity: 1 }}[m
+[31m-            exit={{[m
+[31m-              opacity: 0,[m
+[31m-              x: -80,[m
+[31m-              transition: { duration: 0.35 },[m
+[31m-            }}[m
+[31m-            className="relative min-h-screen"[m
+[31m-          >[m
+[31m-            <div className="mx-auto grid min-h-screen max-w-7xl items-center gap-12 px-5 pb-20 pt-28 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">[m
+[31m-              <motion.div[m
+[31m-                initial={{ opacity: 0, y: 30 }}[m
+[31m-                animate={{ opacity: 1, y: 0 }}[m
+[31m-                transition={{ duration: 0.6 }}[m
+[31m-                className="relative z-10 max-w-xl"[m
+[31m-              >[m
+[31m-                <div className="mb-6 inline-flex items-center gap-2 rounded-full border bg-background/80 px-3 py-1.5 text-sm backdrop-blur">[m
+[31m-                  <Sparkles className="size-4" />[m
+[31m-                  <span>Ideas worth discovering</span>[m
+[31m-                </div>[m
+[32m+[m[32m    <main id="top" className="bg-background min-h-screen overflow-x-hidden">[m
+[32m+[m[32m      <LandingHeader onLogin={scrollToAuth} />[m
+ [m
+[31m-                <h1 className="text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">[m
+[31m-                  Discover what inspires you.[m
+[31m-                </h1>[m
+[32m+[m[32m      <LandingHero pins={pins} onGetStarted={scrollToAuth} />[m
+ [m
+[31m-                <p className="mt-6 max-w-lg text-lg text-muted-foreground sm:text-xl">[m
+[31m-                  Explore ideas, collect inspiration, and[m
+[31m-                  share the things worth remembering.[m
+[31m-                </p>[m
+[32m+[m[32m      <LandingAuth />[m
+ [m
+[31m-                <div className="mt-9 flex flex-wrap gap-3">[m
+[31m-                  <Link[m
+[31m-                    href="/feed"[m
+[31m-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-medium text-primary-foreground transition-transform hover:scale-[1.02]"[m
+[31m-                  >[m
+[31m-                    Explore[m
+[31m-                    <ArrowRight className="size-4" />[m
+[31m-                  </Link>[m
+[32m+[m[32m      <LandingFooter />[m
+[32m+[m[32m    </main>[m
+[32m+[m[32m  );[m
+[32m+[m[32m}[m
+ [m
+[31m-                  <button[m
+[31m-                    type="button"[m
+[31m-                    onClick={() => setShowAuth(true)}[m
+[31m-                    className="inline-flex h-12 items-center justify-center rounded-xl border bg-background px-6 text-sm font-medium transition-colors hover:bg-muted"[m
+[31m-                  >[m
+[31m-                    Get started[m
+[31m-                  </button>[m
+[31m-                </div>[m
+[31m-              </motion.div>[m
+[32m+[m[32minterface LandingHeaderProps {[m
+[32m+[m[32m  onLogin: () => void;[m
+[32m+[m[32m}[m
+ [m
+[31m-              <LandingPins pins={pins} />[m
+[31m-            </div>[m
+[31m-          </motion.section>[m
+[31m-        ) : ([m
+[31m-          <motion.section[m
+[31m-            key="auth"[m
+[31m-            initial={{ opacity: 0, x: 80 }}[m
+[31m-            animate={{ opacity: 1, x: 0 }}[m
+[31m-            exit={{ opacity: 0, x: 80 }}[m
+[31m-            transition={{ duration: 0.45 }}[m
+[31m-            className="relative min-h-screen"[m
+[32m+[m[32mfunction LandingHeader({ onLogin }: LandingHeaderProps) {[m
+[32m+[m[32m  return ([m
+[32m+[m[32m    <header className="absolute inset-x-0 top-0 z-30">[m
+[32m+[m[32m      <div className="mx-auto flex h-20 max-w-7xl items-center gap-8 px-5 sm:px-8">[m
+[32m+[m[32m        <a href="#top" className="shrink-0 text-xl font-bold tracking-tight">[m
+[32m+[m[32m          InspireStack[m
+[32m+[m[32m        </a>[m
+[32m+[m
+[32m+[m[32m        <nav className="hidden items-center gap-6 text-sm font-medium md:flex">[m
+[32m+[m[32m          <a[m
+[32m+[m[32m            href="/feed"[m
+[32m+[m[32m            className="text-muted-foreground hover:text-foreground transition-colors"[m
+           >[m
+[31m-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_50%,var(--muted),transparent_38%)]" />[m
+[32m+[m[32m            Explore[m
+[32m+[m[32m          </a>[m
+ [m
+[31m-            <div className="relative mx-auto flex min-h-screen max-w-7xl items-center justify-end px-5 py-28 sm:px-8">[m
+[31m-              <motion.div[m
+[31m-                initial={{ opacity: 0, y: 25 }}[m
+[31m-                animate={{ opacity: 1, y: 0 }}[m
+[31m-                transition={{ delay: 0.15, duration: 0.45 }}[m
+[31m-                className="w-full max-w-md"[m
+[31m-              >[m
+[31m-                <div className="rounded-3xl border bg-background/90 p-8 shadow-2xl backdrop-blur-xl sm:p-10">[m
+[31m-                  <button[m
+[31m-                    type="button"[m
+[31m-                    onClick={() => setShowAuth(false)}[m
+[31m-                    className="mb-8 text-sm text-muted-foreground hover:text-foreground"[m
+[31m-                  >[m
+[31m-                    ← Back[m
+[31m-                  </button>[m
+[31m-[m
+[31m-                  <div className="space-y-3">[m
+[31m-                    <h2 className="text-3xl font-semibold tracking-tight">[m
+[31m-                      Start discovering.[m
+[31m-                    </h2>[m
+[31m-[m
+[31m-                    <p className="text-muted-foreground">[m
+[31m-                      Join InspireStack and build your[m
+[31m-                      personal collection of inspiration.[m
+[31m-                    </p>[m
+[31m-                  </div>[m
+[31m-[m
+[31m-                  <div className="mt-8">[m
+[31m-                    <GoogleAuthButton />[m
+[31m-                  </div>[m
+[32m+[m[32m          <a[m
+[32m+[m[32m            href="/create"[m
+[32m+[m[32m            className="text-muted-foreground hover:text-foreground transition-colors"[m
+[32m+[m[32m          >[m
+[32m+[m[32m            Create[m
+[32m+[m[32m          </a>[m
+ [m
+[31m-                  <p className="mt-6 text-center text-xs text-muted-foreground">[m
+[31m-                    By continuing, you agree to use[m
+[31m-                    InspireStack responsibly.[m
+[31m-                  </p>[m
+[31m-                </div>[m
+[31m-              </motion.div>[m
+[31m-            </div>[m
+[31m-          </motion.section>[m
+[31m-        )}[m
+[31m-      </AnimatePresence>[m
+[31m-    </main>[m
+[32m+[m[32m          <a[m
+[32m+[m[32m            href="#footer"[m
+[32m+[m[32m            className="text-muted-foreground hover:text-foreground transition-colors"[m
+[32m+[m[32m          >[m
+[32m+[m[32m            About[m
+[32m+[m[32m          </a>[m
+[32m+[m[32m        </nav>[m
+[32m+[m
+[32m+[m[32m        <div className="ml-auto">[m
+[32m+[m[32m          <button[m
+[32m+[m[32m            type="button"[m
+[32m+[m[32m            onClick={onLogin}[m
+[32m+[m[32m            className="hover:bg-foreground hover:text-background inline-flex h-10 items-center justify-center rounded-xl border px-5 text-md font-medium transition-colors"[m
+[32m+[m[32m          >[m
+[32m+[m[32m            Log in[m
+[32m+[m[32m          </button>[m
+[32m+[m[32m        </div>[m
+[32m+[m[32m      </div>[m
+[32m+[m[32m    </header>[m
+   );[m
+ }[m
+[31m-[m
+[31m-function LandingPins({ pins }: LandingPageProps) {[m
+[31m-  return ([m
+[31m-    <motion.div[m
+[31m-      initial="hidden"[m
+[31m-      animate="visible"[m
+[31m-      variants={{[m
+[31m-        hidden: {},[m
+[31m-        visible: {[m
+[31m-          transition: {[m
+[31m-            staggerChildren: 0.08,[m
+[31m-          },[m
+[31m-        },[m
+[31m-      }}[m
+[31m-      className="columns-2 gap-3 sm:columns-3"[m
+[31m-    >[m
+[31m-      {pins.slice(0, 9).map((pin, index) => ([m
+[31m-        <motion.div[m
+[31m-          key={pin.id}[m
+[31m-          variants={{[m
+[31m-            hidden: {[m
+[31m-              opacity: 0,[m
+[31m-              y: 25,[m
+[31m-            },[m
+[31m-            visible: {[m
+[31m-              opacity: 1,[m
+[31m-              y: 0,[m
+[31m-            },[m
+[31m-          }}[m
+[31m-          transition={{ duration: 0.45 }}[m
+[31m-          className={`mb-3 break-inside-avoid overflow-hidden rounded-2xl ${[m
+[31m-            index === 0 ? "sm:mt-10" : ""[m
+[31m-          }`}[m
+[31m-        >[m
+[31m-          <Image[m
+[31m-            src={pin.imageUrl}[m
+[31m-            alt={pin.altText ?? pin.title ?? "Inspiration"}[m
+[31m-            width={pin.imageWidth}[m
+[31m-            height={pin.imageHeight}[m
+[31m-            sizes="(max-width: 640px) 45vw, 20vw"[m
+[31m-            className="h-auto w-full"[m
+[31m-          />[m
+[31m-        </motion.div>[m
+[31m-      ))}[m
+[31m-    </motion.div>[m
+[31m-  );[m
+[31m-}[m
+\ No newline at end of file[m

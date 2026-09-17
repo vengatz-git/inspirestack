@@ -1,23 +1,9 @@
-import { signIn } from "@/auth";
+import { LandingAuth } from "@/features/landing/components/landing-auth";
 
 export default function LoginPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <form
-        action={async () => {
-          "use server";
-          await signIn("google", {
-            redirectTo: "/",
-          });
-        }}
-      >
-        <button
-          type="submit"
-          className="rounded-lg bg-black px-6 py-3 text-white"
-        >
-          Continue with Google
-        </button>
-      </form>
+    <main className="min-h-screen overflow-hidden bg-background">
+      <LandingAuth standalone />
     </main>
   );
 }
