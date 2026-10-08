@@ -1,10 +1,16 @@
 "use client";
 
+import type { MouseEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Trash2 } from "lucide-react";
+import { useTransition } from "react";
+import {
+  BookmarkX,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 
+import { removeSavedPinAction } from "@/features/saved/actions/remove-saved-pin";
 import { deletePinAction } from "@/features/pin/actions/delete-pin";
 
 import type { ProfilePinCardData } from "../types/profile-pin-card";
@@ -13,15 +19,21 @@ interface ProfilePinCardProps {
   pin: ProfilePinCardData;
   onDeleted?: (pinId: string) => void;
   showDelete?: boolean;
+  showRemoveSaved?: boolean;
+  onDirectSaveRemoved?: (pinId: string) => void;
 }
 
 export function ProfilePinCard({
   pin,
   onDeleted,
   showDelete = false,
+  showRemoveSaved = false,
+  onDirectSaveRemoved,
 }: ProfilePinCardProps) {
+  const [isRemoving, startRemoving] = useTransition();
+
   async function handleDelete(
-    event: React.MouseEvent<HTMLButtonElement>,
+    event: MouseEvent<HTMLButtonElement>,
   ) {
     event.preventDefault();
     event.stopPropagation();
@@ -44,13 +56,43 @@ export function ProfilePinCard({
     }
 
     toast.success("Pin deleted.");
-
     onDeleted?.(pin.id);
+  }
+
+  function handleRemoveSaved(
+    event: MouseEvent<HTMLButtonElement>,
+  ) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (isRemoving) {
+      return;
+    }
+
+    startRemoving(async () => {
+      const result = await removeSavedPinAction({
+        pinId: pin.id,
+      });
+
+      if (!result.success) {
+        toast.error(
+          result.error ?? "Failed to remove saved Pin.",
+        );
+        return;
+      }
+
+      toast.success("Removed from Saved.");
+      onDirectSaveRemoved?.(pin.id);
+    });
   }
 
   const profilePinHref = pin.author.username
     ? `/profile/${pin.author.username}/pin/${pin.id}`
     : `/pin/${pin.id}`;
+
+  const showActions =
+    (showRemoveSaved && pin.isDirectSave) ||
+    (showDelete && pin.isOwner);
 
   return (
     <article className="group relative min-w-0">
@@ -81,15 +123,31 @@ export function ProfilePinCard({
           />
         </Link>
 
-        {showDelete && pin.isOwner && (
-          <button
-            type="button"
-            onClick={handleDelete}
-            className="bg-background/90 hover:bg-background absolute top-2 right-2 z-10 flex size-8 items-center justify-center rounded-full shadow-sm backdrop-blur transition-colors"
-            aria-label="Delete pin"
-          >
-            <Trash2 className="text-destructive size-3.5" />
-          </button>
+        {showActions && (
+          <div className="absolute top-2 right-2 z-10 flex gap-2">
+            {showRemoveSaved && pin.isDirectSave && (
+              <button
+                type="button"
+                onClick={handleRemoveSaved}
+                disabled={isRemoving}
+                className="bg-background/90 hover:bg-background flex size-8 items-center justify-center rounded-full shadow-sm backdrop-blur transition-colors disabled:opacity-50"
+                aria-label="Remove from Saved"
+              >
+                <BookmarkX className="size-3.5" />
+              </button>
+            )}
+
+            {showDelete && pin.isOwner && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="bg-background/90 hover:bg-background flex size-8 items-center justify-center rounded-full shadow-sm backdrop-blur transition-colors"
+                aria-label="Delete pin"
+              >
+                <Trash2 className="text-destructive size-3.5" />
+              </button>
+            )}
+          </div>
         )}
       </div>
 
@@ -107,7 +165,6 @@ export function ProfilePinCard({
             )}
           </div>
 
-          {/* Likes will be added when the reaction system exists. */}
           <span
             className="text-muted-foreground shrink-0 text-xs"
             aria-hidden="true"

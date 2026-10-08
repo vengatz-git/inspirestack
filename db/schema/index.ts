@@ -7,3 +7,4 @@ export * from "./tags";
 export * from "./drafts";
 export * from "./notifications";
 export * from "./likes";
+export * from "./saved-pins";

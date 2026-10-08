@@ -18,4 +18,7 @@ export interface ProfilePinCardData {
 
   isOwner: boolean;
   isSaved: boolean;
+
+  isDirectSave?: boolean;
+  isBoardSave?: boolean;
 }

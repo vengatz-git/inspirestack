@@ -1,9 +1,21 @@
-import { and, desc, eq, gt, lt, or, sql } from "drizzle-orm";
+import {
+  and,
+  eq,
+  inArray,
+  or,
+} from "drizzle-orm";
 
 import { db } from "@/db";
-import { boardPins, boards, pins, users } from "@/db/schema";
+import {
+  boardPins,
+  boards,
+  pins,
+  savedPins,
+  users,
+} from "@/db/schema";
 
 import type { ProfilePinCardData } from "../types/profile-pin-card";
+
 interface GetSavedPinsByUserOptions {
   userId: string;
   includePrivate?: boolean;
@@ -16,57 +28,155 @@ interface GetSavedPinsByUserResult {
   nextCursor: string | null;
 }
 
+type SavedPinMeta = {
+  pinId: string;
+  savedAt: Date;
+  isDirectSave: boolean;
+  isBoardSave: boolean;
+};
+
 export async function getSavedPinsByUserService({
   userId,
   includePrivate = false,
   limit = 24,
   cursor,
 }: GetSavedPinsByUserOptions): Promise<GetSavedPinsByUserResult> {
-  const visibilityCondition = includePrivate
-    ? undefined
-    : eq(boards.visibility, "PUBLIC");
+  const pinVisibilityCondition = includePrivate
+    ? or(
+        eq(pins.visibility, "PUBLIC"),
+        eq(pins.authorId, userId),
+      )
+    : eq(pins.visibility, "PUBLIC");
 
-  const savedPinsQuery = db
+  const directSavedPins = await db
+    .select({
+      pinId: savedPins.pinId,
+      savedAt: savedPins.createdAt,
+    })
+    .from(savedPins)
+    .innerJoin(
+      pins,
+      eq(savedPins.pinId, pins.id),
+    )
+    .where(
+      and(
+        eq(savedPins.userId, userId),
+        pinVisibilityCondition,
+      ),
+    );
+
+  const boardSavedPins = await db
     .select({
       pinId: boardPins.pinId,
-      savedAt: sql<Date>`max(${boardPins.createdAt})`.as("saved_at"),
+      savedAt: boardPins.createdAt,
     })
     .from(boardPins)
-    .innerJoin(boards, eq(boardPins.boardId, boards.id))
-    .where(
-      visibilityCondition
-        ? and(eq(boards.ownerId, userId), visibilityCondition)
-        : eq(boards.ownerId, userId),
+    .innerJoin(
+      boards,
+      eq(boardPins.boardId, boards.id),
     )
-    .groupBy(boardPins.pinId)
-    .as("saved_pins");
+    .innerJoin(
+      pins,
+      eq(boardPins.pinId, pins.id),
+    )
+    .where(
+      and(
+        eq(boards.ownerId, userId),
+        includePrivate
+          ? undefined
+          : eq(boards.visibility, "PUBLIC"),
+        pinVisibilityCondition,
+      ),
+    );
 
-  let cursorCondition;
+  const savedPinMetaById = new Map<
+    string,
+    SavedPinMeta
+  >();
 
-  if (cursor) {
-    const cursorPin = await db
-      .select({
-        pinId: savedPinsQuery.pinId,
-        savedAt: savedPinsQuery.savedAt,
-      })
-      .from(savedPinsQuery)
-      .where(eq(savedPinsQuery.pinId, cursor))
-      .limit(1);
+  function addSavedPin(
+    pinId: string,
+    savedAt: Date,
+    source: "direct" | "board",
+  ) {
+    const existing = savedPinMetaById.get(pinId);
 
-    const cursorRow = cursorPin[0];
-
-    if (cursorRow) {
-      cursorCondition = or(
-        lt(savedPinsQuery.savedAt, cursorRow.savedAt),
-        and(
-          eq(savedPinsQuery.savedAt, cursorRow.savedAt),
-          lt(savedPinsQuery.pinId, cursorRow.pinId),
-        ),
-      );
-    }
+    savedPinMetaById.set(pinId, {
+      pinId,
+      savedAt:
+        !existing || savedAt > existing.savedAt
+          ? savedAt
+          : existing.savedAt,
+      isDirectSave:
+        existing?.isDirectSave === true ||
+        source === "direct",
+      isBoardSave:
+        existing?.isBoardSave === true ||
+        source === "board",
+    });
   }
 
-  const conditions = cursorCondition ? cursorCondition : undefined;
+  for (const savedPin of directSavedPins) {
+    addSavedPin(
+      savedPin.pinId,
+      savedPin.savedAt,
+      "direct",
+    );
+  }
+
+  for (const savedPin of boardSavedPins) {
+    addSavedPin(
+      savedPin.pinId,
+      savedPin.savedAt,
+      "board",
+    );
+  }
+
+  const allSavedPins = Array.from(
+    savedPinMetaById.values(),
+  ).sort((left, right) => {
+    const timeDifference =
+      right.savedAt.getTime() - left.savedAt.getTime();
+
+    if (timeDifference !== 0) {
+      return timeDifference;
+    }
+
+    return right.pinId.localeCompare(left.pinId);
+  });
+
+  const cursorIndex = cursor
+    ? allSavedPins.findIndex(
+        (savedPin) => savedPin.pinId === cursor,
+      )
+    : -1;
+
+  const visibleSavedPins =
+    cursorIndex >= 0
+      ? allSavedPins.slice(cursorIndex + 1)
+      : allSavedPins;
+
+  const pageWithExtra = visibleSavedPins.slice(
+    0,
+    limit + 1,
+  );
+
+  const hasMore = pageWithExtra.length > limit;
+
+  const pageSavedPins = hasMore
+    ? pageWithExtra.slice(0, limit)
+    : pageWithExtra;
+
+  if (pageSavedPins.length === 0) {
+    return {
+      pins: [],
+      nextCursor: null,
+    };
+  }
+
+  const pinIds = pageSavedPins.map(
+    (savedPin) => savedPin.pinId,
+  );
 
   const result = await db
     .select({
@@ -77,40 +187,60 @@ export async function getSavedPinsByUserService({
         displayName: users.displayName,
         image: users.image,
       },
-      savedAt: savedPinsQuery.savedAt,
     })
-    .from(savedPinsQuery)
-    .innerJoin(pins, eq(savedPinsQuery.pinId, pins.id))
-    .innerJoin(users, eq(pins.authorId, users.id));
+    .from(pins)
+    .innerJoin(users, eq(pins.authorId, users.id))
+    .where(inArray(pins.id, pinIds));
 
-  const hasMore = result.length > limit;
+  const resultByPinId = new Map(
+    result.map((item) => [item.pin.id, item]),
+  );
 
-  const pageResults = hasMore ? result.slice(0, limit) : result;
+  const profilePins = pageSavedPins.flatMap(
+    (savedPin) => {
+      const resultItem = resultByPinId.get(
+        savedPin.pinId,
+      );
+
+      if (!resultItem) {
+        return [];
+      }
+
+      const { pin, author } = resultItem;
+
+      return [
+        {
+          id: pin.id,
+          title: pin.title,
+          description: pin.description,
+          imageUrl: pin.imageUrl,
+          imageWidth: pin.imageWidth,
+          imageHeight: pin.imageHeight,
+          altText: pin.title,
+
+          author: {
+            id: author.id,
+            username: author.username,
+            displayName: author.displayName,
+            image: author.image,
+          },
+
+          isOwner: pin.authorId === userId,
+          isSaved: true,
+          isDirectSave: savedPin.isDirectSave,
+          isBoardSave: savedPin.isBoardSave,
+        },
+      ];
+    },
+  );
 
   const nextCursor = hasMore
-    ? (pageResults[pageResults.length - 1]?.pin.id ?? null)
+    ? pageSavedPins[pageSavedPins.length - 1]?.pinId ??
+      null
     : null;
 
   return {
-    pins: pageResults.map(({ pin, author }) => ({
-      id: pin.id,
-      title: pin.title,
-      description: pin.description,
-      imageUrl: pin.imageUrl,
-      imageWidth: pin.imageWidth,
-      imageHeight: pin.imageHeight,
-      altText: pin.title,
-
-      author: {
-        id: author.id,
-        username: author.username,
-        displayName: author.displayName,
-        image: author.image,
-      },
-
-      isOwner: pin.authorId === userId,
-      isSaved: true,
-    })),
+    pins: profilePins,
     nextCursor,
   };
 }

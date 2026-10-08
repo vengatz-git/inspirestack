@@ -12,9 +12,10 @@ import { likePinAction } from "../actions/like-pin";
 import { unlikePinAction } from "../actions/unlike-pin";
 
 type LikeEvent = {
-  type: "updated";
+  type: "connected" | "updated";
   pinId: string;
   likeCount: number;
+  isLiked?: boolean;
 };
 
 interface UsePinLikesOptions {
@@ -30,14 +31,9 @@ export function usePinLikes({
   initialLikeCount,
   currentUserId,
 }: UsePinLikesOptions) {
-  const [isLiked, setIsLiked] =
-    useState(initialIsLiked);
-
-  const [likeCount, setLikeCount] =
-    useState(initialLikeCount);
-
-  const [isPending, startTransition] =
-    useTransition();
+  const [isLiked, setIsLiked] = useState(initialIsLiked);
+  const [likeCount, setLikeCount] = useState(initialLikeCount);
+  const [isPending, startTransition] = useTransition();
 
   const mutationPendingRef = useRef(false);
 
@@ -48,9 +44,7 @@ export function usePinLikes({
 
     function handleUpdate(event: MessageEvent) {
       try {
-        const data = JSON.parse(
-          event.data,
-        ) as LikeEvent;
+        const data = JSON.parse(event.data) as LikeEvent;
 
         if (
           data.pinId !== pinId ||
@@ -60,21 +54,21 @@ export function usePinLikes({
         }
 
         setLikeCount(data.likeCount);
+
+        if (data.type === "connected") {
+          setIsLiked(Boolean(data.isLiked));
+        }
       } catch {
         // Ignore malformed events.
       }
     }
 
-    source.addEventListener(
-      "updated",
-      handleUpdate,
-    );
+    source.addEventListener("connected", handleUpdate);
+    source.addEventListener("updated", handleUpdate);
 
     return () => {
-      source.removeEventListener(
-        "updated",
-        handleUpdate,
-      );
+      source.removeEventListener("connected", handleUpdate);
+      source.removeEventListener("updated", handleUpdate);
       source.close();
     };
   }, [pinId]);
@@ -110,8 +104,7 @@ export function usePinLikes({
         setLikeCount(previousLikeCount);
 
         toast.error(
-          result.error ??
-            "Unable to update like.",
+          result.error ?? "Unable to update like.",
         );
       }
     });

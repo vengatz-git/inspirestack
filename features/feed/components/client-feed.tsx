@@ -1,21 +1,36 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+import type { BoardSummary } from "@/features/board/types/board";
 
 import { FeedGrid } from "./feed-grid";
+import { FeedLoadingIndicator } from "./feed-loading-indicator";
 
 import type { FeedResult } from "../types/feed";
-import { FeedLoadingIndicator } from "./feed-loading-indicator";
 
 interface ClientFeedProps {
   initialFeed: FeedResult;
+  boards: BoardSummary[];
 }
 
-export function ClientFeed({ initialFeed }: ClientFeedProps) {
+export function ClientFeed({
+  initialFeed,
+  boards,
+}: ClientFeedProps) {
   const [pins, setPins] = useState(initialFeed.pins);
-  const [nextCursor, setNextCursor] = useState(initialFeed.nextCursor);
+  const [nextCursor, setNextCursor] = useState(
+    initialFeed.nextCursor,
+  );
   const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(initialFeed.nextCursor !== null);
+  const [hasMore, setHasMore] = useState(
+    initialFeed.nextCursor !== null,
+  );
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const loadingRef = useRef(false);
@@ -39,7 +54,10 @@ export function ClientFeed({ initialFeed }: ClientFeedProps) {
 
       const feed: FeedResult = await response.json();
 
-      setPins((prev) => [...prev, ...feed.pins]);
+      setPins((previous) => [
+        ...previous,
+        ...feed.pins,
+      ]);
       setNextCursor(feed.nextCursor);
       setHasMore(feed.nextCursor !== null);
     } catch (error) {
@@ -74,13 +92,20 @@ export function ClientFeed({ initialFeed }: ClientFeedProps) {
 
     return () => observer.disconnect();
   }, [loadMorePins]);
+
   return (
     <>
-      <FeedGrid pins={pins} />
+      <FeedGrid
+        pins={pins}
+        boards={boards}
+      />
 
-      <div ref={loadMoreRef} className="h-10" />
+      <div
+        ref={loadMoreRef}
+        className="h-10"
+      />
 
-      {loading && <FeedLoadingIndicator />}
+      {loading ? <FeedLoadingIndicator /> : null}
     </>
   );
 }

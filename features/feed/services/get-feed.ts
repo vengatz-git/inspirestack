@@ -3,21 +3,16 @@ import { and, desc, eq, lt } from "drizzle-orm";
 import { db } from "@/db";
 import { pins } from "@/db/schema";
 
+import { getSavedPinIdsForPins } from "@/features/saved/services/get-saved-pin-ids";
 import { mapPinToCard } from "@/features/pin/lib/map-pin-card";
+import { getSavedBoardIdsForPins } from "@/features/board/services/get-saved-board-ids-for-pins";
 
-import type {
-  FeedResult,
-  GetFeedOptions,
-} from "../types/feed";
+import type { FeedResult, GetFeedOptions } from "../types/feed";
 
-export async function getFeed(
-  options?: GetFeedOptions,
-): Promise<FeedResult> {
+export async function getFeed(options?: GetFeedOptions): Promise<FeedResult> {
   const limit = options?.limit ?? 30;
 
-  const cursor = options?.cursor
-    ? new Date(options.cursor)
-    : undefined;
+  const cursor = options?.cursor ? new Date(options.cursor) : undefined;
 
   const feedPins = await db.query.pins.findMany({
     where: and(
@@ -30,16 +25,28 @@ export async function getFeed(
 
   const hasMore = feedPins.length > limit;
 
-  const items = hasMore
-    ? feedPins.slice(0, limit)
-    : feedPins;
+  const items = hasMore ? feedPins.slice(0, limit) : feedPins;
 
   const nextCursor = hasMore
     ? items[items.length - 1].createdAt.toISOString()
     : null;
 
+  const savedPinIds = await getSavedPinIdsForPins(
+    options?.viewerUserId,
+    items.map((pin) => pin.id),
+  );
+
+  const savedBoardIdsByPin = await getSavedBoardIdsForPins(
+    options?.viewerUserId,
+    items.map((pin) => pin.id),
+  );
+
   return {
-    pins: items.map(mapPinToCard),
+    pins: items.map((pin) => ({
+      ...mapPinToCard(pin),
+      isSaved: savedPinIds.has(pin.id),
+      savedBoardIds: savedBoardIdsByPin.get(pin.id) ?? [],
+    })),
     nextCursor,
   };
 }

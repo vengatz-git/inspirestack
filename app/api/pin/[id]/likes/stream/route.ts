@@ -1,3 +1,5 @@
+import { auth } from "@/auth";
+import { getPinLikeData } from "@/features/like/services/get-pin-like-data";
 import { subscribeToPinLikes } from "@/features/like/lib/like-events";
 
 export const runtime = "nodejs";
@@ -13,6 +15,12 @@ export async function GET(
   { params }: RouteContext,
 ) {
   const { id: pinId } = await params;
+  const session = await auth();
+
+  const likeData = await getPinLikeData(
+    pinId,
+    session?.user?.id,
+  );
 
   const encoder = new TextEncoder();
 
@@ -21,10 +29,7 @@ export async function GET(
 
   const stream = new ReadableStream({
     start(controller) {
-      function send(
-        event: string,
-        data: unknown,
-      ) {
+      function send(event: string, data: unknown) {
         controller.enqueue(
           encoder.encode(
             `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`,
@@ -34,14 +39,13 @@ export async function GET(
 
       send("connected", {
         pinId,
+        likeCount: likeData.likeCount,
+        isLiked: likeData.isLiked,
       });
 
-      unsubscribe = subscribeToPinLikes(
-        pinId,
-        (event) => {
-          send(event.type, event);
-        },
-      );
+      unsubscribe = subscribeToPinLikes(pinId, (event) => {
+        send(event.type, event);
+      });
 
       heartbeat = setInterval(() => {
         controller.enqueue(

@@ -2,6 +2,7 @@
 
 import { useMemo, useRef } from "react";
 
+import type { BoardSummary } from "@/features/board/types/board";
 import type { PinCardData } from "@/features/pin/types/pin-card";
 
 import { useMasonry } from "../hooks/use-masonry";
@@ -11,11 +12,13 @@ import { MasonryItem } from "./masonry-item";
 
 interface MasonryEngineProps {
   pins: PinCardData[];
+  boards?: BoardSummary[];
   renderItem?: (pin: PinCardData) => React.ReactNode;
 }
 
 export function MasonryEngine({
   pins,
+  boards = [],
   renderItem,
 }: MasonryEngineProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -70,6 +73,7 @@ export function MasonryEngine({
               <MasonryItem
                 key={pin.id}
                 pin={pin}
+                boards={boards}
               />
             ),
           )}

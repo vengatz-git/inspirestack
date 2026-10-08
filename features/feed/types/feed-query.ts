@@ -7,4 +7,5 @@ export interface FeedQuery {
   limit?: number;
   cursor?: string;
   filter?: FeedFilter;
+  viewerUserId?: string | null;
 }

@@ -1,17 +1,21 @@
-import { ProfilePinCard } from "./profile-pin-card";
-
 import type { ProfilePinCardData } from "../types/profile-pin-card";
+
+import { ProfilePinCard } from "./profile-pin-card";
 
 interface ProfilePinGridProps {
   pins: ProfilePinCardData[];
   onDeleted?: (pinId: string) => void;
   showDelete?: boolean;
+  showRemoveSaved?: boolean;
+  onDirectSaveRemoved?: (pinId: string) => void;
 }
 
 export function ProfilePinGrid({
   pins,
   onDeleted,
   showDelete = false,
+  showRemoveSaved = false,
+  onDirectSaveRemoved,
 }: ProfilePinGridProps) {
   return (
     <section>
@@ -22,6 +26,8 @@ export function ProfilePinGrid({
             pin={pin}
             onDeleted={onDeleted}
             showDelete={showDelete}
+            showRemoveSaved={showRemoveSaved}
+            onDirectSaveRemoved={onDirectSaveRemoved}
           />
         ))}
       </div>

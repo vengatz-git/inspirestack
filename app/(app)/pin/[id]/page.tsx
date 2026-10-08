@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { auth } from "@/auth";
-import type { BoardSummary } from "@/features/board/types/board";
 import { getBoardsByUserService } from "@/features/board/services/get-boards-by-user";
+import type { BoardSummary } from "@/features/board/types/board";
 import { getCommentsByPinService } from "@/features/comment/services/get-comments-by-pin";
+import { getPinLikeData } from "@/features/like/services/get-pin-like-data";
 import { PinDetail } from "@/features/pin/components/pin-detail";
 import { getPinByIdService } from "@/features/pin/services/get-pin-by-id";
 import { getRelatedPinsService } from "@/features/pin/services/get-related-pins";
-import { getPinLikeData } from "@/features/like/services/get-pin-like-data";
 
 type PinPageProps = {
   params: Promise<{
@@ -20,7 +20,6 @@ export async function generateMetadata({
   params,
 }: PinPageProps): Promise<Metadata> {
   const { id } = await params;
-
   const pin = await getPinByIdService(id);
 
   if (!pin) {
@@ -30,22 +29,18 @@ export async function generateMetadata({
   }
 
   const title = pin.title ?? "Untitled Pin";
-
   const description = pin.description ?? `Explore "${title}" on InspireStack.`;
 
   return {
     title: `${title} | InspireStack`,
     description,
-
     alternates: {
       canonical: `/pin/${pin.id}`,
     },
-
     robots: {
       index: true,
       follow: true,
     },
-
     openGraph: {
       title,
       description,
@@ -57,7 +52,6 @@ export async function generateMetadata({
         },
       ],
     },
-
     twitter: {
       card: "summary_large_image",
       title,
@@ -68,8 +62,13 @@ export async function generateMetadata({
 }
 
 export default async function PinPage({ params }: PinPageProps) {
-  const { id } = await params;
+  const session = await auth();
 
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
+  const { id } = await params;
   const pin = await getPinByIdService(id);
 
   if (!pin) {
@@ -83,23 +82,20 @@ export default async function PinPage({ params }: PinPageProps) {
     limit: 40,
   });
 
-  const session = await auth();
+  const currentUserId = session.user.id;
 
-  const currentUserId = session?.user?.id ?? null;
+  const likeData = await getPinLikeData(
+    pin.id,
+    currentUserId,
+  );
 
-  const likeData = await getPinLikeData(pin.id, currentUserId ?? undefined);
+  const boards: BoardSummary[] = await getBoardsByUserService({
+    userId: currentUserId,
+    pinId: pin.id,
+    includePrivate: true,
+  });
 
-  let boards: BoardSummary[] = [];
-
-  if (session?.user?.id != null) {
-    boards = await getBoardsByUserService({
-      userId: session.user.id,
-      pinId: pin.id,
-      includePrivate: true,
-    });
-  }
-
-  const isOwner = session?.user?.id === pin.authorId;
+  const isOwner = currentUserId === pin.authorId;
 
   return (
     <PinDetail

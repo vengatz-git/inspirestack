@@ -7,6 +7,8 @@ const protectedRoutes = [
   "/create",
   "/search",
   "/onboarding",
+  "/settings",
+  "/pin",
 ];
 
 const authRoutes = ["/login"];
@@ -51,6 +53,8 @@ export const config = {
     "/create/:path*",
     "/search/:path*",
     "/onboarding/:path*",
+    "/settings/:path*",
+    "/pin/:path*",
     "/login",
   ],
 };

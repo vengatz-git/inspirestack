@@ -1,6 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import type { ProfilePinCardData } from "../types/profile-pin-card";
 
@@ -28,6 +33,30 @@ export function ProfileSavedPinsClient({
     null,
   );
 
+  const handleDirectSaveRemoved = useCallback(
+    (pinId: string) => {
+      setPins((currentPins) =>
+        currentPins.flatMap((pin) => {
+          if (pin.id !== pinId) {
+            return [pin];
+          }
+
+          if (pin.isBoardSave) {
+            return [
+              {
+                ...pin,
+                isDirectSave: false,
+              },
+            ];
+          }
+
+          return [];
+        }),
+      );
+    },
+    [],
+  );
+
   const loadMore = useCallback(async () => {
     if (loadingRef.current || !nextCursor) {
       return;
@@ -42,7 +71,9 @@ export function ProfileSavedPinsClient({
       );
 
       if (!response.ok) {
-        throw new Error("Failed to load more saved pins.");
+        throw new Error(
+          "Failed to load more saved Pins.",
+        );
       }
 
       const data: {
@@ -58,7 +89,7 @@ export function ProfileSavedPinsClient({
       setNextCursor(data.nextCursor);
     } catch (error) {
       console.error(
-        "Failed to load saved profile pins:",
+        "Failed to load saved profile Pins:",
         error,
       );
     } finally {
@@ -94,7 +125,13 @@ export function ProfileSavedPinsClient({
 
   return (
     <>
-      <ProfilePinGrid pins={pins} />
+      <ProfilePinGrid
+        pins={pins}
+        showRemoveSaved
+        onDirectSaveRemoved={
+          handleDirectSaveRemoved
+        }
+      />
 
       {nextCursor && (
         <div
@@ -103,7 +140,7 @@ export function ProfileSavedPinsClient({
         >
           {loading && (
             <p className="text-muted-foreground text-sm">
-              Loading more saved pins...
+              Loading more saved Pins...
             </p>
           )}
         </div>

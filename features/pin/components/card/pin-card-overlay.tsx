@@ -1,3 +1,5 @@
+import type { BoardSummary } from "@/features/board/types/board";
+
 import { getOverlayVariant } from "../../lib/overlay-variant";
 import type { PinCardData } from "../../types/pin-card";
 
@@ -6,32 +8,26 @@ import { PinCardTopActions } from "./pin-card-top-actions";
 
 interface PinCardOverlayProps {
   pin: PinCardData;
+  boards: BoardSummary[];
 }
 
-export function PinCardOverlay({ pin }: PinCardOverlayProps) {
-  const variant = getOverlayVariant(
-    pin.imageWidth,
-    pin.imageHeight,
-  );
+export function PinCardOverlay({ pin, boards }: PinCardOverlayProps) {
+  const variant = getOverlayVariant(pin.imageWidth, pin.imageHeight);
 
   return (
-    <div
-      className="
-        pointer-events-none
-        absolute
-        inset-0
-        rounded-2xl
-        bg-black/0
-        transition-colors
-        duration-200
-        group-hover:bg-black/15
-      "
-    >
-      <PinCardTopActions />
+    <div className="pointer-events-none absolute inset-0 rounded-2xl bg-black/0 transition-colors duration-200 group-hover:bg-black/15">
+      <PinCardTopActions
+        pinId={pin.id}
+        saved={pin.isSaved}
+        savedBoardIds={pin.savedBoardIds}
+        boards={boards}
+      />
 
       <PinCardBottomActions
         variant={variant}
         destinationUrl={pin.destinationUrl}
+        pinId={pin.id}
+        title={pin.title}
       />
     </div>
   );

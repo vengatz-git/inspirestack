@@ -15,6 +15,7 @@ import { users } from "./auth";
 import { boardPins } from "./boards";
 import { comments } from "./comments";
 import { pinTags } from "./tags";
+import { savedPins } from "./saved-pins";
 
 export const pinVisibilityEnum = pgEnum("pin_visibility", [
   "PUBLIC",
@@ -52,9 +53,7 @@ export const pins = pgTable(
 
     imageHeight: integer("image_height").notNull(),
 
-    visibility: pinVisibilityEnum("visibility")
-      .notNull()
-      .default("PUBLIC"),
+    visibility: pinVisibilityEnum("visibility").notNull().default("PUBLIC"),
 
     createdAt: timestamp("created_at", {
       withTimezone: true,
@@ -99,6 +98,8 @@ export const pinsRelations = relations(pins, ({ one, many }) => ({
   comments: many(comments),
 
   pinTags: many(pinTags),
+
+  savedPins: many(savedPins),
 }));
 
 export type Pin = typeof pins.$inferSelect;

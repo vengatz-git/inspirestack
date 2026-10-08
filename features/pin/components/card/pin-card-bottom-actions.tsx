@@ -5,11 +5,15 @@ import { PinCardShareButton } from "./pin-card-share-button";
 import { PinCardVisitButton } from "./pin-card-visit-button";
 
 interface PinCardBottomActionsProps {
+  pinId: string;
+  title: string | null;
   variant: OverlayVariant;
   destinationUrl: string | null;
 }
 
 export function PinCardBottomActions({
+  pinId,
+  title,
   variant,
   destinationUrl,
 }: PinCardBottomActionsProps) {
@@ -20,11 +24,16 @@ export function PinCardBottomActions({
   return (
     <div className="pointer-events-auto absolute inset-x-3 bottom-3 flex items-center justify-between opacity-0 transition-opacity duration-200 group-hover:opacity-100">
       <div>
-        {destinationUrl ? <PinCardVisitButton href={destinationUrl} /> : null}
+        {destinationUrl ? (
+          <PinCardVisitButton href={destinationUrl} />
+        ) : null}
       </div>
 
       <div className="flex items-center gap-2">
-        <PinCardShareButton />
+        <PinCardShareButton
+          pinId={pinId}
+          title={title}
+        />
         <PinCardMoreButton />
       </div>
     </div>

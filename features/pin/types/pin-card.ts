@@ -9,4 +9,6 @@ export interface PinCardData {
   altText: string | null;
 
   destinationUrl: string | null;
+  isSaved?: boolean;
+  savedBoardIds?: string[];
 }
