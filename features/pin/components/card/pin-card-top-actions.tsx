@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import type { BoardSummary } from "@/features/board/types/board";
 
@@ -20,72 +20,42 @@ export function PinCardTopActions({
   savedBoardIds = [],
   boards,
 }: PinCardTopActionsProps) {
-  const [directSaved, setDirectSaved] =
-    useState(saved);
+  const [directSaved, setDirectSaved] = useState(saved);
 
-  const [selectedBoard, setSelectedBoard] =
-    useState<BoardSummary | null>(() => {
-      const board = boards[0];
+  const [selectedBoardId, setSelectedBoardId] = useState<string | null>(
+    () => boards[0]?.id ?? null,
+  );
 
-      return board
-        ? {
-            ...board,
-            isSaved: savedBoardIds.includes(
-              board.id,
-            ),
-          }
-        : null;
-    });
+  const [boardSavedOverride, setBoardSavedOverride] = useState<{
+    boardId: string;
+    saved: boolean;
+  } | null>(null);
 
-  useEffect(() => {
-    setSelectedBoard((currentBoard) => {
-      if (boards.length === 0) {
-        return null;
-      }
+  const selectedBoard =
+    boards.find((board) => board.id === selectedBoardId) ??
+    boards[0] ??
+    null;
 
-      const nextBoard =
-        boards.find(
-          (board) => board.id === currentBoard?.id,
-        ) ?? boards[0];
-
-      return nextBoard
-        ? {
-            ...nextBoard,
-            isSaved: savedBoardIds.includes(
-              nextBoard.id,
-            ),
-          }
-        : null;
-    });
-  }, [boards, savedBoardIds]);
+  const selectedBoardSaved = selectedBoard
+    ? boardSavedOverride?.boardId === selectedBoard.id
+      ? boardSavedOverride.saved
+      : savedBoardIds.includes(selectedBoard.id)
+    : false;
 
   function handleSelectBoard(boardId: string) {
-    const board = boards.find(
-      (item) => item.id === boardId,
-    );
+    if (!boards.some((board) => board.id === boardId)) {
+      return;
+    }
 
-    setSelectedBoard(
-      board
-        ? {
-            ...board,
-            isSaved: savedBoardIds.includes(
-              board.id,
-            ),
-          }
-        : null,
-    );
+    setSelectedBoardId(boardId);
   }
 
   function handleSaved(nextSaved: boolean) {
     if (selectedBoard) {
-      setSelectedBoard((currentBoard) =>
-        currentBoard
-          ? {
-              ...currentBoard,
-              isSaved: nextSaved,
-            }
-          : null,
-      );
+      setBoardSavedOverride({
+        boardId: selectedBoard.id,
+        saved: nextSaved,
+      });
 
       return;
     }
@@ -94,7 +64,7 @@ export function PinCardTopActions({
   }
 
   const saveState = selectedBoard
-    ? selectedBoard.isSaved
+    ? selectedBoardSaved
     : directSaved;
 
   return (
@@ -103,12 +73,8 @@ export function PinCardTopActions({
         {boards.length > 0 && (
           <PinCardBoardPicker
             boards={boards}
-            selectedBoardId={
-              selectedBoard?.id ?? null
-            }
-            selectedBoardName={
-              selectedBoard?.name ?? null
-            }
+            selectedBoardId={selectedBoard?.id ?? null}
+            selectedBoardName={selectedBoard?.name ?? null}
             onSelectBoard={handleSelectBoard}
           />
         )}

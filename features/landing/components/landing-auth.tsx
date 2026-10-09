@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
 import { GoogleAuthButton } from "./google-auth-button";
+import Link from "next/link";
 
 interface LandingAuthProps {
   standalone?: boolean;
@@ -86,12 +87,12 @@ export function LandingAuth({ standalone = false }: LandingAuthProps) {
               By continuing, you agree to use InspireStack responsibly.
             </p>
 
-            <a
+            <Link
               href="/"
               className="text-muted-foreground hover:text-foreground mt-7 block text-center text-sm font-medium transition-colors"
             >
               ← Back to InspireStack
-            </a>
+            </Link>
           </div>
         </motion.div>
       </div>
