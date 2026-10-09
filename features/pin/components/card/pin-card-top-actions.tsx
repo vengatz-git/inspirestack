@@ -99,7 +99,7 @@ export function PinCardTopActions({
 
   return (
     <div className="pointer-events-auto absolute inset-x-3 top-3 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0">
         {boards.length > 0 && (
           <PinCardBoardPicker
             boards={boards}
@@ -114,13 +114,15 @@ export function PinCardTopActions({
         )}
       </div>
 
-      <PinCardSaveButton
-        key={selectedBoard?.id ?? "direct-save"}
-        pinId={pinId}
-        boardId={selectedBoard?.id ?? null}
-        initialSaved={saveState}
-        onSaved={handleSaved}
-      />
+      <div className="ml-auto shrink-0">
+        <PinCardSaveButton
+          key={selectedBoard?.id ?? "direct-save"}
+          pinId={pinId}
+          boardId={selectedBoard?.id ?? null}
+          initialSaved={saveState}
+          onSaved={handleSaved}
+        />
+      </div>
     </div>
   );
 }

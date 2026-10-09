@@ -72,7 +72,7 @@ export function PinCardBoardPicker({
                   ? `Selected board: ${selectedBoardName}`
                   : "Choose board"
               }
-              className="flex h-10 w-full max-w-40 min-w-0 items-center justify-between gap-1 rounded-lg bg-transparent px-3 text-sm font-semibold text-white transition-colors hover:bg-black/60 active:bg-black/70"
+              className="flex h-10 w-24 shrink-0 items-center justify-between gap-1 rounded-lg bg-transparent px-3 text-sm font-semibold text-white transition-colors hover:bg-black/60 active:bg-black/70"
             />
           }
         >

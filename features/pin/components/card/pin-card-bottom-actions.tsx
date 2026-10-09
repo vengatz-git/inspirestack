@@ -7,6 +7,7 @@ import { PinCardVisitButton } from "./pin-card-visit-button";
 interface PinCardBottomActionsProps {
   pinId: string;
   title: string | null;
+  imageUrl: string;
   variant: OverlayVariant;
   destinationUrl: string | null;
 }
@@ -14,6 +15,7 @@ interface PinCardBottomActionsProps {
 export function PinCardBottomActions({
   pinId,
   title,
+  imageUrl,
   variant,
   destinationUrl,
 }: PinCardBottomActionsProps) {
@@ -34,7 +36,11 @@ export function PinCardBottomActions({
           pinId={pinId}
           title={title}
         />
-        <PinCardMoreButton />
+
+        <PinCardMoreButton
+          pinId={pinId}
+          imageUrl={imageUrl}
+        />
       </div>
     </div>
   );

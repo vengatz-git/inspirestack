@@ -24,10 +24,11 @@ export function PinCardOverlay({ pin, boards }: PinCardOverlayProps) {
       />
 
       <PinCardBottomActions
-        variant={variant}
-        destinationUrl={pin.destinationUrl}
         pinId={pin.id}
         title={pin.title}
+        imageUrl={pin.imageUrl}
+        variant={variant}
+        destinationUrl={pin.destinationUrl}
       />
     </div>
   );
