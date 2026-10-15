@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
+import { removePinFromBoardAction } from "../actions/remove-pin-from-board";
 import { savePinToBoardAction } from "../actions/save-pin-to-board";
 
 interface UseBoardSaveOptions {
@@ -15,33 +16,52 @@ export function useBoardSave({
   onSuccess,
 }: UseBoardSaveOptions) {
   const [pending, startTransition] = useTransition();
-  const [savingBoardId, setSavingBoardId] = useState<string | null>(null);
+  const [savingBoardId, setSavingBoardId] = useState<string | null>(
+    null,
+  );
 
-  function save(boardId: string) {
+  function save(
+    boardId: string,
+    isSaved = false,
+  ) {
+    if (pending) {
+      return;
+    }
+
     setSavingBoardId(boardId);
 
     startTransition(async () => {
-      const result = await savePinToBoardAction({
-        boardId,
-        pinId,
-      });
+      try {
+        const result = isSaved
+          ? await removePinFromBoardAction({
+              boardId,
+              pinId,
+            })
+          : await savePinToBoardAction({
+              boardId,
+              pinId,
+            });
 
-      if (!result.success) {
-        toast.error(result.error);
+        if (!result.success) {
+          toast.error(
+            result.error ??
+              `Unable to ${
+                isSaved ? "remove" : "save"
+              } this Pin.`,
+          );
+          return;
+        }
 
+        toast.success(
+          isSaved
+            ? "Pin removed from board."
+            : "Pin saved successfully.",
+        );
+
+        await onSuccess?.();
+      } finally {
         setSavingBoardId(null);
-        return;
       }
-
-      toast.success("Pin saved successfully.");
-
-      await new Promise((resolve) =>
-        setTimeout(resolve, 500),
-      );
-
-      await onSuccess?.();
-
-      setSavingBoardId(null);
     });
   }
 

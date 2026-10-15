@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Check, Loader2 } from "lucide-react";
+import { BookmarkX, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -11,7 +11,10 @@ interface BoardPickerItemProps {
   board: BoardSummary;
   savingBoardId: string | null;
   layout?: "list" | "grid";
-  onSave: (boardId: string) => void;
+  onSave: (
+    boardId: string,
+    isSaved?: boolean,
+  ) => void;
 }
 
 export function BoardPickerItem({
@@ -71,31 +74,28 @@ export function BoardPickerItem({
           </h3>
 
           <p className="text-muted-foreground mt-1 text-sm">
-            {board.pinCount} {board.pinCount === 1 ? "pin" : "pins"}
+            {board.pinCount}{" "}
+            {board.pinCount === 1 ? "pin" : "pins"}
           </p>
         </div>
 
         <Button
+          type="button"
           size="sm"
-          className={[
-            "min-w-20 gap-2 md:min-w-22",
-            !board.isSaved
-              ? "max-md:border-primary! max-md:bg-primary! max-md:text-primary-foreground! max-md:hover:bg-primary/90!"
-              : "",
-          ].join(" ")}
-          variant={board.isSaved ? "secondary" : "outline"}
-          disabled={isSaving || board.isSaved}
-          onClick={() => onSave(board.id)}
+          className="min-w-20 gap-2 md:min-w-22"
+          variant={board.isSaved ? "destructive" : "outline"}
+          disabled={isSaving}
+          onClick={() => onSave(board.id, board.isSaved)}
         >
-          {board.isSaved ? (
-            <>
-              <Check className="size-4" />
-              Saved
-            </>
-          ) : isSaving ? (
+          {isSaving ? (
             <>
               <Loader2 className="size-4 animate-spin" />
-              Saving...
+              {board.isSaved ? "Removing..." : "Saving..."}
+            </>
+          ) : board.isSaved ? (
+            <>
+              <BookmarkX className="size-4" />
+              Remove
             </>
           ) : (
             "Save"

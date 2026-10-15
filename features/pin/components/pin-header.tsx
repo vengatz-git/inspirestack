@@ -3,7 +3,6 @@
 import {
   Copy,
   Download,
-  Heart,
   MessageCircle,
   MoreHorizontal,
   Share2,
@@ -20,9 +19,9 @@ import {
 
 import { BoardSaveButton } from "@/features/board/components/board-save-button";
 import type { BoardSummary } from "@/features/board/types/board";
+import { PinLikeButton } from "@/features/like/components/pin-like-button";
 
 import { getPinByIdService } from "../services/get-pin-by-id";
-import { PinLikeButton } from "@/features/like/components/pin-like-button";
 
 type Pin = NonNullable<Awaited<ReturnType<typeof getPinByIdService>>>;
 
@@ -55,17 +54,35 @@ export function PinHeader({
 
     try {
       await navigator.share({
+        title: pin.title ?? "InspireStack Pin",
+        text:
+          pin.title ??
+          "Discover this Pin on InspireStack.",
         url: window.location.href,
       });
-    } catch {
-      // User cancelled.
+    } catch (error) {
+      if (
+        error instanceof DOMException &&
+        error.name === "AbortError"
+      ) {
+        return;
+      }
+
+      toast.error("Unable to share this Pin.");
     }
   }
 
   async function handleCopyLink() {
-    await navigator.clipboard.writeText(window.location.href);
+    try {
+      if (!navigator.clipboard) {
+        throw new Error("Clipboard unavailable.");
+      }
 
-    toast.success("Link copied to clipboard.");
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success("Link copied to clipboard.");
+    } catch {
+      toast.error("Unable to copy the link.");
+    }
   }
 
   async function handleDownload() {
@@ -96,7 +113,6 @@ export function PinHeader({
 
   return (
     <header className="flex w-full items-center justify-between">
-      {/* Left-side actions */}
       <div className="flex items-center gap-1">
         <PinLikeButton
           pinId={pin.id}
@@ -141,7 +157,9 @@ export function PinHeader({
 
           <DropdownMenuContent align="start" sideOffset={8}>
             <DropdownMenuItem onClick={onToggleDetails}>
-              <span>{showDetails ? "Hide details" : "See details"}</span>
+              <span>
+                {showDetails ? "Hide details" : "See details"}
+              </span>
             </DropdownMenuItem>
 
             <DropdownMenuItem onClick={handleDownload}>
@@ -157,9 +175,11 @@ export function PinHeader({
         </DropdownMenu>
       </div>
 
-      {/* Right-side controls */}
       <div className="flex items-center gap-2">
-        <BoardSaveButton pinId={pin.id} boards={boards} />
+        <BoardSaveButton
+          pinId={pin.id}
+          boards={boards}
+        />
       </div>
     </header>
   );

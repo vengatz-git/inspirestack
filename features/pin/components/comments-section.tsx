@@ -85,16 +85,22 @@ export const CommentsSection = forwardRef<
       {isExpanded ? (
         <div className="min-h-0 flex-1 overflow-y-auto">
           <div className="space-y-6 py-2">
-            {comments.map((comment) => (
-              <CommentItem
-                key={comment.id}
-                comment={comment}
-                pinId={pinId}
-                currentUserId={currentUserId}
-                replyingTo={replyingTo}
-                onReply={onReply}
-              />
-            ))}
+            {comments.length > 0 ? (
+              comments.map((comment) => (
+                <CommentItem
+                  key={comment.id}
+                  comment={comment}
+                  pinId={pinId}
+                  currentUserId={currentUserId}
+                  replyingTo={replyingTo}
+                  onReply={onReply}
+                />
+              ))
+            ) : (
+              <p className="text-muted-foreground py-8 text-center text-sm">
+                Be the first to comment.
+              </p>
+            )}
           </div>
         </div>
       ) : (

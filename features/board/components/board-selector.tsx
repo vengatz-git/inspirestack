@@ -8,20 +8,31 @@ interface BoardSelectorProps {
   pinId: string;
   boards: BoardSummary[];
   onSaved?: () => void;
+  onClose?: () => void;
 }
 
-export function BoardSelector({ pinId, boards, onSaved }: BoardSelectorProps) {
-  const { pending, savingBoardId, save } = useBoardSave({
+export function BoardSelector({
+  pinId,
+  boards,
+  onSaved,
+  onClose,
+}: BoardSelectorProps) {
+  const {
+    pending,
+    savingBoardId,
+    save,
+  } = useBoardSave({
     pinId,
     onSuccess: onSaved,
   });
+
   return (
     <BoardWorkspace
       boards={boards}
       pending={pending}
       savingBoardId={savingBoardId}
       onSave={save}
-      onClose={onSaved ?? (() => {})}
+      onClose={onClose ?? (() => {})}
     />
   );
 }

@@ -19,7 +19,12 @@ export function PinLikeButton({
   initialLikeCount,
   currentUserId,
 }: PinLikeButtonProps) {
-  const { isLiked, likeCount, isPending, handleLike } = usePinLikes({
+  const {
+    isLiked,
+    likeCount,
+    isPending,
+    handleLike,
+  } = usePinLikes({
     pinId,
     initialIsLiked,
     initialLikeCount,
@@ -34,12 +39,14 @@ export function PinLikeButton({
         aria-label={isLiked ? "Unlike pin" : "Like pin"}
         aria-pressed={isLiked}
         disabled={isPending}
-        className="size-9 rounded-full transition-transform active:scale-90"
+        className="size-9 rounded-full transition-transform active:scale-90 hover:text-rose-500"
         onClick={handleLike}
       >
         <Heart
-          className={`size-5 transition-transform duration-150 ${
-            isLiked ? "fill-current" : ""
+          className={`size-5 transition-colors duration-150 ${
+            isLiked
+              ? "fill-rose-500 text-rose-500"
+              : "text-foreground"
           }`}
           aria-hidden="true"
         />
