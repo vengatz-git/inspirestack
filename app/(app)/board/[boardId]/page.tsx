@@ -14,7 +14,6 @@ export default async function BoardPage({
   params,
 }: BoardPageProps) {
   const { boardId } = await params;
-
   const session = await auth();
 
   const board = await getBoardByIdService(
@@ -26,5 +25,12 @@ export default async function BoardPage({
     notFound();
   }
 
-  return <BoardDetail board={board} />;
+  const isOwner = session?.user?.id === board.owner.id;
+
+  return (
+    <BoardDetail
+      board={board}
+      isOwner={isOwner}
+    />
+  );
 }

@@ -6,12 +6,13 @@ import { BoardPinGrid } from "./board-pin-grid";
 
 type BoardDetailProps = {
   board: BoardDetailData;
+  isOwner: boolean;
 };
 
-export function BoardDetail({ board }: BoardDetailProps) {
+export function BoardDetail({ board, isOwner }: BoardDetailProps) {
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-8">
-      <BoardDetailHeader board={board} />
+      <BoardDetailHeader board={board} isOwner={isOwner} />
 
       <section className="mt-10">
         {board.pins.length > 0 ? (

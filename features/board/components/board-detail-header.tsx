@@ -1,15 +1,20 @@
 import Image from "next/image";
+import { Globe2, LockKeyhole } from "lucide-react";
 
 import type { BoardDetail } from "../types/board-detail";
 
+import { DeleteBoardButton } from "./delete-board-button";
 import { EditBoardButton } from "./edit-board-button";
-import { Globe2, LockKeyhole } from "lucide-react";
 
 type BoardDetailHeaderProps = {
   board: BoardDetail;
+  isOwner: boolean;
 };
 
-export function BoardDetailHeader({ board }: BoardDetailHeaderProps) {
+export function BoardDetailHeader({
+  board,
+  isOwner,
+}: BoardDetailHeaderProps) {
   return (
     <header className="flex flex-col gap-6 sm:flex-row sm:items-center">
       <div className="bg-muted relative aspect-4/3 w-full shrink-0 overflow-hidden rounded-3xl shadow-sm sm:aspect-square sm:w-48">
@@ -34,38 +39,55 @@ export function BoardDetailHeader({ board }: BoardDetailHeaderProps) {
           {board.name}
         </h1>
 
-        {board.description && (
+        {board.description ? (
           <p className="text-muted-foreground mt-3 max-w-2xl text-base leading-7">
             {board.description}
           </p>
-        )}
+        ) : null}
 
         <div className="text-muted-foreground mt-4 flex flex-wrap items-center gap-2 text-sm">
           <span className="inline-flex items-center gap-1.5">
             {board.visibility === "PUBLIC" ? (
-              <Globe2 className="size-4" aria-hidden="true" />
+              <Globe2
+                className="size-4"
+                aria-hidden="true"
+              />
             ) : (
-              <LockKeyhole className="size-4" aria-hidden="true" />
+              <LockKeyhole
+                className="size-4"
+                aria-hidden="true"
+              />
             )}
 
-            {board.visibility === "PUBLIC" ? "Public" : "Private"}
+            {board.visibility === "PUBLIC"
+              ? "Public"
+              : "Private"}
           </span>
 
           <span aria-hidden="true">·</span>
 
           <span>
-            {board.pinCount} {board.pinCount === 1 ? "Pin" : "Pins"}
+            {board.pinCount}{" "}
+            {board.pinCount === 1 ? "Pin" : "Pins"}
           </span>
         </div>
 
-        <div className="mt-5">
-          <EditBoardButton
-            boardId={board.id}
-            name={board.name}
-            description={board.description}
-            visibility={board.visibility}
-          />
-        </div>
+        {isOwner ? (
+          <div className="mt-5 flex flex-wrap gap-2">
+            <EditBoardButton
+              boardId={board.id}
+              name={board.name}
+              description={board.description}
+              visibility={board.visibility}
+            />
+
+            <DeleteBoardButton
+              boardId={board.id}
+              boardName={board.name}
+              ownerUsername={board.owner.username}
+            />
+          </div>
+        ) : null}
       </div>
     </header>
   );
