@@ -1,6 +1,10 @@
 "use client";
 
-import type { ChangeEvent } from "react";
+import {
+  useState,
+  type ChangeEvent,
+  type DragEvent,
+} from "react";
 
 import Image from "next/image";
 import { ImageIcon, Upload } from "lucide-react";
@@ -20,6 +24,8 @@ export function ImageUpload({
   error,
   disabled = false,
 }: ImageUploadProps) {
+  const [isDragging, setIsDragging] = useState(false);
+
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     if (disabled) {
       return;
@@ -32,8 +38,42 @@ export function ImageUpload({
     }
 
     onSelect(file);
-
     event.target.value = "";
+  }
+
+  function handleDragOver(event: DragEvent<HTMLLabelElement>) {
+    event.preventDefault();
+
+    if (!disabled) {
+      setIsDragging(true);
+    }
+  }
+
+  function handleDragLeave(event: DragEvent<HTMLLabelElement>) {
+    if (
+      event.currentTarget.contains(
+        event.relatedTarget as Node | null,
+      )
+    ) {
+      return;
+    }
+
+    setIsDragging(false);
+  }
+
+  function handleDrop(event: DragEvent<HTMLLabelElement>) {
+    event.preventDefault();
+    setIsDragging(false);
+
+    if (disabled) {
+      return;
+    }
+
+    const file = event.dataTransfer.files?.[0];
+
+    if (file) {
+      onSelect(file);
+    }
   }
 
   return (
@@ -42,14 +82,19 @@ export function ImageUpload({
         htmlFor="pin-image"
         aria-disabled={disabled}
         className={cn(
-          "group relative flex min-h-120 w-full items-center justify-center overflow-hidden rounded-2xl border bg-muted/30 transition-colors",
+          "group relative flex min-h-120 w-full items-center justify-center overflow-hidden rounded-3xl border bg-muted/30 transition-colors",
           previewUrl
             ? "border-border"
-            : "border-dashed border-muted-foreground/30 hover:border-foreground/40",
+            : isDragging
+              ? "border-primary bg-primary/5"
+              : "border-dashed border-muted-foreground/30 hover:border-foreground/40",
           disabled
             ? "cursor-not-allowed opacity-60"
             : "cursor-pointer",
         )}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
       >
         {previewUrl ? (
           <>
@@ -77,11 +122,13 @@ export function ImageUpload({
 
             <div>
               <p className="text-sm font-medium">
-                Choose an image
+                {isDragging
+                  ? "Drop your image here"
+                  : "Drag and drop an image here"}
               </p>
 
               <p className="mt-1 text-xs text-muted-foreground">
-                PNG, JPG or WEBP
+                or click to browse - PNG, JPG or WEBP
               </p>
             </div>
           </div>

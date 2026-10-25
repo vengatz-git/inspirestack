@@ -3,10 +3,13 @@
 import {
   Copy,
   Download,
+  Heart,
   MessageCircle,
   MoreHorizontal,
+  Pencil,
   Share2,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -34,6 +37,7 @@ interface PinHeaderProps {
   likeCount: number;
   isLiked: boolean;
   currentUserId: string | null;
+  isOwner: boolean;
 }
 
 export function PinHeader({
@@ -45,7 +49,10 @@ export function PinHeader({
   likeCount,
   isLiked,
   currentUserId,
+  isOwner,
 }: PinHeaderProps) {
+  const router = useRouter();
+
   async function handleShare() {
     if (!navigator.share) {
       await handleCopyLink();
@@ -54,35 +61,16 @@ export function PinHeader({
 
     try {
       await navigator.share({
-        title: pin.title ?? "InspireStack Pin",
-        text:
-          pin.title ??
-          "Discover this Pin on InspireStack.",
         url: window.location.href,
       });
-    } catch (error) {
-      if (
-        error instanceof DOMException &&
-        error.name === "AbortError"
-      ) {
-        return;
-      }
-
-      toast.error("Unable to share this Pin.");
+    } catch {
+      // User cancelled sharing.
     }
   }
 
   async function handleCopyLink() {
-    try {
-      if (!navigator.clipboard) {
-        throw new Error("Clipboard unavailable.");
-      }
-
-      await navigator.clipboard.writeText(window.location.href);
-      toast.success("Link copied to clipboard.");
-    } catch {
-      toast.error("Unable to copy the link.");
-    }
+    await navigator.clipboard.writeText(window.location.href);
+    toast.success("Link copied to clipboard.");
   }
 
   async function handleDownload() {
@@ -156,6 +144,15 @@ export function PinHeader({
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="start" sideOffset={8}>
+            {isOwner ? (
+              <DropdownMenuItem
+                onClick={() => router.push(`/pin/${pin.id}/edit`)}
+              >
+                <Pencil />
+                <span>Edit Pin</span>
+              </DropdownMenuItem>
+            ) : null}
+
             <DropdownMenuItem onClick={onToggleDetails}>
               <span>
                 {showDetails ? "Hide details" : "See details"}
@@ -179,6 +176,7 @@ export function PinHeader({
         <BoardSaveButton
           pinId={pin.id}
           boards={boards}
+          currentUserId={currentUserId}
         />
       </div>
     </header>

@@ -1,11 +1,19 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { pinTags, pins, tags } from "@/db/schema";
+import {
+  boardPins,
+  boards,
+  pinTags,
+  pins,
+  tags,
+} from "@/db/schema";
 
 type CreatePinServiceInput = {
   authorId: string;
   topicId: string;
+  boardId?: string;
+  visibility?: "PUBLIC" | "PRIVATE";
   title?: string;
   description?: string;
   imageUrl: string;
@@ -24,6 +32,7 @@ export async function createPinService(
       .values({
         authorId: input.authorId,
         topicId: input.topicId,
+        visibility: input.visibility ?? "PUBLIC",
         title: input.title || null,
         description: input.description || null,
         imageUrl: input.imageUrl,
@@ -35,6 +44,37 @@ export async function createPinService(
 
     if (!pin) {
       throw new Error("Failed to create Pin.");
+    }
+
+    if (input.boardId) {
+      const board = await tx.query.boards.findFirst({
+        where: and(
+          eq(boards.id, input.boardId),
+          eq(boards.ownerId, input.authorId),
+        ),
+        columns: {
+          coverPinId: true,
+        },
+      });
+
+      if (!board) {
+        throw new Error("Board not found.");
+      }
+
+      await tx.insert(boardPins).values({
+        boardId: input.boardId,
+        pinId: pin.id,
+      });
+
+      await tx
+        .update(boards)
+        .set({
+          lastUsedAt: new Date(),
+          ...(board.coverPinId === null && {
+            coverPinId: pin.id,
+          }),
+        })
+        .where(eq(boards.id, input.boardId));
     }
 
     const tagNames = [
@@ -57,9 +97,7 @@ export async function createPinService(
       if (!tagId) {
         const [createdTag] = await tx
           .insert(tags)
-          .values({
-            name,
-          })
+          .values({ name })
           .returning({ id: tags.id });
 
         tagId = createdTag?.id;

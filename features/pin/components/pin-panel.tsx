@@ -85,6 +85,7 @@ export function PinPanel({
           <PinHeader
             pin={pin}
             boards={boards}
+            isOwner={isOwner}
             onCommentClick={handleCommentClick}
             onToggleDetails={() => setShowDetails((current) => !current)}
             showDetails={showDetails}

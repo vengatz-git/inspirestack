@@ -24,7 +24,10 @@ export const createPinSchema = z.object({
       "Image must be 20 MB or smaller.",
     )
     .refine(
-      (file) => ["image/png", "image/jpeg", "image/webp"].includes(file.type),
+      (file) =>
+        ["image/png", "image/jpeg", "image/webp"].includes(
+          file.type,
+        ),
       "Only PNG, JPG, and WEBP images are supported.",
     ),
 
@@ -36,6 +39,10 @@ export const createPinSchema = z.object({
           : "Please select a valid topic.",
     })
     .uuid("Please select a valid topic."),
+
+  boardId: z.string().uuid().optional().or(z.literal("")),
+
+  visibility: z.enum(["PUBLIC", "PRIVATE"]),
 });
 
 export const createPinFormSchema = createPinSchema.extend({
@@ -45,4 +52,5 @@ export const createPinFormSchema = createPinSchema.extend({
 
 export type CreatePinSchema = z.infer<typeof createPinSchema>;
 
-export type CreatePinFormValues = z.infer<typeof createPinFormSchema>;
+export type CreatePinFormValues =
+  z.infer<typeof createPinFormSchema>;

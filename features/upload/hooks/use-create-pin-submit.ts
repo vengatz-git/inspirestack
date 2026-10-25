@@ -19,12 +19,9 @@ export function useCreatePinSubmit({
 }: UseCreatePinSubmitOptions) {
   const router = useRouter();
 
-  const [isSubmitting, setIsSubmitting] =
-    useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  async function submit(
-    values: CreatePinFormValues,
-  ) {
+  async function submit(values: CreatePinFormValues) {
     try {
       setIsSubmitting(true);
 
@@ -35,14 +32,16 @@ export function useCreatePinSubmit({
       }
 
       if (values.description) {
-        formData.append(
-          "description",
-          values.description,
-        );
+        formData.append("description", values.description);
+      }
+
+      if (values.boardId) {
+        formData.append("boardId", values.boardId);
       }
 
       formData.append("image", values.image);
       formData.append("topicId", values.topicId);
+      formData.append("visibility", values.visibility);
 
       for (const tag of values.tags) {
         formData.append("tags", tag);
@@ -66,14 +65,9 @@ export function useCreatePinSubmit({
       router.push(`/profile/${result.username}`);
       router.refresh();
     } catch (error) {
-      console.error(
-        "Failed to publish Pin:",
-        error,
-      );
+      console.error("Failed to publish Pin:", error);
 
-      toast.error(
-        "Something went wrong while publishing your Pin.",
-      );
+      toast.error("Something went wrong while publishing your Pin.");
     } finally {
       setIsSubmitting(false);
     }

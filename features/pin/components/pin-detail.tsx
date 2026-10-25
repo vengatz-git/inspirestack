@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import type { BoardSummary } from "@/features/board/types/board";
 import type { CommentData } from "@/features/comment/types/comment";
 import type { PinCardData } from "../types/pin-card";
@@ -20,6 +22,7 @@ interface PinDetailProps {
   currentUserId: string | null;
   likeCount: number;
   isLiked: boolean;
+  afterDetail?: ReactNode;
 }
 
 export function PinDetail({
@@ -31,6 +34,7 @@ export function PinDetail({
   currentUserId,
   likeCount,
   isLiked,
+  afterDetail,
 }: PinDetailProps) {
   return (
     <>
@@ -45,6 +49,8 @@ export function PinDetail({
           isLiked={isLiked}
         />
       </PinDetailLayout>
+
+      {afterDetail}
 
       <section className="mx-auto mt-10 max-w-screen-2xl px-6">
         <div className="mb-8 flex justify-center">

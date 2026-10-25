@@ -45,6 +45,8 @@ export const pins = pgTable(
 
     description: text("description"),
 
+    destinationUrl: text("destination_url"),
+
     imageUrl: text("image_url").notNull(),
 
     imagePublicId: text("image_public_id"),

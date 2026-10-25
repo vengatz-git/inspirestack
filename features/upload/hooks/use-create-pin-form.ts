@@ -16,8 +16,10 @@ export function useCreatePinForm() {
       title: "",
       description: "",
       topicId: "",
+      boardId: "",
       tags: [],
       tagInput: "",
+      visibility: "PUBLIC",
     },
     mode: "onChange",
   });

@@ -14,6 +14,6 @@ export function mapPinToCard(
     imageHeight: pin.imageHeight,
     altText: pin.title,
 
-    destinationUrl: null,
+    destinationUrl: pin.destinationUrl,
   };
 }

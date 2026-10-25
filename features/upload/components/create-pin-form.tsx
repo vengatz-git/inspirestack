@@ -9,27 +9,32 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
+import type { BoardSummary } from "@/features/board/types/board";
 import type { TopicOption } from "@/features/topic/types/topic";
 
 import type { CreatePinFormValues } from "../hooks/use-create-pin-form";
 import { useCreatePinSubmit } from "../hooks/use-create-pin-submit";
 import { ImageUpload } from "./image-upload";
+import { PinBoardField } from "./pin-board-field";
+import { PinVisibilityField } from "./pin-visibility-field";
 import { TagInput } from "./tag-input";
 import { TopicSelect } from "./topic-select";
 
 interface CreatePinFormProps {
   form: UseFormReturn<CreatePinFormValues>;
   topics: TopicOption[];
+  boards: BoardSummary[];
 }
 
-export function CreatePinForm({ form, topics }: CreatePinFormProps) {
+export function CreatePinForm({ form, topics, boards }: CreatePinFormProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
   const [topicSearch, setTopicSearch] = useState("");
   const [isTopicOpen, setIsTopicOpen] = useState(false);
 
   const image = form.watch("image");
   const selectedTopicId = form.watch("topicId");
+  const selectedBoardId = form.watch("boardId");
+  const visibility = form.watch("visibility");
   const tags = form.watch("tags") ?? [];
   const tagInput = form.watch("tagInput") ?? "";
 
@@ -98,6 +103,14 @@ export function CreatePinForm({ form, topics }: CreatePinFormProps) {
     setTopicSearch("");
   }
 
+  function handleBoardSelect(boardId: string) {
+    form.setValue("boardId", boardId, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
+  }
+
   function handleTagsChange(nextTags: string[]) {
     form.setValue("tags", nextTags, {
       shouldDirty: true,
@@ -110,6 +123,14 @@ export function CreatePinForm({ form, topics }: CreatePinFormProps) {
     form.setValue("tagInput", value, {
       shouldDirty: true,
       shouldTouch: true,
+    });
+  }
+
+  function handleVisibilityChange(nextVisibility: "PUBLIC" | "PRIVATE") {
+    form.setValue("visibility", nextVisibility, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
     });
   }
 
@@ -188,6 +209,13 @@ export function CreatePinForm({ form, topics }: CreatePinFormProps) {
           <FieldError errors={[form.formState.errors.topicId]} />
         </Field>
 
+        <PinBoardField
+          boards={boards}
+          value={selectedBoardId ?? ""}
+          disabled={!image || isSubmitting}
+          onChange={handleBoardSelect}
+        />
+
         <Controller
           control={form.control}
           name="tags"
@@ -200,6 +228,12 @@ export function CreatePinForm({ form, topics }: CreatePinFormProps) {
               onTagsChange={handleTagsChange}
             />
           )}
+        />
+
+        <PinVisibilityField
+          value={visibility}
+          disabled={!image || isSubmitting}
+          onChange={handleVisibilityChange}
         />
       </div>
     </form>

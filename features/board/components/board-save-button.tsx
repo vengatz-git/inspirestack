@@ -16,18 +16,36 @@ import { BoardSaveDialog } from "./board-save-dialog";
 interface BoardSaveButtonProps {
   pinId: string;
   boards: BoardSummary[];
+  currentUserId: string | null;
 }
 
-export function BoardSaveButton({ pinId, boards }: BoardSaveButtonProps) {
+export function BoardSaveButton({
+  pinId,
+  boards,
+  currentUserId,
+}: BoardSaveButtonProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const isSaved = boards.some((board) => board.isSaved);
-
   const selectedBoardName = boards[0]?.name ?? "Create board";
 
+  function handleOpenDialog() {
+    if (!currentUserId) {
+      router.push("/login");
+      return;
+    }
+
+    setOpen(true);
+  }
+
   function handlePrimarySave() {
+    if (!currentUserId) {
+      router.push("/login");
+      return;
+    }
+
     if (isPending || isSaved) {
       return;
     }
@@ -73,10 +91,12 @@ export function BoardSaveButton({ pinId, boards }: BoardSaveButtonProps) {
           aria-label={`Choose board: ${selectedBoardName}`}
           aria-haspopup="dialog"
           aria-expanded={open}
-          onClick={() => setOpen(true)}
+          onClick={handleOpenDialog}
           className="h-10 max-w-44 min-w-0 rounded-xl px-3"
         >
-          <span className="min-w-0 truncate">{selectedBoardName}</span>
+          <span className="min-w-0 truncate">
+            {selectedBoardName}
+          </span>
 
           <ChevronDown className="size-4 shrink-0" />
         </Button>

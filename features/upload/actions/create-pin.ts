@@ -32,11 +32,23 @@ export async function createPinAction(
     };
   }
 
+  const title = formData.get("title");
+  const description = formData.get("description");
+  const boardId = formData.get("boardId");
+
   const parsed = createPinSchema.safeParse({
-    title: formData.get("title"),
-    description: formData.get("description"),
+    title: typeof title === "string" ? title : undefined,
+    description:
+      typeof description === "string"
+        ? description
+        : undefined,
     image: formData.get("image"),
     topicId: formData.get("topicId"),
+    boardId:
+      typeof boardId === "string" && boardId
+        ? boardId
+        : undefined,
+    visibility: formData.get("visibility"),
   });
 
   if (!parsed.success) {
@@ -66,6 +78,8 @@ export async function createPinAction(
       const pin = await createPinService({
         authorId: session.user.id,
         topicId: parsed.data.topicId,
+        boardId: parsed.data.boardId || undefined,
+        visibility: parsed.data.visibility,
         title: parsed.data.title,
         description: parsed.data.description,
         imageUrl: image.imageUrl,
@@ -78,6 +92,10 @@ export async function createPinAction(
       revalidatePath(
         `/profile/${session.user.username}`,
       );
+
+      if (parsed.data.boardId) {
+        revalidatePath(`/board/${parsed.data.boardId}`);
+      }
 
       return {
         success: true,

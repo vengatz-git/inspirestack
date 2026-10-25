@@ -9,6 +9,8 @@ import {
 import { db } from "@/db";
 import { pins } from "@/db/schema";
 
+import { getPinLikeDataForPins } from "@/features/like/services/get-pin-like-data";
+
 import { mapPinToCard } from "../lib/map-pin-card";
 import type { PinCardData } from "../types/pin-card";
 import type { GetRelatedPinsOptions } from "../types/related-pins";
@@ -17,11 +19,8 @@ export async function getRelatedPinsService({
   pinId,
   limit = 20,
   excludeAuthorId,
+  viewerUserId,
 }: GetRelatedPinsOptions): Promise<PinCardData[]> {
-  /*
-   * Get the current Pin so we know which topic
-   * should be preferred for discovery.
-   */
   const currentPin = await db.query.pins.findFirst({
     where: eq(pins.id, pinId),
     columns: {
@@ -33,15 +32,6 @@ export async function getRelatedPinsService({
     return [];
   }
 
-  /*
-   * First preference:
-   *
-   * Public Pins from the same topic.
-   *
-   * By default, the current author's Pins are allowed.
-   * A caller can optionally exclude an author for contexts
-   * such as "Explore More" on a profile Pin page.
-   */
   const relatedPins = await db.query.pins.findMany({
     where: and(
       ne(pins.id, pinId),
@@ -58,10 +48,6 @@ export async function getRelatedPinsService({
     limit,
   });
 
-  /*
-   * If there aren't enough Pins in the same topic,
-   * fill the remaining slots with recent PUBLIC Pins.
-   */
   if (relatedPins.length < limit) {
     const existingIds = relatedPins.map((pin) => pin.id);
 
@@ -87,5 +73,18 @@ export async function getRelatedPinsService({
     relatedPins.push(...fallbackPins);
   }
 
-  return relatedPins.map(mapPinToCard);
+  const likeDataByPinId = await getPinLikeDataForPins(
+    relatedPins.map((pin) => pin.id),
+    viewerUserId,
+  );
+
+  return relatedPins.map((pin) => {
+    const likeData = likeDataByPinId.get(pin.id);
+
+    return {
+      ...mapPinToCard(pin),
+      likeCount: likeData?.likeCount ?? 0,
+      isLiked: likeData?.isLiked ?? false,
+    };
+  });
 }
