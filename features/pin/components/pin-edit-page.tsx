@@ -10,11 +10,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldError,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { TopicOption } from "@/features/topic/types/topic";
@@ -36,10 +32,7 @@ interface PinEditPageProps {
   topics: TopicOption[];
 }
 
-export function PinEditPage({
-  pin,
-  topics,
-}: PinEditPageProps) {
+export function PinEditPage({ pin, topics }: PinEditPageProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [topicSearch, setTopicSearch] = useState("");
@@ -83,9 +76,7 @@ export function PinEditPage({
     });
   }
 
-  function handleVisibilityChange(
-    nextVisibility: "PUBLIC" | "PRIVATE",
-  ) {
+  function handleVisibilityChange(nextVisibility: "PUBLIC" | "PRIVATE") {
     form.setValue("visibility", nextVisibility, {
       shouldDirty: true,
       shouldTouch: true,
@@ -133,7 +124,7 @@ export function PinEditPage({
   return (
     <main className="w-full">
       <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="overflow-hidden rounded-2xl border bg-card">
+        <div className="bg-card overflow-hidden rounded-2xl border">
           <header className="flex items-center justify-between gap-4 border-b px-6 py-5 sm:px-8">
             <div>
               <h1 className="text-lg font-semibold">Edit Pin</h1>
@@ -146,6 +137,7 @@ export function PinEditPage({
               <Button
                 type="button"
                 variant="ghost"
+                nativeButton={false}
                 render={<Link href={`/pin/${pin.id}`} />}
               >
                 Cancel
@@ -184,24 +176,18 @@ export function PinEditPage({
                   disabled={isPending}
                   {...form.register("title")}
                 />
-                <FieldError
-                  errors={[form.formState.errors.title]}
-                />
+                <FieldError errors={[form.formState.errors.title]} />
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="description">
-                  Description
-                </FieldLabel>
+                <FieldLabel htmlFor="description">Description</FieldLabel>
                 <Textarea
                   id="description"
                   rows={5}
                   disabled={isPending}
                   {...form.register("description")}
                 />
-                <FieldError
-                  errors={[form.formState.errors.description]}
-                />
+                <FieldError errors={[form.formState.errors.description]} />
               </Field>
 
               <Field>
@@ -215,9 +201,7 @@ export function PinEditPage({
                   disabled={isPending}
                   {...form.register("destinationUrl")}
                 />
-                <FieldError
-                  errors={[form.formState.errors.destinationUrl]}
-                />
+                <FieldError errors={[form.formState.errors.destinationUrl]} />
               </Field>
 
               <Field>
@@ -232,9 +216,7 @@ export function PinEditPage({
                   onSearchChange={setTopicSearch}
                   onSelect={handleTopicSelect}
                 />
-                <FieldError
-                  errors={[form.formState.errors.topicId]}
-                />
+                <FieldError errors={[form.formState.errors.topicId]} />
               </Field>
 
               <TagInput
