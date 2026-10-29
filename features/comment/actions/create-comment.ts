@@ -46,6 +46,26 @@ export async function createCommentAction(
   const { pinId, parentId, content } =
     validated.data;
 
+  const [pin] = await db
+    .select({
+      authorId: pins.authorId,
+      visibility: pins.visibility,
+    })
+    .from(pins)
+    .where(eq(pins.id, pinId))
+    .limit(1);
+
+  if (
+    !pin ||
+    (pin.visibility === "PRIVATE" &&
+      pin.authorId !== session.user.id)
+  ) {
+    return {
+      success: false,
+      error: "Pin not found.",
+    };
+  }
+
   let recipientId: string | null = null;
   let notificationType:
     | "COMMENT"
@@ -85,21 +105,6 @@ export async function createCommentAction(
     recipientId = parentComment.authorId;
     notificationType = "REPLY";
   } else {
-    const [pin] = await db
-      .select({
-        authorId: pins.authorId,
-      })
-      .from(pins)
-      .where(eq(pins.id, pinId))
-      .limit(1);
-
-    if (!pin) {
-      return {
-        success: false,
-        error: "Pin not found.",
-      };
-    }
-
     recipientId = pin.authorId;
     notificationType = "COMMENT";
   }

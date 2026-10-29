@@ -1,7 +1,7 @@
-import { and, count, eq, inArray } from "drizzle-orm";
+import { and, count, eq, inArray, or } from "drizzle-orm";
 
 import { db } from "@/db";
-import { boardPins, boards } from "@/db/schema";
+import { boardPins, boards, pins } from "@/db/schema";
 
 import { mapBoardSummary } from "../lib/map-board-summary";
 import type { BoardSummary } from "../types/board";
@@ -38,6 +38,8 @@ export async function getBoardsByUserService({
         coverPin: {
           columns: {
             imageUrl: true,
+            visibility: true,
+            authorId: true,
           },
         },
 
@@ -46,13 +48,32 @@ export async function getBoardsByUserService({
             boardId: true,
             pinId: true,
           },
+          with: {
+            pin: {
+              columns: {
+                visibility: true,
+                authorId: true,
+              },
+            },
+          },
         },
       },
     });
 
-    return result.map((board) =>
-      mapBoardSummary(board, pinId),
-    );
+    return result.map((board) => {
+      const visiblePinCount = board.boardPins.filter(
+        ({ pin }) =>
+          pin.visibility === "PUBLIC" ||
+          (includePrivate && pin.authorId === userId),
+      ).length;
+
+      return mapBoardSummary(
+        board,
+        pinId,
+        visiblePinCount,
+        includePrivate ? userId : undefined,
+      );
+    });
   }
 
   /*
@@ -71,6 +92,8 @@ export async function getBoardsByUserService({
       coverPin: {
         columns: {
           imageUrl: true,
+          visibility: true,
+          authorId: true,
         },
       },
     },
@@ -82,13 +105,26 @@ export async function getBoardsByUserService({
 
   const boardIds = result.map((board) => board.id);
 
+  const visiblePinCondition = includePrivate
+    ? or(
+        eq(pins.visibility, "PUBLIC"),
+        eq(pins.authorId, userId),
+      )
+    : eq(pins.visibility, "PUBLIC");
+
   const pinCounts = await db
     .select({
       boardId: boardPins.boardId,
       pinCount: count(boardPins.pinId),
     })
     .from(boardPins)
-    .where(inArray(boardPins.boardId, boardIds))
+    .innerJoin(pins, eq(boardPins.pinId, pins.id))
+    .where(
+      and(
+        inArray(boardPins.boardId, boardIds),
+        visiblePinCondition,
+      ),
+    )
     .groupBy(boardPins.boardId);
 
   const pinCountByBoardId = new Map(
@@ -103,6 +139,7 @@ export async function getBoardsByUserService({
       board,
       undefined,
       pinCountByBoardId.get(board.id) ?? 0,
+      includePrivate ? userId : undefined,
     ),
   );
 }

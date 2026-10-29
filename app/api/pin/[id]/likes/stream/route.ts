@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
-import { getPinLikeData } from "@/features/like/services/get-pin-like-data";
 import { subscribeToPinLikes } from "@/features/like/lib/like-events";
+import { getPinByIdService } from "@/features/pin/services/get-pin-by-id";
 
 export const runtime = "nodejs";
 
@@ -16,50 +16,76 @@ export async function GET(
 ) {
   const { id: pinId } = await params;
   const session = await auth();
+  const pin = await getPinByIdService(pinId, session?.user?.id);
 
-  const likeData = await getPinLikeData(
-    pinId,
-    session?.user?.id,
-  );
+  if (!pin) {
+    return new Response("Pin not found.", {
+      status: 404,
+    });
+  }
 
   const encoder = new TextEncoder();
 
   let unsubscribe: (() => void) | undefined;
   let heartbeat: ReturnType<typeof setInterval> | undefined;
+  let isClosed = false;
+
+  const cleanup = () => {
+    if (isClosed) {
+      return;
+    }
+
+    isClosed = true;
+    unsubscribe?.();
+    unsubscribe = undefined;
+
+    if (heartbeat) {
+      clearInterval(heartbeat);
+      heartbeat = undefined;
+    }
+  };
 
   const stream = new ReadableStream({
     start(controller) {
-      function send(event: string, data: unknown) {
-        controller.enqueue(
-          encoder.encode(
-            `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`,
-          ),
+      const enqueue = (data: string) => {
+        if (isClosed) {
+          return;
+        }
+
+        try {
+          controller.enqueue(encoder.encode(data));
+        } catch {
+          cleanup();
+        }
+      };
+
+      function send(
+        event: string,
+        data: unknown,
+      ) {
+        enqueue(
+          `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`,
         );
       }
 
       send("connected", {
         pinId,
-        likeCount: likeData.likeCount,
-        isLiked: likeData.isLiked,
       });
 
-      unsubscribe = subscribeToPinLikes(pinId, (event) => {
-        send(event.type, event);
-      });
+      unsubscribe = subscribeToPinLikes(
+        pinId,
+        (event) => {
+          send(event.type, event);
+        },
+      );
 
       heartbeat = setInterval(() => {
-        controller.enqueue(
-          encoder.encode(": heartbeat\n\n"),
-        );
+        enqueue(": heartbeat\n\n");
       }, 30_000);
     },
 
     cancel() {
-      unsubscribe?.();
-
-      if (heartbeat) {
-        clearInterval(heartbeat);
-      }
+      cleanup();
     },
   });
 

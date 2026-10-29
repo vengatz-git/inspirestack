@@ -42,11 +42,33 @@ export async function getRecentBoardsService({
           boardId: true,
           pinId: true,
         },
+        with: {
+          pin: {
+            columns: {
+              visibility: true,
+              authorId: true,
+            },
+          },
+        },
       },
     },
   });
 
-  return recentBoards.map((board) =>
-    mapBoardSummary(board, pinId),
-  );
+  return recentBoards.map((board) => {
+    const visibleBoardPins = board.boardPins.filter(
+      ({ pin }) =>
+        pin.visibility === "PUBLIC" ||
+        (includePrivate && pin.authorId === ownerId),
+    );
+
+    return mapBoardSummary(
+      {
+        ...board,
+        boardPins: visibleBoardPins,
+      },
+      pinId,
+      undefined,
+      includePrivate ? ownerId : undefined,
+    );
+  });
 }

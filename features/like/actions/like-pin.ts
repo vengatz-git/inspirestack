@@ -30,12 +30,17 @@ export async function likePinAction(data: unknown): Promise<ActionResult> {
   const [pin] = await db
     .select({
       authorId: pins.authorId,
+      visibility: pins.visibility,
     })
     .from(pins)
     .where(eq(pins.id, pinId))
     .limit(1);
 
-  if (!pin) {
+  if (
+    !pin ||
+    (pin.visibility === "PRIVATE" &&
+      pin.authorId !== session.user.id)
+  ) {
     return { success: false, error: "Pin not found." };
   }
 

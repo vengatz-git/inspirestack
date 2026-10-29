@@ -29,6 +29,8 @@ export async function getBoardByIdService(
       coverPin: {
         columns: {
           imageUrl: true,
+          visibility: true,
+          authorId: true,
         },
       },
 
@@ -49,5 +51,18 @@ export async function getBoardByIdService(
     return null;
   }
 
-  return mapBoardDetail(board);
+  const visibleBoardPins = board.boardPins.filter(
+    ({ pin }) =>
+      pin.visibility === "PUBLIC" ||
+      pin.authorId === viewerId,
+  );
+  const canViewCoverPin =
+    board.coverPin?.visibility === "PUBLIC" ||
+    board.coverPin?.authorId === viewerId;
+
+  return mapBoardDetail({
+    ...board,
+    coverPin: canViewCoverPin ? board.coverPin : null,
+    boardPins: visibleBoardPins,
+  });
 }

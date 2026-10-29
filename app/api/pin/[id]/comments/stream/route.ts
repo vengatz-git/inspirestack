@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { getPinByIdService } from "@/features/pin/services/get-pin-by-id";
 
 import { subscribeToComments } from "@/features/comment/lib/comment-events";
 
@@ -23,9 +24,21 @@ export async function GET(
   }
 
   const { id: pinId } = await params;
+  const pin = await getPinByIdService(pinId, session.user.id);
 
-  let unsubscribe: (() => void) | undefined;
-  let heartbeat: ReturnType<typeof setInterval> | undefined;
+  if (!pin) {
+    return new Response("Pin not found.", {
+      status: 404,
+    });
+  }
+
+  let unsubscribe:
+    | (() => void)
+    | undefined;
+
+  let heartbeat:
+    | ReturnType<typeof setInterval>
+    | undefined;
   let isClosed = false;
 
   const cleanup = () => {
@@ -63,11 +76,18 @@ export async function GET(
         enqueue(`data: ${data}\n\n`);
       };
 
-      send(JSON.stringify({ type: "connected" }));
+      send(
+        JSON.stringify({
+          type: "connected",
+        }),
+      );
 
-      const stop = await subscribeToComments(pinId, (event) => {
-        send(JSON.stringify(event));
-      });
+      const stop = await subscribeToComments(
+        pinId,
+        (event) => {
+          send(JSON.stringify(event));
+        },
+      );
 
       if (isClosed) {
         stop();
@@ -89,7 +109,8 @@ export async function GET(
   return new Response(stream, {
     headers: {
       "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache, no-transform",
+      "Cache-Control":
+        "no-cache, no-transform",
       Connection: "keep-alive",
     },
   });

@@ -10,6 +10,8 @@ type BoardWithRelations = {
 
   coverPin: {
     imageUrl: string;
+    visibility: "PUBLIC" | "PRIVATE";
+    authorId: string;
   } | null;
 
   boardPins?: {
@@ -24,6 +26,7 @@ export function mapBoardSummary(
   board: BoardWithRelations,
   pinId?: string,
   pinCount?: number,
+  viewerId?: string,
 ): BoardSummary {
   const isSaved =
     pinId != null &&
@@ -40,7 +43,12 @@ export function mapBoardSummary(
 
     visibility: board.visibility,
 
-    coverImageUrl: board.coverPin?.imageUrl ?? null,
+    coverImageUrl:
+      board.coverPin &&
+      (board.coverPin.visibility === "PUBLIC" ||
+        board.coverPin.authorId === viewerId)
+        ? board.coverPin.imageUrl
+        : null,
 
     pinCount: pinCount ?? board.boardPins?.length ?? 0,
 

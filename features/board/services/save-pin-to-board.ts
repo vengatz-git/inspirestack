@@ -5,13 +5,16 @@ import { boardPins, boards } from "@/db/schema";
 
 import type { SavePinInput } from "../schemas/save-pin-schema";
 
-export async function savePinToBoardService({
-  boardId,
-  pinId,
-}: SavePinInput) {
+export async function savePinToBoardService(
+  ownerId: string,
+  { boardId, pinId }: SavePinInput,
+) {
   return db.transaction(async (tx) => {
     const board = await tx.query.boards.findFirst({
-      where: eq(boards.id, boardId),
+      where: and(
+        eq(boards.id, boardId),
+        eq(boards.ownerId, ownerId),
+      ),
       columns: {
         coverPinId: true,
       },

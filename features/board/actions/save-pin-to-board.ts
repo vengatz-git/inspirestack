@@ -39,6 +39,7 @@ export async function savePinToBoardAction(
   const pin = await db
     .select({
       authorId: pins.authorId,
+      visibility: pins.visibility,
     })
     .from(pins)
     .where(eq(pins.id, pinId))
@@ -53,9 +54,17 @@ export async function savePinToBoardAction(
     };
   }
 
-  const result = await savePinToBoardService(
-    validated.data,
-  );
+  if (
+    pinAuthor.visibility === "PRIVATE" &&
+    pinAuthor.authorId !== session.user.id
+  ) {
+    return {
+      success: false,
+      error: "Pin not found.",
+    };
+  }
+
+  const result = await savePinToBoardService(session.user.id, validated.data);
 
   if (result.isNew) {
     await createNotificationService({
