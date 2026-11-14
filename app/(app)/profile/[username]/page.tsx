@@ -53,15 +53,13 @@ export default async function ProfilePage({
   }
 
   const session = await auth();
-  const stats = await getProfileStatsService(
-    profile.id,
-    session?.user?.id,
-  );
+  const stats = await getProfileStatsService(profile.id, session?.user?.id);
 
   const isOwner = session?.user.id === profile.id;
-  const isFollowing = session?.user?.id && !isOwner
-    ? await getIsFollowingService(session.user.id, profile.id)
-    : false;
+  const isFollowing =
+    session?.user?.id && !isOwner
+      ? await getIsFollowingService(session.user.id, profile.id)
+      : false;
 
   const googleImage = isOwner
     ? ((await getGoogleImageService(profile.id))?.googleImage ?? null)
@@ -118,8 +116,11 @@ export default async function ProfilePage({
             />
 
             <div className="flex w-full flex-col gap-4 md:w-auto">
-              <ProfileStats stats={stats} username={profile.username} />
-
+              <ProfileStats
+                stats={stats}
+                username={profile.username}
+                currentUserId={session?.user?.id ?? null}
+              />
               {!isOwner && (
                 <div className="w-full md:hidden [&_button]:w-full">
                   <ProfileAction

@@ -368,3 +368,199 @@
 [31m-  );[m
 [31m-}[m
 \ No newline at end of file[m
+[1mdiff --git a/app/(app)/profile/[username]/page.tsx b/app/(app)/profile/[username]/page.tsx[m
+[1mindex f5afaf4..51c4583 100644[m
+[1m--- a/app/(app)/profile/[username]/page.tsx[m
+[1m+++ b/app/(app)/profile/[username]/page.tsx[m
+[36m@@ -20,6 +20,7 @@[m [mimport { getSavedPinsByUserService } from "@/features/profile/services/get-saved[m
+ import { getRecentBoardsService } from "@/features/board/services/get-recent-boards";[m
+ import { ProfileQuickAccess } from "@/features/profile/components/profile-quick-access";[m
+ import { ProfileAction } from "@/features/profile/components/profile-action";[m
+[32m+[m[32mimport { getIsFollowingService } from "@/features/profile/services/follow-user";[m
+ [m
+ import {[m
+   isProfileTab,[m
+[36m@@ -51,12 +52,16 @@[m [mexport default async function ProfilePage({[m
+     notFound();[m
+   }[m
+ [m
+[31m-  const [stats, session] = await Promise.all([[m
+[31m-    getProfileStatsService(profile.id),[m
+[31m-    auth(),[m
+[31m-  ]);[m
+[32m+[m[32m  const session = await auth();[m
+[32m+[m[32m  const stats = await getProfileStatsService([m
+[32m+[m[32m    profile.id,[m
+[32m+[m[32m    session?.user?.id,[m
+[32m+[m[32m  );[m
+ [m
+   const isOwner = session?.user.id === profile.id;[m
+[32m+[m[32m  const isFollowing = session?.user?.id && !isOwner[m
+[32m+[m[32m    ? await getIsFollowingService(session.user.id, profile.id)[m
+[32m+[m[32m    : false;[m
+ [m
+   const googleImage = isOwner[m
+     ? ((await getGoogleImageService(profile.id))?.googleImage ?? null)[m
+[36m@@ -108,14 +113,21 @@[m [mexport default async function ProfilePage({[m
+               profile={profile}[m
+               isOwner={isOwner}[m
+               googleImage={googleImage}[m
+[32m+[m[32m              currentUserId={session?.user?.id ?? null}[m
+[32m+[m[32m              isFollowing={isFollowing}[m
+             />[m
+ [m
+             <div className="flex w-full flex-col gap-4 md:w-auto">[m
+[31m-              <ProfileStats stats={stats} />[m
+[32m+[m[32m              <ProfileStats stats={stats} username={profile.username} />[m
+ [m
+               {!isOwner && ([m
+                 <div className="w-full md:hidden [&_button]:w-full">[m
+[31m-                  <ProfileAction profile={profile} isOwner={isOwner} />[m
+[32m+[m[32m                  <ProfileAction[m
+[32m+[m[32m                    profile={profile}[m
+[32m+[m[32m                    isOwner={isOwner}[m
+[32m+[m[32m                    currentUserId={session?.user?.id ?? null}[m
+[32m+[m[32m                    isFollowing={isFollowing}[m
+[32m+[m[32m                  />[m
+                 </div>[m
+               )}[m
+             </div>[m
+[36m@@ -150,4 +162,4 @@[m [mexport default async function ProfilePage({[m
+       </div>[m
+     </main>[m
+   );[m
+[31m-}[m
+[32m+[m[32m}[m
+\ No newline at end of file[m
+[1mdiff --git a/app/api/profile/[username]/saved/route.ts b/app/api/profile/[username]/saved/route.ts[m
+[1mindex 1fec1fd..bd231b5 100644[m
+[1m--- a/app/api/profile/[username]/saved/route.ts[m
+[1m+++ b/app/api/profile/[username]/saved/route.ts[m
+[36m@@ -1,5 +1,6 @@[m
+ import { NextRequest, NextResponse } from "next/server";[m
+ [m
+[32m+[m[32mimport { auth } from "@/auth";[m
+ import { getProfileByUsername } from "@/features/profile/services/get-profile-by-username";[m
+ import { getSavedPinsByUserService } from "@/features/profile/services/get-saved-pins-by-user";[m
+ [m
+[36m@@ -27,8 +28,11 @@[m [mexport async function GET([m
+     );[m
+   }[m
+ [m
+[32m+[m[32m  const session = await auth();[m
+[32m+[m
+   const result = await getSavedPinsByUserService({[m
+     userId: profile.id,[m
+[32m+[m[32m    includePrivate: session?.user?.id === profile.id,[m
+     cursor,[m
+   });[m
+ [m
+[1mdiff --git a/db/schema/auth.ts b/db/schema/auth.ts[m
+[1mindex cb07677..399f56e 100644[m
+[1m--- a/db/schema/auth.ts[m
+[1m+++ b/db/schema/auth.ts[m
+[36m@@ -14,7 +14,7 @@[m [mimport { comments } from "./comments";[m
+ import { drafts } from "./drafts";[m
+ import { notifications } from "./notifications";[m
+ import { pinLikes } from "./likes";[m
+[31m-import { savedPins } from "./saved-pins";[m
+[32m+[m[32mimport { userFollows } from "./follows";[m
+ [m
+ export const users = pgTable("users", {[m
+   id: uuid("id").defaultRandom().primaryKey(),[m
+[36m@@ -123,8 +123,13 @@[m [mexport const usersRelations = relations(users, ({ many }) => ({[m
+   boards: many(boards),[m
+   comments: many(comments),[m
+   likes: many(pinLikes),[m
+[31m-  // drafts: many(drafts),[m
+[31m-  savedPins: many(savedPins),[m
+[32m+[m[32m  drafts: many(drafts),[m
+[32m+[m[32m  followers: many(userFollows, {[m
+[32m+[m[32m    relationName: "followed_user",[m
+[32m+[m[32m  }),[m
+[32m+[m[32m  following: many(userFollows, {[m
+[32m+[m[32m    relationName: "follower_user",[m
+[32m+[m[32m  }),[m
+ [m
+   receivedNotifications: many(notifications, {[m
+     relationName: "notification_recipient",[m
+[36m@@ -147,4 +152,4 @@[m [mexport const sessionsRelations = relations(sessions, ({ one }) => ({[m
+     fields: [sessions.userId],[m
+     references: [users.id],[m
+   }),[m
+[31m-}));[m
+[32m+[m[32m}));[m
+\ No newline at end of file[m
+[1mdiff --git a/db/schema/follows.ts b/db/schema/follows.ts[m
+[1mnew file mode 100644[m
+[1mindex 0000000..8d8fe83[m
+[1m--- /dev/null[m
+[1m+++ b/db/schema/follows.ts[m
+[36m@@ -0,0 +1,59 @@[m
+[32m+[m[32mimport { relations, sql } from "drizzle-orm";[m
+[32m+[m[32mimport {[m
+[32m+[m[32m  check,[m
+[32m+[m[32m  index,[m
+[32m+[m[32m  pgTable,[m
+[32m+[m[32m  primaryKey,[m
+[32m+[m[32m  timestamp,[m
+[32m+[m[32m  uuid,[m
+[32m+[m[32m} from "drizzle-orm/pg-core";[m
+[32m+[m
+[32m+[m[32mimport { users } from "./auth";[m
+[32m+[m
+[32m+[m[32mexport const userFollows = pgTable([m
+[32m+[m[32m  "user_follows",[m
+[32m+[m[32m  {[m
+[32m+[m[32m    followerId: uuid("follower_id")[m
+[32m+[m[32m      .notNull()[m
+[32m+[m[32m      .references(() => users.id, { onDelete: "cascade" }),[m
+[32m+[m[32m    followedId: uuid("followed_id")[m
+[32m+[m[32m      .notNull()[m
+[32m+[m[32m      .references(() => users.id, { onDelete: "cascade" }),[m
+[32m+[m[32m    createdAt: timestamp("created_at", {[m
+[32m+[m[32m      withTimezone: true,[m
+[32m+[m[32m    })[m
+[32m+[m[32m      .defaultNow()[m
+[32m+[m[32m      .notNull(),[m
+[32m+[m[32m  },[m
+[32m+[m[32m  (table) => ({[m
+[32m+[m[32m    pk: primaryKey({[m
+[32m+[m[32m      columns: [table.followerId, table.followedId],[m
+[32m+[m[32m    }),[m
+[32m+[m[32m    notSelf: check([m
+[32m+[m[32m      "user_follows_not_self",[m
+[32m+[m[32m      sql`${table.followerId} <> ${table.followedId}`,[m
+[32m+[m[32m    ),[m
+[32m+[m[32m    followerCreatedAtIdx: index([m
+[32m+[m[32m      "user_follows_follower_created_at_idx",[m
+[32m+[m[32m    ).on(table.followerId, table.createdAt),[m
+[32m+[m[32m    followedCreatedAtIdx: index([m
+[32m+[m[32m      "user_follows_followed_created_at_idx",[m
+[32m+[m[32m    ).on(table.followedId, table.createdAt),[m
+[32m+[m[32m  }),[m
+[32m+[m[32m);[m
+[32m+[m
+[32m+[m[32mexport const userFollowsRelations = relations([m
+[32m+[m[32m  userFollows,[m
+[32m+[m[32m  ({ one }) => ({[m
+[32m+[m[32m    follower: one(users, {[m
+[32m+[m[32m      fields: [userFollows.followerId],[m
+[32m+[m[32m      references: [users.id],[m
+[32m+[m[32m      relationName: "follower_user",[m
+[32m+[m[32m    }),[m
+[32m+[m[32m    followed: one(users, {[m
+[32m+[m[32m      fields: [userFollows.followedId],[m
+[32m+[m[32m      references: [users.id],[m
+[32m+[m[32m      relationName: "followed_user",[m
+[32m+[m[32m    }),[m
+[32m+[m[32m  }),[m
+[32m+[m[32m);[m
+\ No newline at end of file[m
+[1mdiff --git a/db/schema/index.ts b/db/schema/index.ts[m
+[1mindex d6d617c..0e5b23c 100644[m
+[1m--- a/db/schema/index.ts[m
+[1m+++ b/db/schema/index.ts[m
+[36m@@ -7,4 +7,5 @@[m [mexport * from "./tags";[m
+ export * from "./drafts";[m
+ ex

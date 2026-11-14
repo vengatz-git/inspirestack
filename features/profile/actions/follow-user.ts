@@ -1,6 +1,8 @@
+// features/profile/actions/follow-user.ts
 "use server";
 
 import { auth } from "@/auth";
+import { publishNotificationEvent } from "@/features/notification/lib/publish-notification-event";
 import { createNotificationService } from "@/features/notification/services/create-notification";
 import type { ActionResult } from "@/types/action-result";
 
@@ -29,15 +31,20 @@ export async function followUserAction(
     );
 
     if (created) {
-      try {
-        await createNotificationService({
-          recipientId: parsed.data.userId,
-          actorId: session.user.id,
-          type: "FOLLOW",
-        });
-      } catch (error) {
-        console.error("Failed to create follow notification:", error);
-      }
+      await createNotificationService({
+        recipientId: parsed.data.userId,
+        actorId: session.user.id,
+        type: "FOLLOW",
+      });
+
+      await Promise.all(
+        [session.user.id, parsed.data.userId].map((recipientId) =>
+          publishNotificationEvent({
+            type: "follow-updated",
+            recipientId,
+          }),
+        ),
+      );
     }
 
     return { success: true };

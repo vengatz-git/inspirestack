@@ -1,7 +1,8 @@
-import { and, desc, eq, lt, or } from "drizzle-orm";
+// features/profile/services/follow-user.ts
+import { and, desc, eq, inArray, lt, or } from "drizzle-orm";
 
 import { db } from "@/db";
-import { userFollows, users } from "@/db/schema";
+import { notifications, userFollows, users } from "@/db/schema";
 
 export async function followUserService(
   followerId: string,
@@ -20,17 +21,36 @@ export async function unfollowUserService(
   followerId: string,
   followedId: string,
 ) {
-  const [follow] = await db
-    .delete(userFollows)
-    .where(
-      and(
-        eq(userFollows.followerId, followerId),
-        eq(userFollows.followedId, followedId),
-      ),
-    )
-    .returning({ followerId: userFollows.followerId });
+  return db.transaction(async (tx) => {
+    const [follow] = await tx
+      .delete(userFollows)
+      .where(
+        and(
+          eq(userFollows.followerId, followerId),
+          eq(userFollows.followedId, followedId),
+        ),
+      )
+      .returning({ followerId: userFollows.followerId });
 
-  return Boolean(follow);
+    const deletedNotifications = await tx
+      .delete(notifications)
+      .where(
+        and(
+          eq(notifications.actorId, followerId),
+          eq(notifications.recipientId, followedId),
+          eq(notifications.type, "FOLLOW"),
+        ),
+      )
+      .returning({
+        id: notifications.id,
+        recipientId: notifications.recipientId,
+      });
+
+    return {
+      unfollowed: Boolean(follow),
+      deletedNotifications,
+    };
+  });
 }
 
 export async function getIsFollowingService(
@@ -56,11 +76,13 @@ export async function getProfileFollowListService({
   kind,
   cursor,
   limit = 30,
+  viewerUserId,
 }: {
   userId: string;
   kind: "followers" | "following";
   cursor?: string;
   limit?: number;
+  viewerUserId?: string | null;
 }) {
   const edgeUserId =
     kind === "followers"
@@ -120,9 +142,35 @@ export async function getProfileFollowListService({
 
   const hasMore = rows.length > pageSize;
   const pageRows = hasMore ? rows.slice(0, pageSize) : rows;
+  const profiles = pageRows.map(
+    ({ createdAt: _createdAt, ...profile }) => profile,
+  );
+  const followedUserIds = new Set<string>();
+
+  if (viewerUserId && profiles.length > 0) {
+    const follows = await db
+      .select({ followedId: userFollows.followedId })
+      .from(userFollows)
+      .where(
+        and(
+          eq(userFollows.followerId, viewerUserId),
+          inArray(
+            userFollows.followedId,
+            profiles.map((profile) => profile.id),
+          ),
+        ),
+      );
+
+    for (const follow of follows) {
+      followedUserIds.add(follow.followedId);
+    }
+  }
 
   return {
-    users: pageRows.map(({ createdAt: _createdAt, ...profile }) => profile),
+    users: profiles.map((profile) => ({
+      ...profile,
+      isFollowing: followedUserIds.has(profile.id),
+    })),
     nextCursor: hasMore
       ? pageRows[pageRows.length - 1]?.id ?? null
       : null,

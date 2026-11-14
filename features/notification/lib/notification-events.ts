@@ -1,14 +1,13 @@
+// features/notification/lib/notification-events.ts
 import postgres from "postgres";
 
-interface NotificationEvent {
-  type: "created" | "deleted";
-  notificationId: string;
+export interface NotificationEvent {
+  type: "created" | "deleted" | "follow-updated";
+  notificationId?: string;
   recipientId: string;
 }
 
-type Listener = (
-  event: NotificationEvent,
-) => void;
+type Listener = (event: NotificationEvent) => void;
 
 interface NotificationEventBus {
   sql: ReturnType<typeof postgres>;
@@ -23,24 +22,14 @@ const globalForNotifications =
   };
 
 const eventBus =
-  globalForNotifications.notificationEventBus ??
-  {
-    sql: postgres(
-      process.env.DATABASE_DIRECT_URL!,
-      {
-        max: 1,
-      },
-    ),
-    listeners: new Map<
-      string,
-      Set<Listener>
-    >(),
+  globalForNotifications.notificationEventBus ?? {
+    sql: postgres(process.env.DATABASE_DIRECT_URL!, { max: 1 }),
+    listeners: new Map<string, Set<Listener>>(),
     listening: false,
     listeningPromise: null,
   };
 
-globalForNotifications.notificationEventBus =
-  eventBus;
+globalForNotifications.notificationEventBus = eventBus;
 
 async function startListening() {
   if (eventBus.listening) {
@@ -51,50 +40,37 @@ async function startListening() {
     return eventBus.listeningPromise;
   }
 
-  eventBus.listeningPromise =
-    eventBus.sql
-      .listen(
-        "inspirestack_notifications",
-        (payload) => {
-          try {
-            const event =
-              JSON.parse(
-                payload,
-              ) as NotificationEvent;
+  eventBus.listeningPromise = eventBus.sql
+    .listen("inspirestack_notifications", (payload) => {
+      try {
+        const event = JSON.parse(payload) as NotificationEvent;
+        const listeners = eventBus.listeners.get(event.recipientId);
 
-            const listeners =
-              eventBus.listeners.get(
-                event.recipientId,
-              );
+        if (!listeners) {
+          return;
+        }
 
-            if (!listeners) {
-              return;
-            }
-
-            for (const listener of listeners) {
-              listener(event);
-            }
-          } catch (error) {
-            console.error(
-              "[Notifications] Failed to process notification event:",
-              error,
-            );
-          }
-        },
-      )
-      .then(() => {
-        eventBus.listening = true;
-      })
-      .catch((error) => {
-        eventBus.listeningPromise = null;
-
+        for (const listener of listeners) {
+          listener(event);
+        }
+      } catch (error) {
         console.error(
-          "[Notifications] Failed to start notification listener:",
+          "[Notifications] Failed to process notification event:",
           error,
         );
-
-        throw error;
-      });
+      }
+    })
+    .then(() => {
+      eventBus.listening = true;
+    })
+    .catch((error) => {
+      eventBus.listeningPromise = null;
+      console.error(
+        "[Notifications] Failed to start notification listener:",
+        error,
+      );
+      throw error;
+    });
 
   return eventBus.listeningPromise;
 }
@@ -106,19 +82,13 @@ export async function subscribeToNotifications(
   await startListening();
 
   const current =
-    eventBus.listeners.get(recipientId) ??
-    new Set<Listener>();
+    eventBus.listeners.get(recipientId) ?? new Set<Listener>();
 
   current.add(listener);
-
-  eventBus.listeners.set(
-    recipientId,
-    current,
-  );
+  eventBus.listeners.set(recipientId, current);
 
   return () => {
-    const listeners =
-      eventBus.listeners.get(recipientId);
+    const listeners = eventBus.listeners.get(recipientId);
 
     if (!listeners) {
       return;
@@ -127,9 +97,7 @@ export async function subscribeToNotifications(
     listeners.delete(listener);
 
     if (listeners.size === 0) {
-      eventBus.listeners.delete(
-        recipientId,
-      );
+      eventBus.listeners.delete(recipientId);
     }
   };
 }

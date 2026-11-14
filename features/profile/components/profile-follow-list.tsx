@@ -1,40 +1,42 @@
+// features/profile/components/profile-follow-list.tsx
 import Image from "next/image";
 import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+
+import { FollowButton } from "./follow-button";
 
 type FollowedProfile = {
   id: string;
   username: string | null;
   displayName: string | null;
   image: string | null;
+  isFollowing: boolean;
 };
 
 export function ProfileFollowList({
-  title,
-  username,
   profiles,
-  nextCursor,
+  currentUserId,
+  loadingMore,
+  hasMore,
+  emptyMessage,
+  onLoadMore,
 }: {
-  title: string;
-  username: string;
   profiles: FollowedProfile[];
-  nextCursor: string | null;
+  currentUserId: string | null;
+  loadingMore: boolean;
+  hasMore: boolean;
+  emptyMessage: string;
+  onLoadMore: () => void;
 }) {
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
-      <Link
-        href={`/profile/${username}`}
-        className="text-sm text-muted-foreground hover:text-foreground"
-      >
-        Back to @{username}
-      </Link>
-      <h1 className="mt-4 text-2xl font-bold">{title}</h1>
-
+    <div>
       {profiles.length === 0 ? (
-        <p className="mt-8 rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
-          No {title.toLowerCase()} yet.
+        <p className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground">
+          {emptyMessage}
         </p>
       ) : (
-        <ul className="mt-5 divide-y rounded-xl border">
+        <ul className="divide-y">
           {profiles.map((profile) => {
             const name = profile.displayName ?? profile.username ?? "Member";
             const contents = (
@@ -42,7 +44,7 @@ export function ProfileFollowList({
                 <span className="relative size-11 shrink-0 overflow-hidden rounded-full bg-muted">
                   <Image
                     src={profile.image ?? "/default-avatar.svg"}
-                    alt=""
+                    alt={name}
                     fill
                     sizes="44px"
                     className="object-cover"
@@ -62,18 +64,28 @@ export function ProfileFollowList({
             );
 
             return (
-              <li key={profile.id}>
+              <li key={profile.id} className="flex items-center gap-3 py-3">
                 {profile.username ? (
                   <Link
                     href={`/profile/${profile.username}`}
-                    className="flex items-center gap-3 p-4 hover:bg-muted/50"
+                    className="flex min-w-0 flex-1 items-center gap-3 rounded-lg hover:opacity-75"
                   >
                     {contents}
                   </Link>
                 ) : (
-                  <div className="flex items-center gap-3 p-4">
+                  <div className="flex min-w-0 flex-1 items-center gap-3">
                     {contents}
                   </div>
+                )}
+
+                {currentUserId === profile.id ? null : currentUserId ? (
+                  <FollowButton
+                    key={`${profile.id}:${profile.isFollowing}`}
+                    userId={profile.id}
+                    initialIsFollowing={profile.isFollowing}
+                  />
+                ) : (
+                  <Button render={<Link href="/login" />}>Follow</Button>
                 )}
               </li>
             );
@@ -81,14 +93,17 @@ export function ProfileFollowList({
         </ul>
       )}
 
-      {nextCursor ? (
-        <Link
-          href={`?cursor=${encodeURIComponent(nextCursor)}`}
-          className="mt-5 inline-flex rounded-full border px-4 py-2 text-sm font-medium hover:bg-muted"
+      {hasMore ? (
+        <Button
+          type="button"
+          variant="outline"
+          className="mt-4 w-full"
+          disabled={loadingMore}
+          onClick={onLoadMore}
         >
-          Load more
-        </Link>
+          {loadingMore ? "Loading..." : "Load more"}
+        </Button>
       ) : null}
-    </main>
+    </div>
   );
-}
+} 

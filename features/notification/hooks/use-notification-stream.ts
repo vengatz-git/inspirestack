@@ -1,53 +1,47 @@
+// features/notification/hooks/use-notification-stream.ts
 "use client";
 
 import { useEffect } from "react";
 
-interface NotificationStreamEvent {
-  type: "connected" | "created" | "deleted";
+export interface NotificationStreamEvent {
+  type: "connected" | "created" | "deleted" | "follow-updated";
   notificationId?: string;
 }
 
 interface UseNotificationStreamOptions {
-  onNotification: (
-    event: NotificationStreamEvent,
-  ) => void;
+  onNotification: (event: NotificationStreamEvent) => void;
+  enabled?: boolean;
 }
 
 export function useNotificationStream({
   onNotification,
+  enabled = true,
 }: UseNotificationStreamOptions) {
   useEffect(() => {
-    const source = new EventSource(
-      "/api/notifications/stream",
-    );
+    if (!enabled) {
+      return;
+    }
+
+    const source = new EventSource("/api/notifications/stream");
 
     source.onmessage = (event) => {
       try {
-        const data =
-          JSON.parse(
-            event.data,
-          ) as NotificationStreamEvent;
+        const data = JSON.parse(event.data) as NotificationStreamEvent;
 
         if (
           data.type === "created" ||
-          data.type === "deleted"
+          data.type === "deleted" ||
+          data.type === "follow-updated"
         ) {
           onNotification(data);
         }
       } catch (error) {
-        console.error(
-          "[Notifications] Invalid SSE event:",
-          error,
-        );
+        console.error("[Notifications] Invalid SSE event:", error);
       }
-    };
-
-    source.onerror = () => {
-      source.close();
     };
 
     return () => {
       source.close();
     };
-  }, [onNotification]);
+  }, [enabled, onNotification]);
 }
