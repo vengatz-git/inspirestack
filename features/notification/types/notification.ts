@@ -1,6 +1,6 @@
 export interface Notification {
   id: string;
-  type: "COMMENT" | "REPLY" | "SAVE" | "LIKE";
+  type: "COMMENT" | "REPLY" | "SAVE" | "LIKE" | "FOLLOW";
   createdAt: Date;
   readAt: Date | null;
   actorId: string;

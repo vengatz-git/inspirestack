@@ -5,9 +5,15 @@ import { users } from "@/db/schema";
 
 import type { UpdateProfileInput } from "../schemas/profile-schema";
 
+type UpdateProfileServiceInput = {
+  [Field in keyof UpdateProfileInput]?:
+    | UpdateProfileInput[Field]
+    | null;
+};
+
 export async function updateProfileService(
   userId: string,
-  data: UpdateProfileInput,
+  data: UpdateProfileServiceInput,
 ) {
   const [profile] = await db
     .update(users)

@@ -63,7 +63,7 @@ export function CommentItem({
             </span>
           </div>
 
-          <p className="text-foreground mt-1 text-sm leading-5">
+          <p className="text-muted-foreground mt-1 text-sm leading-5">
             {comment.content}
           </p>
 
@@ -77,7 +77,9 @@ export function CommentItem({
             </button>
 
             {isOwner ? (
-              <CommentDeleteButton commentId={comment.id} pinId={pinId} />
+              <CommentDeleteButton
+                commentId={comment.id}
+              />
             ) : null}
           </div>
 
@@ -161,7 +163,11 @@ interface ReplyItemProps {
   currentUserId: string | null;
 }
 
-function ReplyItem({ reply, pinId, currentUserId }: ReplyItemProps) {
+function ReplyItem({
+  reply,
+  pinId,
+  currentUserId,
+}: ReplyItemProps) {
   const username = reply.author.username ?? "unknown";
   const initials = reply.author.username?.charAt(0) ?? "?";
 
@@ -196,13 +202,15 @@ function ReplyItem({ reply, pinId, currentUserId }: ReplyItemProps) {
           </span>
         </div>
 
-        <p className="text-foreground mt-1 text-sm leading-5">
+        <p className="text-muted-foreground mt-1 text-sm leading-5">
           {reply.content}
         </p>
 
         {isOwner ? (
           <div className="mt-2 flex items-center">
-            <CommentDeleteButton commentId={reply.id} pinId={pinId} />
+            <CommentDeleteButton
+              commentId={reply.id}
+            />
           </div>
         ) : null}
       </div>

@@ -9,12 +9,16 @@ type ProfileHeaderProps = {
   profile: Profile;
   isOwner: boolean;
   googleImage: string | null;
+  currentUserId: string | null;
+  isFollowing: boolean;
 };
 
 export function ProfileHeader({
   profile,
   isOwner,
   googleImage,
+  currentUserId,
+  isFollowing,
 }: ProfileHeaderProps) {
   return (
     <div className="flex min-w-0 items-center gap-4 max-md:flex-col max-md:text-center md:flex-row">
@@ -27,7 +31,7 @@ export function ProfileHeader({
           />
         ) : (
           <Image
-            src={profile.image ?? "/default-avatar.png"}
+            src={profile.image ?? "/default-avatar.svg"}
             alt={profile.username}
             fill
             sizes="160px"
@@ -47,6 +51,8 @@ export function ProfileHeader({
               <ProfileAction
                 profile={profile}
                 isOwner={isOwner}
+                currentUserId={currentUserId}
+                isFollowing={isFollowing}
               />
             </div>
           )}

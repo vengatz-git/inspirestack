@@ -13,7 +13,7 @@ import { comments } from "./comments";
 
 export const notificationTypeEnum = pgEnum(
   "notification_type",
-  ["COMMENT", "REPLY", "SAVE", "LIKE"],
+  ["COMMENT", "REPLY", "SAVE", "LIKE", "FOLLOW"],
 );
 
 export const notifications = pgTable(

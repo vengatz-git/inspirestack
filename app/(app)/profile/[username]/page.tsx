@@ -20,6 +20,7 @@ import { getSavedPinsByUserService } from "@/features/profile/services/get-saved
 import { getRecentBoardsService } from "@/features/board/services/get-recent-boards";
 import { ProfileQuickAccess } from "@/features/profile/components/profile-quick-access";
 import { ProfileAction } from "@/features/profile/components/profile-action";
+import { getIsFollowingService } from "@/features/profile/services/follow-user";
 
 import {
   isProfileTab,
@@ -51,12 +52,16 @@ export default async function ProfilePage({
     notFound();
   }
 
-  const [stats, session] = await Promise.all([
-    getProfileStatsService(profile.id),
-    auth(),
-  ]);
+  const session = await auth();
+  const stats = await getProfileStatsService(
+    profile.id,
+    session?.user?.id,
+  );
 
   const isOwner = session?.user.id === profile.id;
+  const isFollowing = session?.user?.id && !isOwner
+    ? await getIsFollowingService(session.user.id, profile.id)
+    : false;
 
   const googleImage = isOwner
     ? ((await getGoogleImageService(profile.id))?.googleImage ?? null)
@@ -108,14 +113,21 @@ export default async function ProfilePage({
               profile={profile}
               isOwner={isOwner}
               googleImage={googleImage}
+              currentUserId={session?.user?.id ?? null}
+              isFollowing={isFollowing}
             />
 
             <div className="flex w-full flex-col gap-4 md:w-auto">
-              <ProfileStats stats={stats} />
+              <ProfileStats stats={stats} username={profile.username} />
 
               {!isOwner && (
                 <div className="w-full md:hidden [&_button]:w-full">
-                  <ProfileAction profile={profile} isOwner={isOwner} />
+                  <ProfileAction
+                    profile={profile}
+                    isOwner={isOwner}
+                    currentUserId={session?.user?.id ?? null}
+                    isFollowing={isFollowing}
+                  />
                 </div>
               )}
             </div>

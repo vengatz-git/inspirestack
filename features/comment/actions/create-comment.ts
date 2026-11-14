@@ -116,14 +116,18 @@ export async function createCommentAction(
     authorId: session.user.id,
   });
 
-  await sql.notify(
-    "inspirestack_comments",
-    JSON.stringify({
-      type: "created",
-      commentId: comment.id,
-      pinId,
-    }),
-  );
+  try {
+    await sql.notify(
+      "inspirestack_comments",
+      JSON.stringify({
+        type: "created",
+        commentId: comment.id,
+        pinId,
+      }),
+    );
+  } catch (error) {
+    console.error("Failed to publish comment creation:", error);
+  }
 
   if (recipientId && notificationType) {
     await createNotificationService({

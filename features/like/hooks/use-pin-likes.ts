@@ -6,16 +6,16 @@ import {
   useState,
   useTransition,
 } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { likePinAction } from "../actions/like-pin";
 import { unlikePinAction } from "../actions/unlike-pin";
 
 type LikeEvent = {
-  type: "connected" | "updated";
+  type: "updated";
   pinId: string;
   likeCount: number;
-  isLiked?: boolean;
 };
 
 interface UsePinLikesOptions {
@@ -31,11 +31,27 @@ export function usePinLikes({
   initialLikeCount,
   currentUserId,
 }: UsePinLikesOptions) {
-  const [isLiked, setIsLiked] = useState(initialIsLiked);
-  const [likeCount, setLikeCount] = useState(initialLikeCount);
-  const [isPending, startTransition] = useTransition();
+  const [isLiked, setIsLiked] =
+    useState(initialIsLiked);
 
+  const [likeCount, setLikeCount] =
+    useState(initialLikeCount);
+
+  const [isPending, startTransition] =
+    useTransition();
+
+  const router = useRouter();
   const mutationPendingRef = useRef(false);
+  const pendingRealtimeUpdateRef = useRef(false);
+
+  useEffect(() => {
+    if (mutationPendingRef.current) {
+      return;
+    }
+
+    setIsLiked(initialIsLiked);
+    setLikeCount(initialLikeCount);
+  }, [pinId, initialIsLiked, initialLikeCount]);
 
   useEffect(() => {
     const source = new EventSource(
@@ -44,36 +60,43 @@ export function usePinLikes({
 
     function handleUpdate(event: MessageEvent) {
       try {
-        const data = JSON.parse(event.data) as LikeEvent;
+        const data = JSON.parse(
+          event.data,
+        ) as LikeEvent;
 
-        if (
-          data.pinId !== pinId ||
-          mutationPendingRef.current
-        ) {
+        if (data.pinId !== pinId) {
           return;
         }
 
-        setLikeCount(data.likeCount);
-
-        if (data.type === "connected") {
-          setIsLiked(Boolean(data.isLiked));
+        if (mutationPendingRef.current) {
+          pendingRealtimeUpdateRef.current = true;
+        } else {
+          setLikeCount(data.likeCount);
         }
       } catch {
         // Ignore malformed events.
       }
     }
 
-    source.addEventListener("connected", handleUpdate);
-    source.addEventListener("updated", handleUpdate);
+    source.addEventListener(
+      "updated",
+      handleUpdate,
+    );
 
     return () => {
-      source.removeEventListener("connected", handleUpdate);
-      source.removeEventListener("updated", handleUpdate);
+      source.removeEventListener(
+        "updated",
+        handleUpdate,
+      );
       source.close();
     };
   }, [pinId]);
 
   function handleLike() {
+    if (mutationPendingRef.current) {
+      return;
+    }
+
     if (!currentUserId) {
       toast.error("Sign in to like pins.");
       return;
@@ -84,6 +107,7 @@ export function usePinLikes({
     const previousLikeCount = likeCount;
 
     mutationPendingRef.current = true;
+    pendingRealtimeUpdateRef.current = false;
 
     setIsLiked(nextIsLiked);
     setLikeCount((count) =>
@@ -93,19 +117,35 @@ export function usePinLikes({
     );
 
     startTransition(async () => {
-      const result = nextIsLiked
-        ? await likePinAction({ pinId })
-        : await unlikePinAction({ pinId });
+      try {
+        const result = nextIsLiked
+          ? await likePinAction({ pinId })
+          : await unlikePinAction({ pinId });
 
-      mutationPendingRef.current = false;
+        if (result.success) {
+          setIsLiked(result.data?.isLiked ?? nextIsLiked);
+          setLikeCount(result.data?.likeCount ?? previousLikeCount);
+          return;
+        }
 
-      if (!result.success) {
         setIsLiked(previousIsLiked);
         setLikeCount(previousLikeCount);
 
         toast.error(
-          result.error ?? "Unable to update like.",
+          result.error ??
+            "Unable to update like.",
         );
+      } catch {
+        setIsLiked(previousIsLiked);
+        setLikeCount(previousLikeCount);
+        toast.error("Unable to update like. Please try again.");
+      } finally {
+        mutationPendingRef.current = false;
+
+        if (pendingRealtimeUpdateRef.current) {
+          pendingRealtimeUpdateRef.current = false;
+          router.refresh();
+        }
       }
     });
   }

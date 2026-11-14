@@ -6,7 +6,7 @@ import { notifications } from "@/db/schema";
 interface CreateNotificationInput {
   recipientId: string;
   actorId: string;
-  type: "COMMENT" | "REPLY" | "SAVE" | "LIKE";
+  type: "COMMENT" | "REPLY" | "SAVE" | "LIKE" | "FOLLOW";
   pinId?: string | null;
   commentId?: string | null;
 }
@@ -29,34 +29,38 @@ export async function createNotificationService({
     return null;
   }
 
-  const [notification] = await db
-    .insert(notifications)
-    .values({
-      recipientId,
-      actorId,
-      type,
-      pinId: pinId ?? null,
-      commentId: commentId ?? null,
-    })
-    .returning();
+  try {
+    const [notification] = await db
+      .insert(notifications)
+      .values({
+        recipientId,
+        actorId,
+        type,
+        pinId: pinId ?? null,
+        commentId: commentId ?? null,
+      })
+      .returning();
 
-  if (notification) {
-    const event = {
-      type: "created" as const,
-      notificationId: notification.id,
-      recipientId: notification.recipientId,
-    };
+    if (notification) {
+      const event = {
+        type: "created" as const,
+        notificationId: notification.id,
+        recipientId: notification.recipientId,
+      };
 
-    // console.log(
-    //   "[Notifications] Publishing event:",
-    //   event,
-    // );
+      try {
+        await sql.notify(
+          "inspirestack_notifications",
+          JSON.stringify(event),
+        );
+      } catch (error) {
+        console.error("Failed to publish notification:", error);
+      }
+    }
 
-    await sql.notify(
-      "inspirestack_notifications",
-      JSON.stringify(event),
-    );
+    return notification;
+  } catch (error) {
+    console.error("Failed to create notification:", error);
+    return null;
   }
-
-  return notification;
 }

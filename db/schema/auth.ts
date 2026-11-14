@@ -14,7 +14,7 @@ import { comments } from "./comments";
 import { drafts } from "./drafts";
 import { notifications } from "./notifications";
 import { pinLikes } from "./likes";
-import { savedPins } from "./saved-pins";
+import { userFollows } from "./follows";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -123,8 +123,13 @@ export const usersRelations = relations(users, ({ many }) => ({
   boards: many(boards),
   comments: many(comments),
   likes: many(pinLikes),
-  // drafts: many(drafts),
-  savedPins: many(savedPins),
+  drafts: many(drafts),
+  followers: many(userFollows, {
+    relationName: "followed_user",
+  }),
+  following: many(userFollows, {
+    relationName: "follower_user",
+  }),
 
   receivedNotifications: many(notifications, {
     relationName: "notification_recipient",

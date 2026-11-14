@@ -47,10 +47,22 @@ export async function updateProfileAction(
   }
 
   const profile = await updateProfileService(session.user.id, {
-    displayName: validated.data.displayName || undefined,
-    bio: validated.data.bio || undefined,
-    website: validated.data.website || undefined,
-    location: validated.data.location || undefined,
+    displayName:
+      validated.data.displayName === ""
+        ? null
+        : validated.data.displayName,
+    bio:
+      validated.data.bio === ""
+        ? null
+        : validated.data.bio,
+    website:
+      validated.data.website === ""
+        ? null
+        : validated.data.website,
+    location:
+      validated.data.location === ""
+        ? null
+        : validated.data.location,
   });
 
   revalidatePath(`/profile/${profile.username}`);

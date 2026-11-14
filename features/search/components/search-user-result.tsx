@@ -17,7 +17,7 @@ export function SearchUserResult({
     >
       <div className="bg-muted relative size-12 shrink-0 overflow-hidden rounded-full">
         <Image
-          src={user.image ?? "/default-avatar.png"}
+          src={user.image ?? "/default-avatar.svg"}
           alt={user.displayName ?? user.username}
           fill
           sizes="48px"

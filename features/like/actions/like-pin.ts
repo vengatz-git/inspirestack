@@ -12,7 +12,9 @@ import type { ActionResult } from "@/types/action-result";
 import { likePinSchema } from "../schemas/like-schema";
 import { likePinService } from "../services/like-pin";
 
-export async function likePinAction(data: unknown): Promise<ActionResult> {
+export async function likePinAction(
+  data: unknown,
+): Promise<ActionResult<{ isLiked: true; likeCount: number }>> {
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -46,16 +48,23 @@ export async function likePinAction(data: unknown): Promise<ActionResult> {
 
   const like = await likePinService(session.user.id, pinId);
 
-  if (like && pin.authorId !== session.user.id) {
-    await createNotificationService({
-      recipientId: pin.authorId,
-      actorId: session.user.id,
-      type: "LIKE",
-      pinId,
-    });
+  if (like.created && pin.authorId !== session.user.id) {
+    try {
+      await createNotificationService({
+        recipientId: pin.authorId,
+        actorId: session.user.id,
+        type: "LIKE",
+        pinId,
+      });
+    } catch (error) {
+      console.error("Failed to create like notification:", error);
+    }
   }
 
   revalidatePath(`/pin/${pinId}`);
 
-  return { success: true };
+  return {
+    success: true,
+    data: { isLiked: true, likeCount: like.likeCount },
+  };
 }

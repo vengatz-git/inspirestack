@@ -8,12 +8,10 @@ import { deleteCommentAction } from "../actions/delete-comment";
 
 interface CommentDeleteButtonProps {
   commentId: string;
-  pinId: string;
 }
 
 export function CommentDeleteButton({
   commentId,
-  pinId,
 }: CommentDeleteButtonProps) {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -54,10 +52,7 @@ export function CommentDeleteButton({
 
   function handleDelete() {
     startTransition(async () => {
-      const result = await deleteCommentAction(
-        commentId,
-        pinId,
-      );
+      const result = await deleteCommentAction(commentId);
 
       if (!result.success) {
         return;

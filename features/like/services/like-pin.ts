@@ -23,10 +23,6 @@ export async function likePinService(
     })
     .returning();
 
-  if (!like) {
-    return null;
-  }
-
   const [result] = await db
     .select({
       count: sql<number>`count(*)`,
@@ -36,13 +32,17 @@ export async function likePinService(
 
   const likeCount = Number(result?.count ?? 0);
 
-  await publishPinLikeUpdate({
-    type: "updated",
-    pinId,
-    likeCount,
-  });
+  try {
+    await publishPinLikeUpdate({
+      type: "updated",
+      pinId,
+      likeCount,
+    });
+  } catch (error) {
+    console.error("Failed to publish pin like update:", error);
+  }
 
-  return like;
+  return { created: Boolean(like), likeCount };
 }
 
 export async function unlikePinService(
@@ -61,10 +61,6 @@ export async function unlikePinService(
       id: pinLikes.id,
     });
 
-  if (deleted.length === 0) {
-    return false;
-  }
-
   const [result] = await db
     .select({
       count: sql<number>`count(*)`,
@@ -74,11 +70,15 @@ export async function unlikePinService(
 
   const likeCount = Number(result?.count ?? 0);
 
-  await publishPinLikeUpdate({
-    type: "updated",
-    pinId,
-    likeCount,
-  });
+  try {
+    await publishPinLikeUpdate({
+      type: "updated",
+      pinId,
+      likeCount,
+    });
+  } catch (error) {
+    console.error("Failed to publish pin like update:", error);
+  }
 
-  return true;
+  return { deleted: deleted.length > 0, likeCount };
 }

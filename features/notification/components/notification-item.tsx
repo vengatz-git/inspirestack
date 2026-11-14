@@ -7,6 +7,7 @@ import {
   Heart,
   MessageCircle,
   Reply,
+  UserPlus,
 } from "lucide-react";
 
 import type { Notification } from "../types/notification";
@@ -62,6 +63,8 @@ export function NotificationItem({
       ? "commented on your Pin"
       : notification.type === "REPLY"
         ? "replied to your comment"
+        : notification.type === "FOLLOW"
+          ? "started following you"
         : notification.type === "LIKE"
           ? "liked your Pin"
           : "saved your Pin";
@@ -71,13 +74,23 @@ export function NotificationItem({
       ? MessageCircle
       : notification.type === "REPLY"
         ? Reply
+        : notification.type === "FOLLOW"
+          ? UserPlus
         : notification.type === "LIKE"
           ? Heart
           : Bookmark;
 
-  const href = notification.pinId
-    ? `/pin/${notification.pinId}`
-    : "#";
+  const href = notification.type === "FOLLOW"
+    ? notification.actorUsername
+      ? `/profile/${notification.actorUsername}`
+      : "/"
+    : notification.pinId
+      ? `/pin/${notification.pinId}`
+      : "/";
+
+  const activityLabel = notification.type === "FOLLOW"
+    ? "View profile"
+    : notification.pinTitle ?? "View activity";
 
   return (
     <Link
@@ -91,7 +104,7 @@ export function NotificationItem({
         <Image
           src={
             notification.actorImage ??
-            "/default-avatar.png"
+            "/default-avatar.svg"
           }
           alt={actorName}
           fill
@@ -112,8 +125,7 @@ export function NotificationItem({
           <Icon className="size-3.5" />
 
           <span className="truncate">
-            {notification.pinTitle ??
-              "View activity"}
+            {activityLabel}
           </span>
 
           <span className="shrink-0">

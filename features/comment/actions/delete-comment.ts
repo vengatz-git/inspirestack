@@ -18,7 +18,6 @@ const sql = postgres(
 
 export async function deleteCommentAction(
   commentId: string,
-  pinId: string,
 ): Promise<ActionResult> {
   const session = await auth();
 
@@ -41,21 +40,40 @@ export async function deleteCommentAction(
   }
 
   try {
-    await deleteCommentService(
+    const deleted = await deleteCommentService(
       session.user.id,
       parsed.data.commentId,
     );
 
-    await sql.notify(
-      "inspirestack_comments",
-      JSON.stringify({
-        type: "deleted",
-        commentId: parsed.data.commentId,
-        pinId,
-      }),
-    );
+    try {
+      await sql.notify(
+        "inspirestack_comments",
+        JSON.stringify({
+          type: "deleted",
+          commentId: parsed.data.commentId,
+          pinId: deleted.pinId,
+        }),
+      );
+    } catch (error) {
+      console.error("Failed to publish comment deletion:", error);
+    }
 
-    revalidatePath(`/pin/${pinId}`);
+    for (const notification of deleted.deletedNotifications) {
+      try {
+        await sql.notify(
+          "inspirestack_notifications",
+          JSON.stringify({
+            type: "deleted",
+            notificationId: notification.id,
+            recipientId: notification.recipientId,
+          }),
+        );
+      } catch (error) {
+        console.error("Failed to publish notification deletion:", error);
+      }
+    }
+
+    revalidatePath(`/pin/${deleted.pinId}`);
 
     return {
       success: true,
