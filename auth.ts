@@ -31,6 +31,13 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
         session.user.username = user.username;
         session.user.role = user.role;
         session.user.isOnboarded = user.isOnboarded;
+        session.user.notifyComments = user.notifyComments;
+        session.user.notifyReplies = user.notifyReplies;
+        session.user.notifySaves = user.notifySaves;
+        session.user.notifyLikes = user.notifyLikes;
+        session.user.notifyFollows = user.notifyFollows;
+        session.user.defaultPinVisibility = user.defaultPinVisibility;
+        session.user.defaultBoardVisibility = user.defaultBoardVisibility;
       }
 
       return session;

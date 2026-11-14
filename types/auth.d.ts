@@ -7,14 +7,39 @@ declare module "next-auth" {
       username: string | null;
       role: string;
       isOnboarded: boolean;
+      notifyComments: boolean;
+      notifyReplies: boolean;
+      notifySaves: boolean;
+      notifyLikes: boolean;
+      notifyFollows: boolean;
+      defaultPinVisibility: "PUBLIC" | "PRIVATE";
+      defaultBoardVisibility: "PUBLIC" | "PRIVATE";
     } & DefaultSession["user"];
-
   }
 
   interface User {
     username: string | null;
     role: string;
     isOnboarded: boolean;
+    notifyComments: boolean;
+    notifyReplies: boolean;
+    notifySaves: boolean;
+    notifyLikes: boolean;
+    notifyFollows: boolean;
+    defaultPinVisibility: "PUBLIC" | "PRIVATE";
+    defaultBoardVisibility: "PUBLIC" | "PRIVATE";
+  }
+}
+
+declare module "@auth/core/adapters" {
+  interface AdapterUser {
+    notifyComments: boolean;
+    notifyReplies: boolean;
+    notifySaves: boolean;
+    notifyLikes: boolean;
+    notifyFollows: boolean;
+    defaultPinVisibility: "PUBLIC" | "PRIVATE";
+    defaultBoardVisibility: "PUBLIC" | "PRIVATE";
   }
 }
 

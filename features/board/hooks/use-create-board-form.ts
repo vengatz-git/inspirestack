@@ -2,6 +2,8 @@
 
 import { useState, useTransition } from "react";
 
+import { useContentDefaults } from "@/features/settings/components/content-defaults-provider";
+
 import { createBoardAction } from "../actions/create-board";
 
 type Visibility = "PUBLIC" | "PRIVATE";
@@ -13,12 +15,13 @@ interface UseCreateBoardFormOptions {
 export function useCreateBoardForm({
   onSuccess,
 }: UseCreateBoardFormOptions = {}) {
+  const { defaultBoardVisibility } = useContentDefaults();
   const [isPending, startTransition] = useTransition();
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [visibility, setVisibility] =
-    useState<Visibility>("PUBLIC");
+    useState<Visibility>(defaultBoardVisibility);
 
   const [errors, setErrors] = useState<{
     name?: string;
@@ -32,7 +35,7 @@ export function useCreateBoardForm({
   async function reset() {
     setName("");
     setDescription("");
-    setVisibility("PUBLIC");
+    setVisibility(defaultBoardVisibility);
     setErrors({});
     setServerError(undefined);
   }

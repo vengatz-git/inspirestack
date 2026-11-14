@@ -1,7 +1,9 @@
 import postgres from "postgres";
 
+import { eq } from "drizzle-orm";
+
 import { db } from "@/db";
-import { notifications } from "@/db/schema";
+import { notifications, users } from "@/db/schema";
 
 interface CreateNotificationInput {
   recipientId: string;
@@ -18,6 +20,14 @@ const sql = postgres(
   },
 );
 
+const notificationPreference = {
+  COMMENT: users.notifyComments,
+  REPLY: users.notifyReplies,
+  SAVE: users.notifySaves,
+  LIKE: users.notifyLikes,
+  FOLLOW: users.notifyFollows,
+} as const;
+
 export async function createNotificationService({
   recipientId,
   actorId,
@@ -30,6 +40,16 @@ export async function createNotificationService({
   }
 
   try {
+    const [recipient] = await db
+      .select({ enabled: notificationPreference[type] })
+      .from(users)
+      .where(eq(users.id, recipientId))
+      .limit(1);
+
+    if (!recipient?.enabled) {
+      return null;
+    }
+
     const [notification] = await db
       .insert(notifications)
       .values({

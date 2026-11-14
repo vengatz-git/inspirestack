@@ -8,8 +8,8 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
-import { pins } from "./pins";
-import { boards } from "./boards";
+import { pins, pinVisibilityEnum } from "./pins";
+import { boards, boardVisibilityEnum } from "./boards";
 import { comments } from "./comments";
 import { drafts } from "./drafts";
 import { notifications } from "./notifications";
@@ -46,6 +46,18 @@ export const users = pgTable("users", {
   isOnboarded: boolean("is_onboarded").notNull().default(false),
 
   role: text("role").notNull().default("user"),
+
+  notifyComments: boolean("notify_comments").notNull().default(true),
+  notifyReplies: boolean("notify_replies").notNull().default(true),
+  notifySaves: boolean("notify_saves").notNull().default(true),
+  notifyLikes: boolean("notify_likes").notNull().default(true),
+  notifyFollows: boolean("notify_follows").notNull().default(true),
+  defaultPinVisibility: pinVisibilityEnum("default_pin_visibility")
+    .notNull()
+    .default("PUBLIC"),
+  defaultBoardVisibility: boardVisibilityEnum("default_board_visibility")
+    .notNull()
+    .default("PUBLIC"),
 
   createdAt: timestamp("created_at", {
     mode: "date",

@@ -32,9 +32,13 @@ import { toast } from "sonner";
 
 type EditProfileDialogProps = {
   profile: Profile;
+  triggerLabel?: string;
 };
 
-export function EditProfileDialog({ profile }: EditProfileDialogProps) {
+export function EditProfileDialog({
+  profile,
+  triggerLabel,
+}: EditProfileDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useProfileForm(profile);
@@ -86,12 +90,13 @@ export function EditProfileDialog({ profile }: EditProfileDialogProps) {
       <DialogTrigger
         render={
           <Button
-            variant="ghost"
-            size="icon-sm"
-            className="rounded-full"
-            aria-label="Edit profile"
+            variant={triggerLabel ? "outline" : "ghost"}
+            size={triggerLabel ? "default" : "icon-sm"}
+            className={triggerLabel ? "rounded-xl" : "rounded-full"}
+            aria-label={triggerLabel ?? "Edit profile"}
           >
-            <Pencil />
+            <Pencil className="size-4" />
+            {triggerLabel}
           </Button>
         }
       />
