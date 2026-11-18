@@ -25,6 +25,7 @@ import { getRecentBoardsService } from "@/features/board/services/get-recent-boa
 import { ProfileQuickAccess } from "@/features/profile/components/profile-quick-access";
 import { ProfileAction } from "@/features/profile/components/profile-action";
 import { getIsFollowingService } from "@/features/profile/services/follow-user";
+import { getIsUserMutedService } from "@/features/profile/services/mute-user";
 
 import {
   isProfileTab,
@@ -98,10 +99,13 @@ export default async function ProfilePage({
   const stats = await getProfileStatsService(profile.id, session?.user?.id);
 
   const isOwner = session?.user.id === profile.id;
-  const isFollowing =
+  const [isFollowing, isMuted] =
     session?.user?.id && !isOwner
-      ? await getIsFollowingService(session.user.id, profile.id)
-      : false;
+      ? await Promise.all([
+          getIsFollowingService(session.user.id, profile.id),
+          getIsUserMutedService(session.user.id, profile.id),
+        ])
+      : [false, false];
 
   const googleImage = isOwner
     ? ((await getGoogleImageService(profile.id))?.googleImage ?? null)
@@ -155,6 +159,7 @@ export default async function ProfilePage({
               googleImage={googleImage}
               currentUserId={session?.user?.id ?? null}
               isFollowing={isFollowing}
+              isMuted={isMuted}
             />
 
             <div className="flex w-full flex-col gap-4 md:w-auto">
@@ -170,6 +175,7 @@ export default async function ProfilePage({
                     isOwner={isOwner}
                     currentUserId={session?.user?.id ?? null}
                     isFollowing={isFollowing}
+                    isMuted={isMuted}
                   />
                 </div>
               )}

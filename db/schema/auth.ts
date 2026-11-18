@@ -15,6 +15,7 @@ import { drafts } from "./drafts";
 import { notifications } from "./notifications";
 import { pinLikes } from "./likes";
 import { userFollows } from "./follows";
+import { userMutes } from "./user-mutes";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -145,6 +146,12 @@ export const usersRelations = relations(users, ({ many }) => ({
   }),
   following: many(userFollows, {
     relationName: "follower_user",
+  }),
+  mutedUsers: many(userMutes, {
+    relationName: "muter_user",
+  }),
+  mutedByUsers: many(userMutes, {
+    relationName: "muted_user",
   }),
 
   receivedNotifications: many(notifications, {

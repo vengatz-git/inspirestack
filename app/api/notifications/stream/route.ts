@@ -4,7 +4,7 @@ import { subscribeToNotifications } from "@/features/notification/lib/notificati
 
 export const runtime = "nodejs";
 
-export async function GET() {
+export async function GET(request: Request) {
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -17,15 +17,45 @@ export async function GET() {
 
   let unsubscribe: (() => void) | undefined;
   let heartbeat: ReturnType<typeof setInterval> | undefined;
+  let isClosed = false;
+
+  const cleanup = () => {
+    if (isClosed) {
+      return;
+    }
+
+    isClosed = true;
+    unsubscribe?.();
+    unsubscribe = undefined;
+
+    if (heartbeat) {
+      clearInterval(heartbeat);
+      heartbeat = undefined;
+    }
+  };
+
+  request.signal.addEventListener("abort", () => {
+    cleanup();
+  });
 
   const stream = new ReadableStream({
     async start(controller) {
       const encoder = new TextEncoder();
 
+      const enqueue = (data: string) => {
+        if (isClosed) {
+          return;
+        }
+
+        try {
+          controller.enqueue(encoder.encode(data));
+        } catch {
+          cleanup();
+        }
+      };
+
       const send = (data: string) => {
-        controller.enqueue(
-          encoder.encode(`data: ${data}\n\n`),
-        );
+        enqueue(`data: ${data}\n\n`);
       };
 
       send(
@@ -34,33 +64,33 @@ export async function GET() {
         }),
       );
 
-      unsubscribe =
-        await subscribeToNotifications(
-          recipientId,
-          (event) => {
-            send(
-              JSON.stringify({
-                type: event.type,
-                notificationId:
-                  event.notificationId,
-              }),
-            );
-          },
-        );
+      const stop = await subscribeToNotifications(
+        recipientId,
+        (event) => {
+          send(
+            JSON.stringify({
+              type: event.type,
+              notificationId:
+                event.notificationId,
+            }),
+          );
+        },
+      );
+
+      if (isClosed) {
+        stop();
+        return;
+      }
+
+      unsubscribe = stop;
 
       heartbeat = setInterval(() => {
-        controller.enqueue(
-          encoder.encode(": heartbeat\n\n"),
-        );
+        enqueue(": heartbeat\n\n");
       }, 30_000);
     },
 
     cancel() {
-      unsubscribe?.();
-
-      if (heartbeat) {
-        clearInterval(heartbeat);
-      }
+      cleanup();
     },
   });
 

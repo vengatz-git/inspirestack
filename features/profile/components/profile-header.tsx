@@ -11,6 +11,7 @@ type ProfileHeaderProps = {
   googleImage: string | null;
   currentUserId: string | null;
   isFollowing: boolean;
+  isMuted: boolean;
 };
 
 export function ProfileHeader({
@@ -19,6 +20,7 @@ export function ProfileHeader({
   googleImage,
   currentUserId,
   isFollowing,
+  isMuted,
 }: ProfileHeaderProps) {
   return (
     <div className="flex min-w-0 items-center gap-4 max-md:flex-col max-md:text-center md:flex-row">
@@ -53,14 +55,13 @@ export function ProfileHeader({
                 isOwner={isOwner}
                 currentUserId={currentUserId}
                 isFollowing={isFollowing}
+                isMuted={isMuted}
               />
             </div>
           )}
         </div>
 
-        <p className="text-muted-foreground">
-          @{profile.username}
-        </p>
+        <p className="text-muted-foreground">@{profile.username}</p>
       </div>
     </div>
   );

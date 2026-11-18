@@ -1,7 +1,7 @@
-import { and, desc, eq, lt } from "drizzle-orm";
+import { and, desc, eq, lt, notInArray } from "drizzle-orm";
 
 import { db } from "@/db";
-import { pins } from "@/db/schema";
+import { pins, userMutes } from "@/db/schema";
 
 import { getSavedPinIdsForPins } from "@/features/saved/services/get-saved-pin-ids";
 import { mapPinToCard } from "@/features/pin/lib/map-pin-card";
@@ -18,6 +18,15 @@ export async function getFeed(options?: GetFeedOptions): Promise<FeedResult> {
     where: and(
       eq(pins.visibility, "PUBLIC"),
       cursor ? lt(pins.createdAt, cursor) : undefined,
+      options?.viewerUserId
+        ? notInArray(
+            pins.authorId,
+            db
+              .select({ mutedUserId: userMutes.mutedUserId })
+              .from(userMutes)
+              .where(eq(userMutes.muterId, options.viewerUserId)),
+          )
+        : undefined,
     ),
     orderBy: desc(pins.createdAt),
     limit: limit + 1,

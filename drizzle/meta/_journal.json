@@ -127,6 +127,13 @@
       "when": 1795008668278,
       "tag": "0017_charming_blazing_skull",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1795012985490,
+      "tag": "0018_loud_tombstone",
+      "breakpoints": true
     }
   ]
 }

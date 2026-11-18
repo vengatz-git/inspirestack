@@ -8,4 +8,5 @@ export * from "./drafts";
 export * from "./notifications";
 export * from "./likes";
 export * from "./follows";
+export * from "./user-mutes";
 export * from "./saved";
