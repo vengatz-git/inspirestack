@@ -137,6 +137,57 @@ export function PreferencesSettings({
 
       <div className="mt-6 grid gap-8">
         <fieldset>
+          <legend className="text-sm font-semibold">Search visibility</legend>
+          <p className="text-muted-foreground mt-1 text-sm">
+            This only affects user search and username suggestions. Your public
+            profile and Pins can still be opened by direct links.
+          </p>
+          <label className="mt-3 flex min-h-16 cursor-pointer items-center justify-between gap-4 rounded-2xl border px-4 py-3">
+            <span>
+              <span className="block text-sm font-medium">
+                Show my profile in user search
+              </span>
+              <span className="text-muted-foreground mt-0.5 block text-xs leading-5">
+                Let people find you by username, display name, or account name.
+              </span>
+            </span>
+            <input
+              type="checkbox"
+              checked={settings.showInSearch}
+              onChange={(event) =>
+                setSettings((current) => ({
+                  ...current,
+                  showInSearch: event.target.checked,
+                }))
+              }
+              className="size-4 shrink-0 accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            />
+          </label>
+          <label className="mt-3 flex min-h-16 cursor-pointer items-center justify-between gap-4 rounded-2xl border px-4 py-3">
+            <span>
+              <span className="block text-sm font-medium">
+                Allow search engines to index my profile
+              </span>
+              <span className="text-muted-foreground mt-0.5 block text-xs leading-5">
+                Turning this off requests that search engines exclude your
+                profile page. Public Pins may still appear separately.
+              </span>
+            </span>
+            <input
+              type="checkbox"
+              checked={settings.allowSearchEngineIndexing}
+              onChange={(event) =>
+                setSettings((current) => ({
+                  ...current,
+                  allowSearchEngineIndexing: event.target.checked,
+                }))
+              }
+              className="size-4 shrink-0 accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            />
+          </label>
+        </fieldset>
+
+        <fieldset>
           <legend className="text-sm font-semibold">In-app notifications</legend>
           <p className="text-muted-foreground mt-1 text-sm">
             These settings apply to future alerts shown in InspireStack.

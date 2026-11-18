@@ -47,6 +47,10 @@ export const users = pgTable("users", {
 
   role: text("role").notNull().default("user"),
 
+  showInSearch: boolean("show_in_search").notNull().default(true),
+  allowSearchEngineIndexing: boolean("allow_search_engine_indexing")
+    .notNull()
+    .default(true),
   notifyComments: boolean("notify_comments").notNull().default(true),
   notifyReplies: boolean("notify_replies").notNull().default(true),
   notifySaves: boolean("notify_saves").notNull().default(true),

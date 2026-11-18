@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { auth } from "@/auth";
@@ -11,7 +12,10 @@ import {
   ProfileTabs,
 } from "@/features/profile";
 
-import { getProfileByUsername } from "@/features/profile/services/get-profile-by-username";
+import {
+  getProfileByUsername,
+  getProfileMetadataByUsername,
+} from "@/features/profile/services/get-profile-by-username";
 import { getGoogleImageService } from "@/features/profile/services/get-google-image";
 
 import { getBoardsByUserService } from "@/features/board/services/get-boards-by-user";
@@ -36,6 +40,44 @@ type ProfilePageProps = {
     tab?: string;
   }>;
 };
+
+export async function generateMetadata({
+  params,
+}: Pick<ProfilePageProps, "params">): Promise<Metadata> {
+  const { username } = await params;
+  const profile = await getProfileMetadataByUsername(username);
+
+  if (!profile) {
+    return {
+      title: "Profile not found | InspireStack",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const title = profile.displayName?.trim() || `@${profile.username}`;
+  const description =
+    profile.bio?.trim() || `View ${title}'s public profile on InspireStack.`;
+
+  return {
+    title: `${title} | InspireStack`,
+    description,
+    alternates: {
+      canonical: `/profile/${profile.username}`,
+    },
+    robots: {
+      index: profile.allowSearchEngineIndexing,
+      follow: true,
+    },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      ...(profile.image
+        ? { images: [{ url: profile.image, alt: title }] }
+        : {}),
+    },
+  };
+}
 
 export default async function ProfilePage({
   params,

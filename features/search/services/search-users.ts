@@ -1,4 +1,4 @@
-import { asc, ilike, or } from "drizzle-orm";
+import { and, asc, eq, ilike, or } from "drizzle-orm";
 
 import { db } from "@/db";
 import { users } from "@/db/schema";
@@ -32,10 +32,13 @@ export async function searchUsers({
     })
     .from(users)
     .where(
-      or(
-        ilike(users.username, term),
-        ilike(users.displayName, term),
-        ilike(users.name, term),
+      and(
+        eq(users.showInSearch, true),
+        or(
+          ilike(users.username, term),
+          ilike(users.displayName, term),
+          ilike(users.name, term),
+        ),
       ),
     )
     .orderBy(asc(users.username))

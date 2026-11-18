@@ -45,6 +45,8 @@ export default async function SettingsPage() {
     profile?.displayName || user.name || user.username || "InspireStack user";
   const avatarInitial = displayName.trim().charAt(0).toUpperCase() || "I";
   const settings: UserSettings = {
+    showInSearch: user.showInSearch,
+    allowSearchEngineIndexing: user.allowSearchEngineIndexing,
     notifyComments: user.notifyComments,
     notifyReplies: user.notifyReplies,
     notifySaves: user.notifySaves,

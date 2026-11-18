@@ -41,3 +41,22 @@ export async function getProfileByUsername(
     updatedAt: user.updatedAt,
   };
 }
+
+export async function getProfileMetadataByUsername(username: string) {
+  const user = await db.query.users.findFirst({
+    where: eq(users.username, username),
+    columns: {
+      username: true,
+      displayName: true,
+      bio: true,
+      image: true,
+      allowSearchEngineIndexing: true,
+    },
+  });
+
+  if (!user?.username) {
+    return null;
+  }
+
+  return user;
+}

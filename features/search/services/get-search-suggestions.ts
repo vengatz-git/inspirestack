@@ -35,10 +35,13 @@ export async function getSearchSuggestions({
       })
       .from(users)
       .where(
-        or(
-          ilike(users.username, term),
-          ilike(users.displayName, term),
-          ilike(users.name, term),
+        and(
+          eq(users.showInSearch, true),
+          or(
+            ilike(users.username, term),
+            ilike(users.displayName, term),
+            ilike(users.name, term),
+          ),
         ),
       )
       .orderBy(asc(users.username))

@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 export const userSettingsSchema = z.object({
+  showInSearch: z.boolean(),
+  allowSearchEngineIndexing: z.boolean(),
   notifyComments: z.boolean(),
   notifyReplies: z.boolean(),
   notifySaves: z.boolean(),

@@ -32,6 +32,9 @@ export async function updateUserSettingsAction(
       success: false,
       error: "Please review your settings and try again.",
       fieldErrors: {
+        showInSearch: fieldErrors.showInSearch?.[0],
+        allowSearchEngineIndexing:
+          fieldErrors.allowSearchEngineIndexing?.[0],
         notifyComments: fieldErrors.notifyComments?.[0],
         notifyReplies: fieldErrors.notifyReplies?.[0],
         notifySaves: fieldErrors.notifySaves?.[0],

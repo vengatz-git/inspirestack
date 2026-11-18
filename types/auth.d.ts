@@ -7,6 +7,8 @@ declare module "next-auth" {
       username: string | null;
       role: string;
       isOnboarded: boolean;
+      showInSearch: boolean;
+      allowSearchEngineIndexing: boolean;
       notifyComments: boolean;
       notifyReplies: boolean;
       notifySaves: boolean;
@@ -15,12 +17,15 @@ declare module "next-auth" {
       defaultPinVisibility: "PUBLIC" | "PRIVATE";
       defaultBoardVisibility: "PUBLIC" | "PRIVATE";
     } & DefaultSession["user"];
+
   }
 
   interface User {
     username: string | null;
     role: string;
     isOnboarded: boolean;
+    showInSearch: boolean;
+    allowSearchEngineIndexing: boolean;
     notifyComments: boolean;
     notifyReplies: boolean;
     notifySaves: boolean;
@@ -33,6 +38,8 @@ declare module "next-auth" {
 
 declare module "@auth/core/adapters" {
   interface AdapterUser {
+    showInSearch: boolean;
+    allowSearchEngineIndexing: boolean;
     notifyComments: boolean;
     notifyReplies: boolean;
     notifySaves: boolean;
