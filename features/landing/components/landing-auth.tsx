@@ -28,7 +28,7 @@ export function LandingAuth({ standalone = false }: LandingAuthProps) {
         <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-black/30 to-black/65" />
       </div>
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center justify-end px-5 py-20 sm:px-8 lg:px-12">
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center justify-center lg:justify-end px-4 py-16 sm:px-8 lg:px-12">
         <motion.div
           initial={{
             opacity: 0,
@@ -56,7 +56,7 @@ export function LandingAuth({ standalone = false }: LandingAuthProps) {
           }}
           className="w-full max-w-md"
         >
-          <div className="bg-background/95 rounded-3xl border border-white/15 p-8 shadow-2xl backdrop-blur-xl sm:p-10">
+          <div className="bg-background/95 rounded-3xl border border-white/15 p-6 shadow-2xl backdrop-blur-xl sm:p-10">
             <div className="flex flex-col items-center text-center">
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm">
                 <Sparkles className="size-4" />

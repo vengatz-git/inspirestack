@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
 import type { UseFormReturn } from "react-hook-form";
 import { Controller } from "react-hook-form";
 
@@ -24,27 +23,42 @@ interface CreatePinFormProps {
   form: UseFormReturn<CreatePinFormValues>;
   topics: TopicOption[];
   boards: BoardSummary[];
+  previewUrl: string | null;
+  onPreviewUrlChange: (url: string | null) => void;
+  onImageSelected?: (file: File) => void;
+  onPublishSuccess?: () => void;
 }
 
-export function CreatePinForm({ form, topics, boards }: CreatePinFormProps) {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+export function CreatePinForm({
+  form,
+  topics,
+  boards,
+  previewUrl,
+  onPreviewUrlChange,
+  onImageSelected,
+  onPublishSuccess,
+}: CreatePinFormProps) {
   const [topicSearch, setTopicSearch] = useState("");
   const [isTopicOpen, setIsTopicOpen] = useState(false);
 
   const image = form.watch("image");
+  const draftId = form.watch("draftId");
   const selectedTopicId = form.watch("topicId");
   const selectedBoardId = form.watch("boardId");
   const visibility = form.watch("visibility");
   const tags = form.watch("tags") ?? [];
   const tagInput = form.watch("tagInput") ?? "";
 
+  const hasImage = Boolean(image || previewUrl || draftId);
+
   const { submit, isSubmitting } = useCreatePinSubmit({
     previewUrl,
     onSuccess: () => {
       form.reset();
-      setPreviewUrl(null);
+      onPreviewUrlChange(null);
       setTopicSearch("");
       setIsTopicOpen(false);
+      onPublishSuccess?.();
     },
   });
 
@@ -62,7 +76,6 @@ export function CreatePinForm({ form, topics, boards }: CreatePinFormProps) {
         type: "validate",
         message: "Image must be 20 MB or smaller.",
       });
-
       return;
     }
 
@@ -71,7 +84,6 @@ export function CreatePinForm({ form, topics, boards }: CreatePinFormProps) {
         type: "validate",
         message: "Only PNG, JPG, and WEBP images are supported.",
       });
-
       return;
     }
 
@@ -82,14 +94,15 @@ export function CreatePinForm({ form, topics, boards }: CreatePinFormProps) {
     }
 
     const nextPreviewUrl = URL.createObjectURL(file);
-
-    setPreviewUrl(nextPreviewUrl);
+    onPreviewUrlChange(nextPreviewUrl);
 
     form.setValue("image", file, {
       shouldDirty: true,
       shouldTouch: true,
       shouldValidate: true,
     });
+
+    onImageSelected?.(file);
   }
 
   function handleTopicSelect(topicId: string) {
@@ -98,7 +111,6 @@ export function CreatePinForm({ form, topics, boards }: CreatePinFormProps) {
       shouldTouch: true,
       shouldValidate: true,
     });
-
     setIsTopicOpen(false);
     setTopicSearch("");
   }
@@ -156,28 +168,24 @@ export function CreatePinForm({ form, topics, boards }: CreatePinFormProps) {
       <div className="min-w-0 space-y-6 lg:pt-10">
         <Field>
           <FieldLabel htmlFor="title">Title</FieldLabel>
-
           <Input
             id="title"
             placeholder="Tell everyone what your Pin is about"
-            disabled={!image || isSubmitting}
+            disabled={!hasImage || isSubmitting}
             {...form.register("title")}
           />
-
           <FieldError errors={[form.formState.errors.title]} />
         </Field>
 
         <Field>
           <FieldLabel htmlFor="description">Description</FieldLabel>
-
           <Textarea
             id="description"
             rows={5}
             placeholder="Describe your Pin"
-            disabled={!image || isSubmitting}
+            disabled={!hasImage || isSubmitting}
             {...form.register("description")}
           />
-
           <FieldError errors={[form.formState.errors.description]} />
         </Field>
 
@@ -192,7 +200,7 @@ export function CreatePinForm({ form, topics, boards }: CreatePinFormProps) {
               value={selectedTopicId}
               search={topicSearch}
               isOpen={isTopicOpen}
-              disabled={!image || isSubmitting}
+              disabled={!hasImage || isSubmitting}
               onOpenChange={setIsTopicOpen}
               onSearchChange={setTopicSearch}
               onSelect={handleTopicSelect}
@@ -212,7 +220,7 @@ export function CreatePinForm({ form, topics, boards }: CreatePinFormProps) {
         <PinBoardField
           boards={boards}
           value={selectedBoardId ?? ""}
-          disabled={!image || isSubmitting}
+          disabled={!hasImage || isSubmitting}
           onChange={handleBoardSelect}
         />
 
@@ -223,7 +231,7 @@ export function CreatePinForm({ form, topics, boards }: CreatePinFormProps) {
             <TagInput
               tags={tags}
               value={tagInput}
-              disabled={!image || isSubmitting}
+              disabled={!hasImage || isSubmitting}
               onChange={handleTagInputChange}
               onTagsChange={handleTagsChange}
             />
@@ -232,7 +240,7 @@ export function CreatePinForm({ form, topics, boards }: CreatePinFormProps) {
 
         <PinVisibilityField
           value={visibility}
-          disabled={!image || isSubmitting}
+          disabled={!hasImage || isSubmitting}
           onChange={handleVisibilityChange}
         />
       </div>

@@ -78,20 +78,20 @@ export default async function SettingsPage() {
         </p>
       </header>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[13rem_minmax(0,1fr)]">
-        <aside className="lg:sticky lg:top-28 lg:self-start">
+      <div className="mt-8 grid w-full min-w-0 max-w-full gap-8 lg:grid-cols-[13rem_minmax(0,1fr)]">
+        <aside className="w-full min-w-0 max-w-full lg:sticky lg:top-28 lg:self-start">
           <p className="text-muted-foreground mb-3 hidden px-3 text-xs font-semibold tracking-[0.16em] uppercase lg:block">
             On this page
           </p>
           <nav
             aria-label="Settings sections"
-            className="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible"
+            className="flex max-w-full gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible"
           >
             {settingsLinks.map(({ href, label, icon: Icon }) => (
               <a
                 key={href}
                 href={href}
-                className="bg-background text-muted-foreground hover:bg-muted hover:text-foreground inline-flex shrink-0 items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors lg:border-transparent lg:bg-transparent"
+                className="bg-background text-muted-foreground hover:bg-muted hover:text-foreground inline-flex min-h-[44px] shrink-0 items-center gap-3 rounded-xl border px-3.5 py-3 text-sm font-medium transition-colors lg:min-h-0 lg:border-transparent lg:bg-transparent lg:px-3 lg:py-2.5"
               >
                 <Icon className="size-4" />
                 {label}
@@ -100,7 +100,7 @@ export default async function SettingsPage() {
           </nav>
         </aside>
 
-        <div className="min-w-0 space-y-6">
+        <div className="w-full min-w-0 max-w-full space-y-6">
           <section
             id="profile"
             className="scroll-mt-28 overflow-hidden rounded-3xl border bg-background shadow-sm"
@@ -121,7 +121,7 @@ export default async function SettingsPage() {
               {user.username ? (
                 <Link
                   href={`/profile/${user.username}`}
-                  className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium transition-colors"
+                  className="text-muted-foreground hover:text-foreground inline-flex min-h-[40px] items-center gap-2 rounded-lg border border-border/60 px-3 py-2 text-sm font-medium transition-colors sm:border-transparent sm:px-2 sm:py-1.5"
                 >
                   View public profile
                   <ExternalLink className="size-3.5" />

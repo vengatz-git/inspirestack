@@ -16,7 +16,8 @@ export function useCreatePinForm() {
   return useForm<CreatePinFormValues>({
     resolver: zodResolver(createPinFormSchema),
     defaultValues: {
-      image: undefined as unknown as File,
+      image: undefined,
+      draftId: "",
       title: "",
       description: "",
       topicId: "",

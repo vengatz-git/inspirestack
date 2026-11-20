@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { useDebouncedSearch } from "../hooks/use-debounced-search";
@@ -28,6 +29,7 @@ function SearchFormContent({ currentQuery }: SearchFormContentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const requestIdRef = useRef(0);
 
+  const [mounted, setMounted] = useState(false);
   const [value, setValue] = useState(currentQuery);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
@@ -38,10 +40,27 @@ function SearchFormContent({ currentQuery }: SearchFormContentProps) {
   const { recentSearches, saveRecentSearch, removeRecentSearch } =
     useSearchRecent();
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const resetSelection = useCallback(() => {
     setActiveIndex(-1);
     setHoveredIndex(-1);
   }, []);
+
+  const handleClose = useCallback(() => {
+    setOpen(false);
+    setPreviewValue("");
+    resetSelection();
+  }, [resetSelection]);
+
+  const handleClear = useCallback(() => {
+    setValue("");
+    setPreviewValue("");
+    setSuggestions([]);
+    resetSelection();
+  }, [resetSelection]);
 
   const fetchSuggestions = useCallback(
     (query: string) => {
@@ -69,22 +88,27 @@ function SearchFormContent({ currentQuery }: SearchFormContentProps) {
   useDebouncedSearch(value, fetchSuggestions);
 
   useEffect(() => {
-    function handlePointerDown(event: PointerEvent) {
+    if (!open) {
+      return;
+    }
+
+    function handleClickOutside(event: MouseEvent) {
       if (
         containerRef.current &&
         !containerRef.current.contains(event.target as Node)
       ) {
-        setOpen(false);
-        resetSelection();
+        handleClose();
       }
     }
 
-    document.addEventListener("pointerdown", handlePointerDown);
+    // Use click listener (not pointerdown) so overlays are not unmounted mid-gesture,
+    // which would otherwise cause the browser to dispatch the subsequent click to underlying links/cards
+    document.addEventListener("click", handleClickOutside);
 
     return () => {
-      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("click", handleClickOutside);
     };
-  }, [resetSelection]);
+  }, [open, handleClose]);
 
   function performSearch(query: string) {
     const trimmed = query.trim();
@@ -132,14 +156,11 @@ function SearchFormContent({ currentQuery }: SearchFormContentProps) {
       }
 
       event.preventDefault();
-      setOpen(false);
-      resetSelection();
-
+      handleClose();
       event.currentTarget.blur();
-
       return;
     }
-    
+
     if (!open || items.length === 0) {
       return;
     }
@@ -210,32 +231,63 @@ function SearchFormContent({ currentQuery }: SearchFormContentProps) {
   const showRecent = value.trim() === "";
 
   return (
-    <div ref={containerRef} className="relative w-full">
-      <form role="search" autoComplete="off" onSubmit={handleSubmit}>
-        <SearchInput
-          value={value || previewValue}
-          onChange={handleChange}
-          onFocus={handleFocus}
-          onKeyDown={handleKeyDown}
-          expanded={open}
-          listboxId={listboxId}
-          activeDescendant={activeDescendant}
-        />
-      </form>
+    <>
+      {open &&
+        mounted &&
+        createPortal(
+          <div
+            role="presentation"
+            aria-hidden="true"
+            className="fixed inset-0 z-[45] bg-black/40 backdrop-blur-[2px] transition-opacity animate-in fade-in duration-150 cursor-pointer select-none"
+            onPointerDown={(event) => {
+              // Stop propagation so document-level listeners do not tear down the backdrop mid-gesture
+              event.stopPropagation();
+            }}
+            onMouseDown={(event) => {
+              event.stopPropagation();
+            }}
+            onTouchStart={(event) => {
+              event.stopPropagation();
+            }}
+            onClick={(event) => {
+              // Consume the click completely on the backdrop
+              event.preventDefault();
+              event.stopPropagation();
+              handleClose();
+            }}
+          />,
+          document.body,
+        )}
 
-      {open && (
-        <SearchSuggestions
-          suggestions={items}
-          recent={showRecent}
-          listboxId={listboxId}
-          activeIndex={activeIndex}
-          hoveredIndex={hoveredIndex}
-          onSelect={handleSelect}
-          onActiveIndexChange={setActiveIndex}
-          onHoverIndexChange={setHoveredIndex}
-          onRemoveRecentSearch={showRecent ? removeRecentSearch : undefined}
-        />
-      )}
-    </div>
+      <div ref={containerRef} className="relative z-50 w-full">
+        <form role="search" autoComplete="off" onSubmit={handleSubmit}>
+          <SearchInput
+            value={value || previewValue}
+            onChange={handleChange}
+            onClear={handleClear}
+            onFocus={handleFocus}
+            onKeyDown={handleKeyDown}
+            expanded={open}
+            listboxId={listboxId}
+            activeDescendant={activeDescendant}
+          />
+        </form>
+
+        {open && (
+          <SearchSuggestions
+            suggestions={items}
+            recent={showRecent}
+            listboxId={listboxId}
+            activeIndex={activeIndex}
+            hoveredIndex={hoveredIndex}
+            onSelect={handleSelect}
+            onActiveIndexChange={setActiveIndex}
+            onHoverIndexChange={setHoveredIndex}
+            onRemoveRecentSearch={showRecent ? removeRecentSearch : undefined}
+            onClose={handleClose}
+          />
+        )}
+      </div>
+    </>
   );
 }

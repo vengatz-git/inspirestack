@@ -32,18 +32,18 @@ export function PinLikeButton({
   });
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-0.5 sm:gap-1">
       <Button
         variant="ghost"
         size="icon"
         aria-label={isLiked ? "Unlike pin" : "Like pin"}
         aria-pressed={isLiked}
         disabled={isPending}
-        className="size-9 rounded-full transition-transform active:scale-90 hover:text-rose-500"
+        className="size-9 rounded-full transition-transform active:scale-90 hover:text-rose-500 sm:size-10"
         onClick={handleLike}
       >
         <Heart
-          className={`size-5 transition-colors duration-150 ${
+          className={`size-4.5 transition-colors duration-150 sm:size-5 ${
             isLiked
               ? "fill-rose-500 text-rose-500"
               : "text-foreground"
@@ -53,7 +53,7 @@ export function PinLikeButton({
       </Button>
 
       {likeCount > 0 && (
-        <span className="text-muted-foreground min-w-4 text-sm">
+        <span className="min-w-3 text-xs text-muted-foreground sm:text-sm">
           {likeCount}
         </span>
       )}

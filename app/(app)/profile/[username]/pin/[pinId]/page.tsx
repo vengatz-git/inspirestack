@@ -84,7 +84,7 @@ export default async function ProfilePinPage({ params }: ProfilePinPageProps) {
 
   const [comments, relatedPins, moreFromUserResult, likeData] =
     await Promise.all([
-      getCommentsByPinService(pin.id),
+      getCommentsByPinService(pin.id, currentUserId),
 
       getRelatedPinsService({
         pinId: pin.id,

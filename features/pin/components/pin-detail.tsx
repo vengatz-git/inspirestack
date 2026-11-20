@@ -52,7 +52,7 @@ export function PinDetail({
 
       {afterDetail}
 
-      <section className="mx-auto mt-10 max-w-screen-2xl px-6">
+      <section className="mx-auto mt-10 max-w-screen-2xl px-0 sm:px-6">
         <div className="mb-8 flex justify-center">
           <h2 className="text-2xl font-semibold">More like this</h2>
         </div>

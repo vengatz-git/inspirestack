@@ -129,12 +129,16 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     scroll-behavior: smooth;
+    max-width: 100%;
+    overflow-x: clip;
   }
 
   body {
     @apply bg-background text-foreground;
     line-height: 1.6;
     font-weight: 400;
+    max-width: 100%;
+    overflow-x: clip;
   }
 
   h1,

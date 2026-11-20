@@ -13,7 +13,7 @@ export function TopicPage({ topic }: TopicPageProps) {
   return (
     <main className="mx-auto max-w-7xl px-4 py-8">
       <header className="mb-10">
-        <h1 className="text-4xl font-bold">{topic.name}</h1>
+        <h1 className="break-words text-2xl font-bold sm:text-4xl">{topic.name}</h1>
 
         <p className="text-muted-foreground mt-2">
           {topic.pins.length} {topic.pins.length === 1 ? "Pin" : "Pins"}

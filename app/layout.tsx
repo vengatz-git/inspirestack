@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 
 import "./globals.css";
@@ -24,6 +24,11 @@ export const metadata: Metadata = {
   description: "Visual discovery platform",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -36,7 +41,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn(plusJakartaSans.variable, geistMono.variable)}
     >
-      <body className="bg-background min-h-screen font-sans antialiased">
+      <body className="min-h-screen max-w-full overflow-x-clip bg-background font-sans antialiased">
         <AppProviders>{children}</AppProviders>
 
         <Toaster richColors position="top-right" />

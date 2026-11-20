@@ -81,7 +81,7 @@ export function PinPanel({
   return (
     <>
       <section className="bg-card flex h-auto min-h-0 flex-col overflow-hidden md:h-full">
-        <header className="shrink-0 px-4 py-2">
+        <header className="shrink-0 px-3 py-2 sm:px-4">
           <PinHeader
             pin={pin}
             boards={boards}
@@ -90,6 +90,7 @@ export function PinPanel({
             onToggleDetails={() => setShowDetails((current) => !current)}
             showDetails={showDetails}
             likeCount={likeCount}
+            commentCount={comments.length}
             isLiked={isLiked}
             currentUserId={currentUserId}
           />

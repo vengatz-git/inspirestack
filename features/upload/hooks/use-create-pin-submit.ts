@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -39,7 +38,14 @@ export function useCreatePinSubmit({
         formData.append("boardId", values.boardId);
       }
 
-      formData.append("image", values.image);
+      if (values.draftId) {
+        formData.append("draftId", values.draftId);
+      }
+
+      if (values.image) {
+        formData.append("image", values.image);
+      }
+
       formData.append("topicId", values.topicId);
       formData.append("visibility", values.visibility);
 

@@ -25,7 +25,7 @@ export async function GET(
     );
   }
 
-  const comments = await getCommentsByPinService(id);
+  const comments = await getCommentsByPinService(id, session?.user?.id);
 
   return NextResponse.json(comments, {
     headers: {

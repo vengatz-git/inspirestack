@@ -142,7 +142,7 @@ export function PreferencesSettings({
             This only affects user search and username suggestions. Your public
             profile and Pins can still be opened by direct links.
           </p>
-          <label className="mt-3 flex min-h-16 cursor-pointer items-center justify-between gap-4 rounded-2xl border px-4 py-3">
+          <label className="mt-3 flex min-h-16 cursor-pointer items-center justify-between gap-4 rounded-2xl border px-4 py-3 [&>span:first-child]:min-w-0 [&>span:first-child]:flex-1">
             <span>
               <span className="block text-sm font-medium">
                 Show my profile in user search
@@ -163,7 +163,7 @@ export function PreferencesSettings({
               className="size-4 shrink-0 accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             />
           </label>
-          <label className="mt-3 flex min-h-16 cursor-pointer items-center justify-between gap-4 rounded-2xl border px-4 py-3">
+          <label className="mt-3 flex min-h-16 cursor-pointer items-center justify-between gap-4 rounded-2xl border px-4 py-3 [&>span:first-child]:min-w-0 [&>span:first-child]:flex-1">
             <span>
               <span className="block text-sm font-medium">
                 Allow search engines to index my profile
@@ -196,7 +196,7 @@ export function PreferencesSettings({
             {notificationOptions.map((option) => (
               <label
                 key={option.key}
-                className="flex min-h-16 cursor-pointer items-center justify-between gap-4 py-3"
+                className="flex min-h-16 cursor-pointer items-center justify-between gap-4 py-3 [&>span:first-child]:min-w-0 [&>span:first-child]:flex-1"
               >
                 <span>
                   <span className="block text-sm font-medium">

@@ -14,17 +14,31 @@ export async function Navbar() {
   const unreadCount = user?.id ? await getUnreadNotificationCount() : 0;
 
   return (
-    <header className="bg-background/80 sticky top-0 z-50 border-b backdrop-blur-sm">
-      <div className="mx-auto flex h-20 max-w-7xl items-center gap-4 px-4 sm:px-6">
+    <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-3 sm:h-20 sm:gap-4 sm:px-6">
         {/* Left */}
-        <div className="flex shrink-0 items-center gap-6">
-          <Link href="/feed" className="text-xl font-bold">
-            InspireStack
+        <div className="flex shrink-0 items-center gap-2 md:gap-4">
+          <Link
+            href="/feed"
+            className="shrink-0 text-lg font-bold tracking-tight sm:text-xl"
+          >
+            <span className="hidden sm:inline">InspireStack</span>
+            <span className="sm:hidden">Inspire</span>
           </Link>
 
-          <nav className="flex items-center gap-4 text-sm font-medium">
-            <Link href="/feed">Home</Link>
-            <Link href="/create">Create</Link>
+          <nav className="hidden items-center gap-1 text-sm font-medium md:flex">
+            <Link
+              href="/feed"
+              className="rounded-xl px-3 py-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              Home
+            </Link>
+            <Link
+              href="/create"
+              className="rounded-xl px-3 py-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              Create
+            </Link>
           </nav>
         </div>
 

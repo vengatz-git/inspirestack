@@ -75,7 +75,7 @@ export default async function PinPage({ params }: PinPageProps) {
     notFound();
   }
 
-  const comments = await getCommentsByPinService(pin.id);
+  const comments = await getCommentsByPinService(pin.id, session.user.id);
 
   const relatedPins = await getRelatedPinsService({
     pinId: pin.id,

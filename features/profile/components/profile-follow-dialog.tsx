@@ -123,7 +123,7 @@ export function ProfileFollowDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <button
         type="button"
-        className="min-w-24 px-4 text-center first:pl-2 last:pr-2 hover:opacity-75"
+        className="min-w-16 px-2 text-center first:pl-1 last:pr-1 sm:min-w-20 sm:px-4 md:min-w-24 hover:opacity-75"
         aria-haspopup="dialog"
         onClick={() => {
           setActiveKind("followers");
@@ -138,7 +138,7 @@ export function ProfileFollowDialog({
 
       <button
         type="button"
-        className="min-w-24 px-4 text-center first:pl-2 last:pr-2 hover:opacity-75"
+        className="min-w-16 px-2 text-center first:pl-1 last:pr-1 sm:min-w-20 sm:px-4 md:min-w-24 hover:opacity-75"
         aria-haspopup="dialog"
         onClick={() => {
           setActiveKind("following");

@@ -1,13 +1,9 @@
 // features/notification/components/notification-dropdown.tsx
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Bell } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -174,7 +170,7 @@ export function NotificationDropdown({
       </Button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-96 overflow-hidden rounded-2xl border bg-background shadow-lg">
+        <div className="absolute right-0 top-full z-50 mt-2 w-[calc(100vw-2rem)] max-w-sm overflow-hidden rounded-2xl border bg-background shadow-lg sm:w-96">
           <div className="flex items-center justify-between border-b px-4 py-3">
             <h2 className="text-sm font-semibold">Notifications</h2>
 
@@ -218,6 +214,16 @@ export function NotificationDropdown({
                 />
               ))
             )}
+          </div>
+
+          <div className="border-t p-2 text-center">
+            <Link
+              href="/notifications"
+              onClick={() => setOpen(false)}
+              className="text-muted-foreground hover:text-foreground inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-medium transition-colors hover:bg-muted"
+            >
+              View all notifications
+            </Link>
           </div>
         </div>
       )}

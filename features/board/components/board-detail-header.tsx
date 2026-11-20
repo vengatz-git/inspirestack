@@ -35,7 +35,7 @@ export function BoardDetailHeader({
       </div>
 
       <div className="min-w-0 flex-1">
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+        <h1 className="break-words text-2xl font-semibold tracking-tight sm:text-4xl">
           {board.name}
         </h1>
 

@@ -16,7 +16,7 @@ export function ProfileStats({
   return (
     <section>
       <div className="grid grid-cols-3 divide-x">
-        <div className="min-w-24 px-4 text-center first:pl-2 last:pr-2">
+        <div className="min-w-16 px-2 text-center first:pl-1 last:pr-1 sm:min-w-20 sm:px-4 md:min-w-24">
           <p className="text-xl font-bold">{stats.posts}</p>
           <p className="whitespace-nowrap text-xs text-muted-foreground">
             Posted Pins

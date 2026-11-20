@@ -14,4 +14,7 @@ export interface CommentData {
   author: CommentAuthor;
 
   replies: CommentData[];
+
+  likeCount: number;
+  isLiked: boolean;
 }

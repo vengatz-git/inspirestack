@@ -1,12 +1,9 @@
-import { desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, inArray } from "drizzle-orm";
 
 import { db } from "@/db";
-import { comments } from "@/db/schema";
+import { commentLikes, comments } from "@/db/schema";
 
-import type {
-  CommentAuthor,
-  CommentData,
-} from "../types/comment";
+import type { CommentAuthor, CommentData } from "../types/comment";
 
 const COMMENTS_LIMIT = 50;
 
@@ -21,14 +18,12 @@ type CommentRow = {
 
 export async function getCommentsByPinService(
   pinId: string,
+  currentUserId?: string | null,
 ): Promise<CommentData[]> {
   const results = await db.query.comments.findMany({
     where: eq(comments.pinId, pinId),
-
     orderBy: desc(comments.createdAt),
-
     limit: COMMENTS_LIMIT,
-
     with: {
       author: {
         columns: {
@@ -55,6 +50,41 @@ export async function getCommentsByPinService(
     },
   }));
 
+  const commentIds = rows.map((r) => r.id);
+
+  let likeCountMap = new Map<string, number>();
+  let userLikesSet = new Set<string>();
+
+  if (commentIds.length > 0) {
+    const [likeCounts, userLikes] = await Promise.all([
+      db
+        .select({
+          commentId: commentLikes.commentId,
+          count: count(),
+        })
+        .from(commentLikes)
+        .where(inArray(commentLikes.commentId, commentIds))
+        .groupBy(commentLikes.commentId),
+
+      currentUserId
+        ? db
+            .select({ commentId: commentLikes.commentId })
+            .from(commentLikes)
+            .where(
+              and(
+                inArray(commentLikes.commentId, commentIds),
+                eq(commentLikes.userId, currentUserId),
+              ),
+            )
+        : Promise.resolve([]),
+    ]);
+
+    likeCountMap = new Map<string, number>(
+      likeCounts.map((lc) => [lc.commentId, Number(lc.count)]),
+    );
+    userLikesSet = new Set<string>(userLikes.map((ul) => ul.commentId));
+  }
+
   const commentsById = new Map<string, CommentData>();
 
   for (const row of rows) {
@@ -65,6 +95,8 @@ export async function getCommentsByPinService(
       updatedAt: row.updatedAt,
       author: row.author,
       replies: [],
+      likeCount: likeCountMap.get(row.id) ?? 0,
+      isLiked: userLikesSet.has(row.id),
     });
   }
 
@@ -96,8 +128,7 @@ export async function getCommentsByPinService(
 
 function sortReplies(commentList: CommentData[]) {
   commentList.sort(
-    (a, b) =>
-      b.createdAt.getTime() - a.createdAt.getTime(),
+    (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
   );
 
   for (const comment of commentList) {

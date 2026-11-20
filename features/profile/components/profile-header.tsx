@@ -24,7 +24,7 @@ export function ProfileHeader({
 }: ProfileHeaderProps) {
   return (
     <div className="flex min-w-0 items-center gap-4 max-md:flex-col max-md:text-center md:flex-row">
-      <div className="border-background bg-muted relative h-34 w-34 shrink-0 overflow-hidden rounded-full border-4 sm:h-38 sm:w-38 md:h-40 md:w-40">
+      <div className="border-background bg-muted relative size-32 shrink-0 overflow-hidden rounded-full border-4 sm:size-36 md:size-40">
         {isOwner ? (
           <ProfileImageUpload
             imageUrl={profile.image}
@@ -36,7 +36,7 @@ export function ProfileHeader({
             src={profile.image ?? "/default-avatar.svg"}
             alt={profile.username}
             fill
-            sizes="160px"
+            sizes="(max-width: 640px) 128px, (max-width: 768px) 144px, 160px"
             className="object-cover"
           />
         )}

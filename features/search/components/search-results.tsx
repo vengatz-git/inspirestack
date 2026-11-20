@@ -12,7 +12,14 @@ export async function SearchResults({
   query,
 }: SearchResultsProps) {
   if (!query) {
-    return null;
+    return (
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <p className="text-lg font-semibold">Search InspireStack</p>
+        <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+          Use the search bar above to discover Pins, creators, and topics.
+        </p>
+      </div>
+    );
   }
 
   const { users, pins } = await searchAll({
@@ -26,7 +33,7 @@ export async function SearchResults({
           No results found
         </p>
 
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Try a different search term.
         </p>
       </div>

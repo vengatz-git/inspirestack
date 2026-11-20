@@ -125,7 +125,7 @@ export function PinEditPage({ pin, topics }: PinEditPageProps) {
     <main className="w-full">
       <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
         <div className="bg-card overflow-hidden rounded-2xl border">
-          <header className="flex items-center justify-between gap-4 border-b px-6 py-5 sm:px-8">
+          <header className="flex flex-col gap-4 border-b px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
             <div>
               <h1 className="text-lg font-semibold">Edit Pin</h1>
               <p className="text-muted-foreground mt-1 text-sm">
@@ -133,7 +133,7 @@ export function PinEditPage({ pin, topics }: PinEditPageProps) {
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 max-sm:self-end">
               <Button
                 type="button"
                 variant="ghost"

@@ -41,7 +41,7 @@ export function ProfileTabs({
               href={`/profile/${username}?tab=${tab.value}`}
               aria-current={isActive ? "page" : undefined}
               className={[
-                "relative shrink-0 px-5 py-3 text-sm font-medium transition-colors sm:px-8 sm:py-4",
+                "relative shrink-0 px-4 py-3.5 text-sm font-medium transition-colors sm:px-8 sm:py-4",
                 isActive
                   ? "text-foreground"
                   : "text-muted-foreground hover:text-foreground",

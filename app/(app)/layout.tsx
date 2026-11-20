@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { Navbar } from "@/components/layout/navbar";
+import { MobileNav } from "@/components/layout/mobile-nav";
 import { Container } from "@/components/layout/container";
 import { ContentDefaultsProvider } from "@/features/settings/components/content-defaults-provider";
 
@@ -31,9 +32,11 @@ export default async function AppLayout({
     >
       <Navbar />
 
-      <Container className="py-6">
+      <Container className="py-6 pb-24 md:pb-6">
         {children}
       </Container>
+
+      <MobileNav username={session.user.username} />
     </ContentDefaultsProvider>
   );
 }

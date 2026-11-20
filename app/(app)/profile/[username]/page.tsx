@@ -152,7 +152,7 @@ export default async function ProfilePage({
     <main className="mx-auto w-full max-w-6xl px-4 pt-0 pb-6 sm:px-6 sm:pt-0 sm:pb-8">
       <div className="space-y-0">
         <div className="space-y-0">
-          <div className="grid gap-6 px-1 pb-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-10 md:px-6 md:pb-8">
+          <div className="grid gap-6 px-2 pb-6 sm:px-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-10 md:px-6 md:pb-8">
             <ProfileHeader
               profile={profile}
               isOwner={isOwner}

@@ -84,7 +84,7 @@ export function BoardSaveButton({
 
   return (
     <>
-      <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
         <Button
           type="button"
           variant="outline"
@@ -92,13 +92,13 @@ export function BoardSaveButton({
           aria-haspopup="dialog"
           aria-expanded={open}
           onClick={handleOpenDialog}
-          className="h-10 max-w-44 min-w-0 rounded-xl px-3"
+          className="h-9 max-w-24 min-w-0 rounded-xl px-2 text-xs sm:h-10 sm:max-w-44 sm:px-3 sm:text-sm"
         >
           <span className="min-w-0 truncate">
             {selectedBoardName}
           </span>
 
-          <ChevronDown className="size-4 shrink-0" />
+          <ChevronDown className="size-3.5 shrink-0 sm:size-4" />
         </Button>
 
         <Button
@@ -108,7 +108,7 @@ export function BoardSaveButton({
           disabled={isPending}
           onClick={handlePrimarySave}
           className={[
-            "h-10 min-w-20 rounded-xl px-5 text-sm font-semibold text-white opacity-100 transition-colors",
+            "h-9 shrink-0 rounded-xl px-3.5 text-xs font-semibold text-white opacity-100 transition-colors sm:h-10 sm:min-w-20 sm:px-5 sm:text-sm",
             saveColor,
           ].join(" ")}
         >

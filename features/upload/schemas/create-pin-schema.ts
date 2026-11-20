@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const MAX_IMAGE_SIZE = 20 * 1024 * 1024;
 
-export const createPinSchema = z.object({
+export const basePinSchema = z.object({
   title: z
     .string()
     .trim()
@@ -16,20 +16,21 @@ export const createPinSchema = z.object({
     .optional(),
 
   image: z
-    .instanceof(File, {
-      message: "Please select an image.",
-    })
+    .custom<File | undefined>()
+    .optional()
     .refine(
-      (file) => file.size <= MAX_IMAGE_SIZE,
+      (file) => !file || (file instanceof File && file.size <= MAX_IMAGE_SIZE),
       "Image must be 20 MB or smaller.",
     )
     .refine(
       (file) =>
-        ["image/png", "image/jpeg", "image/webp"].includes(
-          file.type,
-        ),
+        !file ||
+        (file instanceof File &&
+          ["image/png", "image/jpeg", "image/webp"].includes(file.type)),
       "Only PNG, JPG, and WEBP images are supported.",
     ),
+
+  draftId: z.string().uuid().optional().or(z.literal("")),
 
   topicId: z
     .string({
@@ -45,12 +46,30 @@ export const createPinSchema = z.object({
   visibility: z.enum(["PUBLIC", "PRIVATE"]),
 });
 
-export const createPinFormSchema = createPinSchema.extend({
-  tags: z.array(z.string()).max(10),
-  tagInput: z.string(),
-});
+export const createPinSchema = basePinSchema.refine(
+  (data) =>
+    (data.image instanceof File && data.image.size > 0) || Boolean(data.draftId),
+  {
+    message: "Please select an image.",
+    path: ["image"],
+  },
+);
+
+export const createPinFormSchema = basePinSchema
+  .extend({
+    tags: z.array(z.string()).max(10),
+    tagInput: z.string(),
+  })
+  .refine(
+    (data) =>
+      (data.image instanceof File && data.image.size > 0) ||
+      Boolean(data.draftId),
+    {
+      message: "Please select an image.",
+      path: ["image"],
+    },
+  );
 
 export type CreatePinSchema = z.infer<typeof createPinSchema>;
 
-export type CreatePinFormValues =
-  z.infer<typeof createPinFormSchema>;
+export type CreatePinFormValues = z.infer<typeof createPinFormSchema>;
