@@ -3,6 +3,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { ProfileDropdown } from "@/components/layout/profile-dropdown";
 import { SearchForm } from "@/features/search/components/search-form";
+import { Logo } from "@/components/shared/logo";
 
 import { NotificationDropdown } from "@/features/notification/components/notification-dropdown";
 import { getUnreadNotificationCount } from "@/features/notification/actions/get-unread-notification-count";
@@ -18,13 +19,7 @@ export async function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-2 px-3 sm:h-20 sm:gap-4 sm:px-6">
         {/* Left */}
         <div className="flex shrink-0 items-center gap-2 md:gap-4">
-          <Link
-            href="/feed"
-            className="shrink-0 text-lg font-bold tracking-tight sm:text-xl"
-          >
-            <span className="hidden sm:inline">InspireStack</span>
-            <span className="sm:hidden">Inspire</span>
-          </Link>
+          <Logo href="/feed" />
 
           <nav className="hidden items-center gap-1 text-sm font-medium md:flex">
             <Link

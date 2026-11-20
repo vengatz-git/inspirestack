@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/shared/logo";
 
 export function LandingFooter() {
   return (
@@ -6,9 +7,7 @@ export function LandingFooter() {
       <div className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-8">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_repeat(3,1fr)]">
           <div className="max-w-sm">
-            <Link href="/" className="text-xl font-bold tracking-tight">
-              InspireStack
-            </Link>
+            <Logo href="/" alwaysShowText textClassName="text-xl" />
 
             <p className="mt-3 text-sm leading-6 text-muted-foreground">
               Discover ideas, save inspiration, and build collections around the

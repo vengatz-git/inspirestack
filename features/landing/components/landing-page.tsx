@@ -5,6 +5,7 @@ import type { PinCardData } from "@/features/pin/types/pin-card";
 import { LandingAuth } from "./landing-auth";
 import { LandingHero } from "./landing-hero";
 import { LandingFooter } from "./landing-footer";
+import { Logo } from "@/components/shared/logo";
 
 interface LandingPageProps {
   pins: PinCardData[];
@@ -39,9 +40,7 @@ function LandingHeader({ onLogin }: LandingHeaderProps) {
   return (
     <header className="absolute inset-x-0 top-0 z-30">
       <div className="mx-auto flex h-20 max-w-7xl items-center gap-4 px-4 sm:gap-8 sm:px-8">
-        <a href="#top" className="shrink-0 text-lg font-bold tracking-tight sm:text-xl">
-          InspireStack
-        </a>
+        <Logo href="#top" />
 
         <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
           <a
