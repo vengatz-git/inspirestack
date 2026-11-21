@@ -85,7 +85,6 @@ export function PinPanel({
             onToggleDetails={() => setShowDetails((current) => !current)}
             showDetails={showDetails}
             likeCount={likeCount}
-            commentCount={comments.length}
             isLiked={isLiked}
             currentUserId={currentUserId}
           />

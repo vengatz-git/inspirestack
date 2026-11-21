@@ -37,7 +37,6 @@ interface PinHeaderProps {
   isLiked: boolean;
   currentUserId: string | null;
   isOwner: boolean;
-  commentCount?: number;
 }
 
 export function PinHeader({
@@ -50,7 +49,6 @@ export function PinHeader({
   isLiked,
   currentUserId,
   isOwner,
-  commentCount,
 }: PinHeaderProps) {
   const router = useRouter();
 
@@ -114,13 +112,10 @@ export function PinHeader({
           variant="ghost"
           size="icon"
           aria-label="Comments"
-          className="relative size-9 shrink-0 rounded-full sm:size-10"
+          className="size-9 shrink-0 rounded-full sm:size-10"
           onClick={onCommentClick}
         >
           <MessageCircle className="size-4.5 sm:size-5" />
-          {commentCount !== undefined && commentCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-red-500" />
-          )}
         </Button>
 
         <Button
