@@ -82,6 +82,13 @@ export function BoardSaveButton({
       return;
     }
 
+    // On mobile (board picker is hidden), always open the dialog to let the user choose a board.
+    const isMobile = window.innerWidth < 640;
+    if (isMobile) {
+      setOpen(true);
+      return;
+    }
+
     const recommendedBoard = boards[0];
 
     if (!recommendedBoard) {
@@ -124,7 +131,7 @@ export function BoardSaveButton({
           aria-haspopup="dialog"
           aria-expanded={open}
           onClick={handleOpenDialog}
-          className="h-9 max-w-20 min-w-0 rounded-xl px-2 text-xs sm:h-10 sm:max-w-44 sm:px-3 sm:text-sm"
+          className="hidden h-9 max-w-20 min-w-0 rounded-xl px-2 text-xs sm:flex sm:h-10 sm:max-w-44 sm:px-3 sm:text-sm"
         >
           <span className="min-w-0 truncate">
             {selectedBoardName}
