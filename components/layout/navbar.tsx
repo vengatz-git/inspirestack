@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { Settings } from "lucide-react";
 
 import { auth } from "@/auth";
+import { buttonVariants } from "@/components/ui/button";
 import { ProfileDropdown } from "@/components/layout/profile-dropdown";
 import { SearchForm } from "@/features/search/components/search-form";
 import { Logo } from "@/components/shared/logo";
+import { cn } from "@/lib/utils";
 
 import { NotificationDropdown } from "@/features/notification/components/notification-dropdown";
 import { getUnreadNotificationCount } from "@/features/notification/actions/get-unread-notification-count";
@@ -49,13 +52,30 @@ export async function Navbar() {
           ) : null}
 
           {user?.username ? (
-            <ProfileDropdown
-              user={{
-                username: user.username,
-                name: user.name ?? null,
-                image: user.image ?? null,
-              }}
-            />
+            <>
+              {/* Desktop: Profile dropdown */}
+              <div className="hidden md:block">
+                <ProfileDropdown
+                  user={{
+                    username: user.username,
+                    name: user.name ?? null,
+                    image: user.image ?? null,
+                  }}
+                />
+              </div>
+
+              {/* Mobile: Settings button */}
+              <Link
+                href="/settings"
+                aria-label="Settings"
+                className={cn(
+                  buttonVariants({ variant: "ghost", size: "icon" }),
+                  "rounded-full md:hidden",
+                )}
+              >
+                <Settings className="size-5" />
+              </Link>
+            </>
           ) : null}
         </div>
       </div>

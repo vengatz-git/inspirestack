@@ -5,6 +5,7 @@ import "./globals.css";
 
 import { cn } from "@/lib/utils";
 import { AppProviders } from "@/components/providers/app-providers";
+import { ServiceWorkerRegister } from "@/components/providers/service-worker-register";
 import { Toaster } from "sonner";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -32,6 +33,21 @@ export const metadata: Metadata = {
     template: "%s | InspireStack",
   },
   description: "Visual discovery platform — Save, organize, and share your inspiration.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "InspireStack",
+  },
+  icons: {
+    icon: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
   openGraph: {
     title: "InspireStack",
     description: "Visual discovery platform — Save, organize, and share your inspiration.",
@@ -50,6 +66,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#09090b",
 };
 
 export default function RootLayout({
@@ -66,6 +83,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen max-w-full overflow-x-clip bg-background font-sans antialiased">
         <AppProviders>{children}</AppProviders>
+        <ServiceWorkerRegister />
 
         <Toaster richColors position="top-right" />
       </body>
