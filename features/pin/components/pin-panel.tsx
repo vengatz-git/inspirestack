@@ -63,11 +63,6 @@ export function PinPanel({
 
     if (isMobile) {
       setIsMobileCommentsOpen(true);
-
-      requestAnimationFrame(() => {
-        mobileCommentsRef.current?.focusInput();
-      });
-
       return;
     }
 
@@ -125,6 +120,7 @@ export function PinPanel({
       <MobileCommentsSheet
         open={isMobileCommentsOpen}
         onOpenChange={setIsMobileCommentsOpen}
+        count={comments.length}
       >
         <CommentsSection
           ref={mobileCommentsRef}

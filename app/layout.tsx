@@ -19,9 +19,32 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
+const defaultUrl = process.env.NEXT_PUBLIC_APP_URL
+  ? new URL(process.env.NEXT_PUBLIC_APP_URL)
+  : process.env.VERCEL_URL
+    ? new URL(`https://${process.env.VERCEL_URL}`)
+    : new URL("http://localhost:3000");
+
 export const metadata: Metadata = {
-  title: "InspireStack",
-  description: "Visual discovery platform",
+  metadataBase: defaultUrl,
+  title: {
+    default: "InspireStack",
+    template: "%s | InspireStack",
+  },
+  description: "Visual discovery platform — Save, organize, and share your inspiration.",
+  openGraph: {
+    title: "InspireStack",
+    description: "Visual discovery platform — Save, organize, and share your inspiration.",
+    url: "/",
+    siteName: "InspireStack",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "InspireStack",
+    description: "Visual discovery platform — Save, organize, and share your inspiration.",
+  },
 };
 
 export const viewport: Viewport = {

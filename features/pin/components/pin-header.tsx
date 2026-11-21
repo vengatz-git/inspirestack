@@ -3,7 +3,6 @@
 import {
   Copy,
   Download,
-  Heart,
   MessageCircle,
   MoreHorizontal,
   Pencil,
@@ -103,7 +102,7 @@ export function PinHeader({
 
   return (
     <header className="flex w-full items-center justify-between gap-1">
-      <div className="flex min-w-0 shrink items-center gap-0.5 sm:gap-1">
+      <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
         <PinLikeButton
           pinId={pin.id}
           initialIsLiked={isLiked}
@@ -111,29 +110,24 @@ export function PinHeader({
           currentUserId={currentUserId}
         />
 
-        <div className="flex items-center gap-0.5 sm:gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Comments"
-            className="size-9 rounded-full sm:size-10"
-            onClick={onCommentClick}
-          >
-            <MessageCircle className="size-4.5 sm:size-5" />
-          </Button>
-
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Comments"
+          className="relative size-9 shrink-0 rounded-full sm:size-10"
+          onClick={onCommentClick}
+        >
+          <MessageCircle className="size-4.5 sm:size-5" />
           {commentCount !== undefined && commentCount > 0 && (
-            <span className="min-w-3 text-xs text-muted-foreground sm:text-sm">
-              {commentCount}
-            </span>
+            <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-red-500" />
           )}
-        </div>
+        </Button>
 
         <Button
           variant="ghost"
           size="icon"
           aria-label="Share pin"
-          className="size-9 rounded-full sm:size-10"
+          className="size-9 shrink-0 rounded-full sm:size-10"
           onClick={handleShare}
         >
           <Share2 className="size-4.5 sm:size-5" />
@@ -146,7 +140,7 @@ export function PinHeader({
                 variant="ghost"
                 size="icon"
                 aria-label="More actions"
-                className="size-9 rounded-full sm:size-10"
+                className="size-9 shrink-0 rounded-full sm:size-10"
               />
             }
           >
@@ -182,7 +176,7 @@ export function PinHeader({
         </DropdownMenu>
       </div>
 
-      <div className="flex shrink-0 items-center">
+      <div className="flex min-w-0 shrink items-center justify-end">
         <BoardSaveButton
           pinId={pin.id}
           boards={boards}

@@ -8,6 +8,8 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { savePinToBoardAction } from "@/features/board/actions/save-pin-to-board";
+import { removePinFromBoardAction } from "@/features/board/actions/remove-pin-from-board";
+import { removeSavedPinAction } from "@/features/saved/actions/remove-saved-pin";
 
 import type { BoardSummary } from "../types/board";
 
@@ -46,7 +48,37 @@ export function BoardSaveButton({
       return;
     }
 
-    if (isPending || isSaved) {
+    if (isPending) {
+      return;
+    }
+
+    if (isSaved) {
+      startTransition(async () => {
+        const savedBoards = boards.filter((board) => board.isSaved);
+        let error: string | null = null;
+
+        for (const board of savedBoards) {
+          const res = await removePinFromBoardAction({
+            boardId: board.id,
+            pinId,
+          });
+
+          if (!res.success) {
+            error = res.error ?? "Failed to remove pin";
+          }
+        }
+
+        await removeSavedPinAction({ pinId });
+
+        if (error) {
+          toast.error(error);
+        } else {
+          toast.success("Pin unsaved successfully.");
+        }
+
+        router.refresh();
+      });
+
       return;
     }
 
@@ -84,7 +116,7 @@ export function BoardSaveButton({
 
   return (
     <>
-      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+      <div className="flex shrink-0 items-center gap-1 sm:gap-2">
         <Button
           type="button"
           variant="outline"
@@ -92,7 +124,7 @@ export function BoardSaveButton({
           aria-haspopup="dialog"
           aria-expanded={open}
           onClick={handleOpenDialog}
-          className="h-9 max-w-24 min-w-0 rounded-xl px-2 text-xs sm:h-10 sm:max-w-44 sm:px-3 sm:text-sm"
+          className="h-9 max-w-20 min-w-0 rounded-xl px-2 text-xs sm:h-10 sm:max-w-44 sm:px-3 sm:text-sm"
         >
           <span className="min-w-0 truncate">
             {selectedBoardName}
@@ -108,7 +140,7 @@ export function BoardSaveButton({
           disabled={isPending}
           onClick={handlePrimarySave}
           className={[
-            "h-9 shrink-0 rounded-xl px-3.5 text-xs font-semibold text-white opacity-100 transition-colors sm:h-10 sm:min-w-20 sm:px-5 sm:text-sm",
+            "h-9 shrink-0 rounded-xl px-3 text-xs font-semibold text-white opacity-100 transition-colors sm:h-10 sm:min-w-20 sm:px-5 sm:text-sm",
             saveColor,
           ].join(" ")}
         >

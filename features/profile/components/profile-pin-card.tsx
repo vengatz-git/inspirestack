@@ -91,7 +91,7 @@ export function ProfilePinCard({
     : `/pin/${pin.id}`;
 
   const showActions =
-    (showRemoveSaved && pin.isDirectSave) ||
+    showRemoveSaved ||
     (showDelete && pin.isOwner);
 
   return (
@@ -125,7 +125,7 @@ export function ProfilePinCard({
 
         {showActions && (
           <div className="absolute top-2 right-2 z-10 flex gap-2">
-            {showRemoveSaved && pin.isDirectSave && (
+            {showRemoveSaved && (
               <button
                 type="button"
                 onClick={handleRemoveSaved}

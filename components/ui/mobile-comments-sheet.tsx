@@ -9,12 +9,14 @@ interface MobileCommentsSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
+  count?: number;
 }
 
 export function MobileCommentsSheet({
   open,
   onOpenChange,
   children,
+  count,
 }: MobileCommentsSheetProps) {
   return (
     <Dialog.Root
@@ -60,7 +62,7 @@ export function MobileCommentsSheet({
         >
           <header className="flex shrink-0 items-center justify-between border-b px-5 py-4">
             <Dialog.Title className="text-lg font-semibold">
-              Comments
+              {count !== undefined && count > 0 ? `Comments (${count})` : "Comments"}
             </Dialog.Title>
 
             <Dialog.Close

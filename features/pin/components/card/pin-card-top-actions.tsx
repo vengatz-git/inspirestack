@@ -68,7 +68,7 @@ export function PinCardTopActions({
     : directSaved;
 
   return (
-    <div className="pointer-events-auto absolute inset-x-3 top-3 flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+    <div className="pointer-events-auto absolute inset-x-3 top-3 hidden items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:flex">
       <div className="min-w-0">
         {boards.length > 0 && (
           <PinCardBoardPicker

@@ -24,7 +24,7 @@ export function PinCardBottomActions({
   }
 
   return (
-    <div className="pointer-events-auto absolute inset-x-3 bottom-3 flex items-center justify-between opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+    <div className="pointer-events-auto absolute inset-x-3 bottom-3 hidden items-center justify-between opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:flex">
       <div>
         {destinationUrl ? (
           <PinCardVisitButton href={destinationUrl} />

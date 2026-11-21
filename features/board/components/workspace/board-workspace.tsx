@@ -9,6 +9,7 @@ import type { BoardView } from "../../types/board-view";
 import { BoardBrowser } from "./board-browser";
 import { BoardSidebar } from "./board-sidebar";
 import { BoardWorkspaceHeader } from "./board-workspace-header";
+import { CreateBoardButton } from "../create-board-button";
 
 interface BoardWorkspaceProps {
   boards: BoardSummary[];
@@ -78,6 +79,10 @@ export function BoardWorkspace({
           view={view}
           onSave={onSave}
         />
+
+        <div className="border-border/40 border-t p-3 shrink-0 flex justify-center md:hidden bg-background">
+          <CreateBoardButton className="w-full" />
+        </div>
       </div>
     </div>
   );

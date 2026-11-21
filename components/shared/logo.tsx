@@ -126,7 +126,7 @@ export function Logo({
     return (
       <Link
         href={href}
-        className="shrink-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="inline-flex shrink-0 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         aria-label="InspireStack Home"
       >
         {content}

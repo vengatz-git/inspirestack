@@ -54,6 +54,7 @@ export function ProfileContent({
               username={username}
               initialPins={savedPins}
               initialCursor={savedPinsCursor}
+              isOwner={isOwner}
             />
           )}
         </>

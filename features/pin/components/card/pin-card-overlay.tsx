@@ -15,7 +15,7 @@ export function PinCardOverlay({ pin, boards }: PinCardOverlayProps) {
   const variant = getOverlayVariant(pin.imageWidth, pin.imageHeight);
 
   return (
-    <div className="pointer-events-none absolute inset-0 rounded-2xl bg-black/0 transition-colors duration-200 group-hover:bg-black/15">
+    <div className="pointer-events-none absolute inset-0 rounded-2xl bg-black/0 transition-colors duration-200 sm:group-hover:bg-black/15">
       <PinCardTopActions
         pinId={pin.id}
         saved={pin.isSaved}

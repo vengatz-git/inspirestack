@@ -35,11 +35,22 @@ export function UsernameField({
           id="username"
           placeholder="guts"
           autoComplete="off"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           {...registration}
+          onChange={(event) => {
+            // Automatically turn uppercase to lowercase and allow only letters, numbers, and underscores
+            const sanitized = event.target.value
+              .toLowerCase()
+              .replace(/[^a-z0-9_]/g, "");
+            event.target.value = sanitized;
+            registration.onChange(event);
+          }}
         />
 
         <FieldDescription>
-          This will become your public profile URL.
+          This will become your public profile URL (lowercase letters, numbers, and _ only).
         </FieldDescription>
 
         <FieldError

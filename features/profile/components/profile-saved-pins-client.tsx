@@ -15,12 +15,14 @@ interface ProfileSavedPinsClientProps {
   username: string;
   initialPins: ProfilePinCardData[];
   initialCursor: string | null;
+  isOwner?: boolean;
 }
 
 export function ProfileSavedPinsClient({
   username,
   initialPins,
   initialCursor,
+  isOwner = true,
 }: ProfileSavedPinsClientProps) {
   const [pins, setPins] = useState(initialPins);
   const [nextCursor, setNextCursor] = useState(
@@ -36,22 +38,7 @@ export function ProfileSavedPinsClient({
   const handleDirectSaveRemoved = useCallback(
     (pinId: string) => {
       setPins((currentPins) =>
-        currentPins.flatMap((pin) => {
-          if (pin.id !== pinId) {
-            return [pin];
-          }
-
-          if (pin.isBoardSave) {
-            return [
-              {
-                ...pin,
-                isDirectSave: false,
-              },
-            ];
-          }
-
-          return [];
-        }),
+        currentPins.filter((pin) => pin.id !== pinId),
       );
     },
     [],
@@ -127,7 +114,7 @@ export function ProfileSavedPinsClient({
     <>
       <ProfilePinGrid
         pins={pins}
-        showRemoveSaved
+        showRemoveSaved={isOwner}
         onDirectSaveRemoved={
           handleDirectSaveRemoved
         }

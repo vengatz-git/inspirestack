@@ -35,6 +35,7 @@ export async function removeSavedPinAction(
   );
 
   revalidatePath("/feed");
+  revalidatePath(`/pin/${validated.data.pinId}`);
   revalidatePath("/profile/[username]", "page");
 
   return {
